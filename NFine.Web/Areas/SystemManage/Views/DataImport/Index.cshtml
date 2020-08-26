@@ -1,0 +1,113 @@
+﻿
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+
+<script>
+
+    function btn_Base_download() {
+        $.submitForm({
+            url: "/SystemManage/DataImport/BaseDownload",
+            success: function () {
+
+            }
+        });
+    }
+    function btn_MedicalInsurance_download() {
+        $.modalOpen({
+            id: "Form",
+            title: "医保ICD10导入",
+            url: "/SystemManage/DataImport/ImportExcelIcd",
+            width: "450px",
+            height: "340px",
+            callBack: function (iframeId) {
+                top.frames[iframeId].submitForm();
+            }
+        });
+    }
+    function importDrugCatalogExcel() {
+        $.modalOpen({
+            id: "Form",
+            title: "医保药品目录导入",
+            url: "/SystemManage/DataImport/DrugCatalogExcel",
+            width: "450px",
+            height: "340px",
+            callBack: function (iframeId) {
+                top.frames[iframeId].submitForm();
+            }
+        });
+    }
+
+    //更新基层目录
+    function updateBaseDirectory() {
+
+        var paramData = {
+            "DirectoryType": $("#DirectoryType").val()
+        }
+        $.submitForm({
+            url: "/SystemManage/DataImport/updateBaseDirectory",
+            param: paramData,
+            success: function () {
+            }
+        });
+
+    }
+
+</script>
+
+
+<form id="form1">
+    <div style="margin-top: 10px; margin-left: 10px; margin-right: 10px;">
+        <div style="margin-right: 30px; width: 30%">
+
+            <table class="form">
+                <tr>
+                    <th class="formTitle">目录类别</th>
+                    <td class="formValue" style="width: 150px">
+                        <select id="DirectoryType" name="DirectoryType" class="form-control">
+                            <option value="0">中药</option>
+                            <option value="1">西药</option>
+                            <option value="2">诊疗</option>
+                            <option value="3">耗材</option>
+                        </select>
+                    </td>
+                    <td class="formValue">
+                        <a authorize="yes" class="btn btn-primary dropdown-text" onclick="updateBaseDirectory()"><i class="fa fa-plus"></i>基层更新目录</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="formTitle"></th>
+                    <td class="formValue">
+                        <a authorize="yes" class="btn btn-primary dropdown-text" onclick="btn_Base_download()"><i class="fa fa-plus"></i>基层icd10更新</a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th class="formTitle"></th>
+                    <td class="formValue"></td>
+                </tr>
+                <tr>
+                    <th class="formTitle"></th>
+                    <td class="formValue"></td>
+                </tr>
+          
+                <tr style="padding-top: 100px">
+                    <th class="formTitle"></th>
+                    <td class="formValue">
+                        <a authorize="yes" class="btn btn-primary dropdown-text" onclick="btn_MedicalInsurance_download()"><i class="fa fa-plus"></i>医保ICD10导入</a>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="formTitle"></th>
+                    <td class="formValue">
+                        <a class="btn btn-primary dropdown-text" onclick="importDrugCatalogExcel()"><i class="fa fa-plus"></i>医保目录导入</a>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+    </div>
+</form>
+
+

@@ -1,0 +1,347 @@
+﻿@{
+    Layout = "~/Views/Shared/_Base.cshtml";
+    ViewBag.Title = "住院医保取消结算";
+}
+<link href="~/Content/js/layui/css/modules/layuiAutocomplete.css" rel="stylesheet" />
+<script src="~/script/BenDingComm.js"></script>
+<style>
+    .layui-card-header.layuibd-card-header-auto {
+        padding-top: 15px;
+        /*padding-bottom: 5px;*/
+        height: auto;
+    }
+
+    .layuibd-card-header-auto i.layuibd-button-btn {
+        position: relative;
+        right: 0;
+        top: 0;
+        vertical-align: middle
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <form class="layui-form" id="LAY-form" lay-filter="LAY-form-render">
+          
+            @{Html.RenderPartial("_CSharpActiveX");}
+            <div class="layui-card-header layuibd-card-header-auto">
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+                    <legend>病人信息</legend>
+                </fieldset>
+                <!--病人信息-->
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">住院编号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="HospitalizationNo" autocomplete="off" disabled class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">身份证号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="IdCardNo" autocomplete="off" disabled class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">患者姓名</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="PatientName" autocomplete="off" disabled class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">入院日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="AdmissionDate" autocomplete="off" disabled class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">出院日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="LeaveHospitalDate" autocomplete="off" disabled class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">住院科室</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="DepartmentName" autocomplete="off" disabled class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">诊断医生</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="AdmissionDiagnosticDoctor" autocomplete="off" disabled class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">经办人</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="Operator" autocomplete="off" disabled class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">结算编号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="SettlementNo" autocomplete="off" disabled class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">就诊编号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="DiagnosisNo" autocomplete="off" disabled class="layui-input layui-disabled">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="CancelSettlementRemarks" name="CancelSettlementRemarks" autocomplete="off"  class="layui-input">
+                    </div>
+                </div>
+                </div>
+                <div class="layui-form-item">
+                    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+                        <legend>出院诊断信息</legend>
+                    </fieldset>
+                    <table class="layui-table" id="dataTable" lay-size="sm" lay-filter="dataTable"></table>
+                    <div class="layui-form-item" style="text-align: center;margin-top: 20px;">
+                        <button type="button" Id="SettlementCancel" class="layui-btn layui-btn-disabled layui-btn-radius">取消结算</button>
+                    </div>
+                </div>
+            </div>
+         
+            
+            <div class="layui-card-body" lay-size="sm">
+                <fieldset id="SettleData" class="layui-elem-field layui-field-title" style="margin-top: 2px;">
+                    <legend>医保结算信息</legend>
+                </fieldset>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    layui.config({
+        base: '/Content/js/layui/plugin/'
+    }).extend({
+        autocomplete: 'layAutoComplete'
+        });
+    var iniJs;
+    var iniMsg;
+    layui.use(['form', 'laypage', 'layer', 'table', 'element', 'autocomplete'], function () {
+        var $ = layui.$,
+            element = layui.element,
+            form = layui.form,
+            layer = layui.layer,
+            table = layui.table;
+            iniJs = $;
+        iniMsg = layer;
+        //是否生育
+        var isBirthHospital = 0;
+        //险种类型
+        var insuranceType;
+        //form数据回显:数据回显到Form表单主体部分
+        var jsonToForm = function (jsonData, formFilter) {
+            //给表单赋值
+            form.val(formFilter,
+                {
+                    "AdmissionDate": jsonData.AdmissionDate,
+                    "LeaveHospitalDate": jsonData.LeaveHospitalDate,
+                    "HospitalizationNo": jsonData.HospitalizationNo,
+                    "PatientName": jsonData.PatientName,
+                    "IdCardNo": jsonData.IdCardNo,
+                    "DepartmentName": jsonData.InDepartmentName,
+                    "AdmissionDiagnosticDoctor": jsonData.AdmissionDiagnosticDoctor,
+                    "Operator": jsonData.CancelOperator,
+                    "SettlementNo": jsonData.SettlementNo,
+                    "DiagnosisNo": jsonData.DiagnosisNo
+                });
+
+        }
+        //----
+        //诊断数据表格实例化
+        var layTableId = "dataTableId";
+        var tableIns = table.render({
+            elem: '#dataTable',
+            id: layTableId,
+            page: false,
+            cols: [
+                [
+                    { title: '序号', type: 'numbers', width: 80 },
+                    { field: 'DiseaseCoding', title: '基层疾病编码', width: 280 },
+                    { field: 'DiseaseName', title: '基层疾病名称', width: 280 },
+                    { field: 'ProjectCode', title: '医保疾病编码', width: 280 },
+                    {
+                        field: 'IsMainDiagnosis',
+                        title: '主诊',
+                        width: 120,
+                        event: 'diagnosis',
+                        templet: function (d) {
+                            var html = [
+                                '<input type="checkbox" name="IsMainDiagnosis" lay-skin="switch" lay-text="是|否"'
+                            ];
+                            html.push(d.IsMainDiagnosis === true ? 'checked' : '');
+                            html.push('/>');
+                            return html.join('');
+                        }
+                    
+                    }
+                ]
+            ]
+        });
+
+        var params = {
+            "TransKey": $("#transkey").val() /*医保交易码*/,
+            "BusinessId": $("#bid").val() /*当前住院记录的业务ID*/,
+            "UserId": $("#empid").val() /*授权操作人的ID*/
+        }
+        params["timestamp"] = (new Date()).valueOf();
+
+        //插件检查
+        var verification = DetectActiveX();
+        if (verification === false) {
+            return false;
+        }
+        //获取医院基本信息回调方法
+        window.getHospitalInfoBack = function () { };
+     
+        getHospitalInfo(getHospitalInfoBack);
+        $.ajax({
+            type: 'get',
+            url: host + '/GetHisHospitalizationSettlementCancel',
+            data: params,
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                
+                if (data.Success === false) {
+                    var errData = data.Message;
+                    //样式类名:墨绿深蓝风
+                    layer.alert(errData, { icon: 5,title: '错误提示',skin: 'layui-layer-molv' });
+                    
+                } else {
+                    //加载结算数据
+                    if (data.Data.PayMsg !== null) {
+                        settlementData(data.Data.PayMsg);
+                    }
+                    isBirthHospital = data.Data.IsBirthHospital;
+                    insuranceType = data.Data.InsuranceType;
+                    jsonToForm(data.Data, "LAY-form-render");
+                    //加载诊断默认数据
+                    tableIns.reload({
+                        data: data.Data.DiagnosisList
+                    });
+                    buttonStatus("SettlementCancel", true);
+                  
+                }
+            },
+            complete: function () {
+                form.render();
+            }
+        });
+        
+        function getLeaveHospitalSettlementCancelParamIni() {
+            var cancelParams = {
+                "TransKey": $("#transkey").val() /*医保交易码*/,
+                "BusinessId": $("#bid").val() /*当前住院记录的业务ID*/,
+                "UserId": $("#empid").val() /*授权操作人的ID*/,
+                "CancelLimit": "1"/*取消程度*/,
+                "CancelSettlementRemarks": $("#CancelSettlementRemarks").val() //取消备注
+
+            }
+            return cancelParams;
+
+        }
+        //医保取消结算
+        function leaveHospitalSettlementCancel(cancelParam) {
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/LeaveHospitalSettlementCancel',
+                async: false,
+                data: JSON.stringify(cancelParam),
+                dataType: "json",
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        msgError(errData);
+                        //样式类名:墨绿深蓝风
+                    } else {
+                        msgSuccess('住院取消结算成功');
+                        buttonStatus("SettlementCancel", false);
+                    }
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        }
+        //获取医保取消结算参数
+        function getLeaveHospitalSettlementCancelParam() {
+
+            var cancelParam = getLeaveHospitalSettlementCancelParamIni();
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/GetLeaveHospitalSettlementCancelParam',
+                async: false,
+                data: JSON.stringify(cancelParam),
+                dataType: "json",
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        msgError(errData);
+                        //样式类名:墨绿深蓝风
+                    } else {
+                        var activeX = document.getElementById("CSharpActiveX");
+                     
+                        var activeData;
+                        var activeJsonData;
+                     
+                        if (insuranceType === "342") {
+                            //居民取消结算
+                            activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "LeaveHospitalSettlementCancel");
+                            activeJsonData = JSON.parse(activeData);
+                            if (activeJsonData.Success === false) {
+                                msgError(activeJsonData.Message);
+                            } else {
+                                leaveHospitalSettlementCancel();
+                            }
+                        }
+                        if (insuranceType === "310") {
+                          
+                            //职工生育取消结算
+                            if (isBirthHospital === 1) {
+
+                                activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "LeaveHospitalSettlementCancel");
+                               
+                            }
+                            else//职工取消结算
+                            {
+                                activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "WorkerSettlementCancel"); 
+                            }
+
+                            activeJsonData = JSON.parse(activeData);
+                          
+                            if (activeJsonData.Success === false) {
+                                msgError(activeJsonData.Message);
+                            } else {
+                                if (insuranceType === "310" && isBirthHospital !== 1) {
+                                    cancelParam["YearSign"] = activeJsonData.OtherInfo;
+                                }
+                               
+                                leaveHospitalSettlementCancel(cancelParam);
+                            }
+                        }
+
+                      
+
+                    }
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        }
+     
+        //结算取消
+        $('#SettlementCancel').on('click', function () {
+            getLeaveHospitalSettlementCancelParam();
+        });
+      
+    });
+ 
+
+</script>

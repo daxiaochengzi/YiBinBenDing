@@ -1,0 +1,291 @@
+﻿@{
+    ViewBag.Title = "住院费用清单上传回退";
+    Layout = "~/Views/Shared/_Base.cshtml";
+}
+<script src="~/script/BenDingComm.js"></script>
+<div class="layui-fluid" style="padding-top:10px">
+    <div class="layui-card">
+        <div class="layui-form" id="LAY-form" lay-filter="LAY-bill-data-list">
+           
+            @{Html.RenderPartial("_CSharpActiveX");}
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">药品名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="DirectoryName" placeholder="请输入药品名称" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">费用日期</label>
+
+                    <div class="layui-input-inline">
+                        <input type="text" id="date1" name="BillTime" placeholder=" - " autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit lay-filter="LAY-bill-data-list">查询</button>
+                    <button class="layui-btn" id="allUploadReceive" lay-submit lay-filter="allUploadReceive">全部撤销</button>
+                </div>
+            </div>
+        </div>
+        <!--院内费用已传明细列表-->
+        <table id="dataTableBillId" lay-filter="dataTableBillId"></table>
+    </div>
+</div>
+
+
+<script>
+    layui.config({
+        base: '/Content/js/layui/plugin/' //假设这是test.js所在的目录
+    }).extend({ //设定模块别名
+        autocomplete: 'layAutoComplete'
+    });
+    var iniJs;
+    var iniMsg;
+    layui.use(['form', 'laypage', 'layer', 'table', 'element', 'laydate', 'autocomplete'], function () {
+        var $ = layui.$
+            //Tab的切换功能，切换事件监听等，需要依赖element模块
+            ,
+            element = layui.element,
+            form = layui.form,
+            layer = layui.layer,
+            table = layui.table,
+            laydate = layui.laydate;
+            iniJs = $;
+            iniMsg = layer;
+        //初始化日期控件
+        laydate.render({ elem: '#date1', range: true });
+        //查询参数
+        var queryParam = {
+            BusinessId: $("#bid").val(),
+            UserId: $("#empid").val(),
+            UploadMark: 1,
+            TransKey: $("#empid").val()
+        };
+        //插件检查
+        var verification = DetectActiveX();
+        if (verification === false) {
+            return false;
+        }
+        //数据表格实例化
+        var layTableId = "dataTableBillId"; //默认
+            table.render({
+            elem: '#' + layTableId,
+            id: layTableId,
+            limits: [10, 20, 50],
+            page: true,
+            toolbar: '#toolbarOne',
+            cols: [
+                [
+                    { type: 'checkbox', fixed: 'left' },
+                    { title: '序号', type: 'numbers', align: 'center' },
+                    { field: 'UploadMark', title: '上传状态', width: 100, toolbar: '#tableBtn', align: 'center' },
+                    { field: 'BatchNumber', title: '医保批次号', width: 150 },
+                    { field: 'DirectoryCode', title: '药品编码', width: 320, hide: true },
+                    { field: 'DirectoryName', title: '药品名称', width: 200 },
+                    { field: 'DirectoryCategoryCode', title: '药品类别', width: 100 },
+                    { field: 'Quantity', title: '数量', width: 100 }, { field: 'UnitPrice', title: '单价', width: 100 },
+                    { field: 'Amount', title: '金额', width: 100 }, { field: 'BillTime', title: '费用日期', width: 160 },
+                    { field: 'BillDepartment', title: '科室', width: 100 },
+                    { field: 'DetailId', title: '处方流水号', width: 250, hide: true },
+                    { field: 'OperateDoctorName', title: '执行医生', width: 100 , hide: true  },
+                    { field: 'UploadUserName', title: '上传操作员', width: 100},
+                    { field: 'UploadTime', title: '上传时间', width: 100 },
+                    { field: 'ProjectCode', title: '医保编码', width: 100 },
+                    { field: 'ProjectCodeType', title: '医保类别', width: 100 },
+                    { field: 'UploadAmount', title: '医保上传金额', width: 100 },
+                    { field: 'ProjectLevel', title: '项目等级', width: 100 },
+                    { field: 'SelfPayProportion', title: '自付比例', width: 100 },
+                    { field: 'BlockPrice', title: '限制价格', width: 100 },
+                    { field: 'BlockRemark', title: '限制使用说明', width: 100},
+                    { field: 'Specification', title: '规格', width: 100 }
+                ]
+            ]
+        });
+        var tableDataLoad = function (tableId) {
+            queryParam["timestamp"] = (new Date()).valueOf();
+            //执行重载
+            table.reload(tableId,
+                {
+                    url: host + '/QueryHospitalizationFee',
+                    where: queryParam
+                    , parseData: function (res) { //res 即为原始返回的数据
+                        if (res.Success === false) layer.alert(res.Message, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                         
+                        return {
+                            "code": res.Code,
+                            "count": res.Data.count, //解析数据长度
+                            "data": res.Data.data //解析数据列表
+                        };
+                    }
+                },
+                'data');
+
+
+        }
+        //表格查询
+        var tableDataQuery = function (method, url, params, reloadTable, tableId) {
+            $.ajax({
+                type: method,
+                url: host + url,
+                data: params,
+                dataType: "json",
+                async: false,
+                success: function (res) {
+                    if (res.Success === false) {
+                        var errData = res.Message;
+                        //样式类名:墨绿深蓝风
+                        
+                        layer.alert(errData, { skin: 'layui-layer-molv', icon: 3, title: '提示' });
+                    } else {
+                        if (url === "/DeletePrescriptionUpload") {
+                            layer.alert('撤销成功', { icon: 6, shade: 0.1, skin: 'layui-layer-molv',title: '温馨提示' });
+                          
+                        }
+                        if (reloadTable) {
+                            //重新加载表格
+                            tableDataLoad(tableId);
+                        }
+                    }
+                },
+                complete: function () {
+                    form.render();
+                }
+            });
+        }
+        /**处方明细查询*/
+        form.on('submit(LAY-bill-data-list)', function (data) {
+            queryParam["BillTime"] = $("#date1").val();/*费用日期*/
+            queryParam["DirectoryName"] = data.field.DirectoryName;/*药品名称*/
+            //执行查询
+            tableDataLoad(layTableId);
+        });
+        //处方撤销上传
+        var prescriptionUploadReceive = function (tableData) {
+            var params = {
+                "BusinessId": $("#bid").val() /*当前住院记录的业务ID*/
+                , "UserId": $("#empid").val() /*授权操作人的ID*/
+                , "DataIdList": tableData
+                , "TransKey": $("#transkey").val()
+            }
+            getDeletePrescriptionUploadParam(params);
+            //tableDataQuery("POST", "/DeletePrescriptionUpload", params, true, layTableId);
+        }
+        //获取医院基本信息回调方法
+        window.getHospitalInfoBack = function () { };
+        getHospitalInfo(getHospitalInfoBack);
+        //获取取消处方上传参数
+        function deletePrescriptionUpload(uploadParam) {
+
+            $.ajax({
+                type: "POST",
+                url: hostNew + "/DeletePrescriptionUpload",
+                data: JSON.stringify(uploadParam),
+                dataType: "json",
+                contentType: 'application/json',
+                async: false,
+                success: function (res) {
+                    if (res.Success === false) {
+                        var errData = res.Message;
+                        //样式类名:墨绿深蓝风
+                        msgError(errData);
+                    } else {
+                        tableDataLoad(layTableId);
+                        msgSuccess("操作成功");
+                    }
+                },
+                complete: function () {
+                    form.render();
+                }
+            });
+
+        }
+        //获取取消处方上传参数
+        function getDeletePrescriptionUploadParam(params) {
+          
+            $.ajax({
+                type: "POST",
+                url: hostNew +"/GetDeletePrescriptionUploadParam",
+                data: JSON.stringify(params) ,
+                dataType: "json",
+                contentType: 'application/json',
+                async: false,
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        //样式类名:墨绿深蓝风
+                        msgError(errData);
+                    } else
+                    {
+                        var activeX = document.getElementById("CSharpActiveX");
+                        //取消处方上传
+                        var activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "DeletePrescriptionUpload");
+                        var activeJsonData = JSON.parse(activeData);
+                        if (activeJsonData.Success === false) {
+                            msgError(activeJsonData.Message);
+                        } else {
+                           deletePrescriptionUpload(params);
+                        }
+                       
+                    }
+                },
+                complete: function () {
+                    form.render();
+                }
+            });
+
+        }
+     
+        //医保费用上传
+        form.on('submit(allUploadReceive)', function (data) {
+            
+            var params = {
+                "BusinessId": $("#bid").val() /*当前住院记录的业务ID*/
+                , "UserId": $("#empid").val() /*授权操作人的ID*/
+                , "TransKey": $("#transkey").val()
+            }
+            getDeletePrescriptionUploadParam(params);
+            //tableDataQuery("POST", "/DeletePrescriptionUpload", params, true, layTableId);
+        });
+        //头工具栏事件
+        table.on('toolbar(dataTableBillId)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'batchUpdateDataReceive':
+                    var data = checkStatus.data;//选中行的数据
+                    //排除已经上传了的数据
+                    var dataIds = [];
+                    for (var i in data) {
+                        if (data[i].UploadMark === 1) {
+                            dataIds.push(data[i].Id);
+                        }
+                    }
+                    prescriptionUploadReceive(dataIds);
+                    break;
+            };
+        });
+        //页面初始化加载默认数据
+        $(function () {
+            tableDataLoad(layTableId);
+        });
+    });
+
+
+
+</script>
+
+<script type="text/html" id="toolbarOne">
+
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="batchUpdateDataReceive">批量取消</button>
+    </div>
+</script>
+
+<script type="text/html" id="tableBtn">
+    {{#  if(d.UploadMark == 0){ }}
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="pairCode">未上传</a>
+    {{#  } else { }}
+    <a class="layui-btn layui-btn-xs" lay-event="updatePairCode">已上传</a>
+    {{#  }}}
+</script>
+

@@ -1,0 +1,547 @@
+﻿
+@{
+    ViewBag.Title = "门诊结算";
+    Layout = "~/Views/Shared/_Base.cshtml";
+}
+
+<link href="~/Content/js/layui/css/modules/layuiAutocomplete.css" rel="stylesheet" />
+<script src="~/script/BenDingComm.js"></script>
+<style>
+    .layui-card-header.layuibd-card-header-auto {
+        padding-top: 15px;
+        padding-bottom: 15px;
+        height: auto;
+    }
+
+    .layuibd-card-header-auto i.layuibd-button-btn {
+        position: relative;
+        right: 0;
+        top: 0;
+        vertical-align: middle
+    }
+</style>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <form class="layui-form" id="LAY-form" lay-filter="LAY-form-render">
+            @{Html.RenderPartial("_CSharpActiveX");}
+            <div class="layui-card-header layuibd-card-header-auto">
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+                    <legend>病人信息</legend>
+                </fieldset>
+                <div class="layui-form-item" style="text-align: right;">
+                    <a id="BenDingDownloadFile" href="/api/BenDing/DownloadFile">医保插件下载</a>
+                </div>
+                <!--病人信息-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">结算方式</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="Settlement" value="0" title="门诊结算" checked="">
+                        <input type="radio" name="Settlement" value="1" title="计划生育结算">
+
+                    </div>
+
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">主诊断编码</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="DiagnosisCode" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">主诊断名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="DiagnosisName" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">医保诊断编码</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="DiagnosisMedicalInsuranceCode" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">医保诊断名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="DiagnosisMedicalInsuranceName" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">门诊号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="OutpatientNumber" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">身份证号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="IdCardNo" @*lay-verify="required|number"*@ autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">患者姓名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="PatientName" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">就诊日期</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="VisitDate" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">住院科室</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="DepartmentName" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">费用合计</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="MedicalTreatmentTotalCost" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">现金支付</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="CashPayment" name="CashPayment" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-inline" id="InsuranceBalanceDiv">
+                    <label class="layui-form-label">账户余额</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="InsuranceBalance" name="InsuranceBalance" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-inline" id="AccountPaymentDiv">
+                    <label class="layui-form-label">下账金额</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="AccountPayment" name="AccountPayment" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">诊断医生</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="DiagnosticDoctor" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">经办人</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="Operator" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">发票号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="InvoiceNo" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
+
+            </div>
+            <div class="layui-form-item" id="queryDataDiv" style="text-align: center; margin-top: 20px;">
+                <button type="button" Id="queryData" class="layui-btn layui-btn-radius">查询</button>
+
+            </div>
+            <div class="layui-form-item" id="DoorDiagnosisPreSettlementDiv" style="text-align: center; margin-top: 20px;">
+               
+                <button type="button" Id="DoorDiagnosisPreSettlement" class="layui-btn layui-btn-radius">门诊预结算</button>
+            </div>
+            <div class="layui-form-item" style="text-align: center; margin-top: 20px;" id="DoorDiagnosisSettlementDiv">
+                <button type="button" Id="DoorDiagnosisSettlement" class="layui-btn layui-btn-disabled layui-btn-radius">门诊结算</button>
+
+            </div>
+            <div class="layui-card-body" lay-size="sm">
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+                    <legend>医保结算信息</legend>
+                </fieldset>
+                <div class="layui-inline" id="SettleData">
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+<script>
+    layui.config({
+        base: '/Content/js/layui/plugin/'
+    }).extend({
+        autocomplete: 'layAutoComplete'
+        });
+    var iniJs;
+    var iniMsg;
+    layui.use(['form', 'laypage', 'layer', 'table', 'element', 'laydate', 'autocomplete'], function () {
+        var $ = layui.$,
+            element = layui.element,
+            form = layui.form,
+            layer = layui.layer,
+            table = layui.table;
+        //初始化公共页面
+        iniJs = $;
+        iniMsg = layer;
+        $("#InsuranceBalanceDiv").hide();
+        $("#AccountPaymentDiv").hide();
+        $("#DoorDiagnosisPreSettlementDiv").hide();
+        $("#DoorDiagnosisSettlementDiv").hide();
+        $("#queryDataDiv").hide();
+
+       // 插件检查
+        var verification = DetectActiveX();
+        if (verification === false) {
+            return false;
+        }
+        //form数据回显:数据回显到Form表单主体部分
+        var jsonToForm = function (jsonData, formFilter) {
+            var diagnosisList = jsonData.DiagnosisList;
+            var diagnosisName = null;
+            var diagnosisCode = null;
+            var diagnosisMedicalInsuranceCode = null;
+            var diagnosisMedicalInsuranceName = null;
+            if (diagnosisList !== null) {
+
+                for (var i = 0; i < diagnosisList.length; i++) {
+                    if (diagnosisList[i].是否主诊断 === "是") {
+                        diagnosisName = diagnosisList[i].诊断名称;
+                        diagnosisCode = diagnosisList[i].诊断编码;
+                        diagnosisMedicalInsuranceCode = diagnosisList[i].诊断医保编码;
+                        diagnosisMedicalInsuranceName = diagnosisList[i].诊断医保名称;
+                    }
+                }
+
+            }
+            //给表单赋值
+            form.val(formFilter,
+                {
+                    "OutpatientNumber": jsonData.OutpatientNumber,
+                    "IdCardNo": jsonData.IdCardNo,
+                    "PatientName": jsonData.PatientName,
+                    "VisitDate": jsonData.VisitDate,
+                    "DepartmentName": jsonData.DepartmentName,
+                    "MedicalTreatmentTotalCost": jsonData.MedicalTreatmentTotalCost,
+                    "Operator": jsonData.Operator,
+                    "DiagnosticDoctor": jsonData.DiagnosticDoctor,
+                    "InvoiceNo": jsonData.InvoiceNo,
+                    "DiagnosisName": diagnosisName,
+                    "DiagnosisCode": diagnosisCode,
+                    "DiagnosisMedicalInsuranceCode": diagnosisMedicalInsuranceCode,
+                    "DiagnosisMedicalInsuranceName": diagnosisMedicalInsuranceName
+                });
+
+        }
+       
+        var params = {
+            "TransKey": $("#transkey").val() /*医保交易码*/,
+            "BusinessId": $("#bid").val() /*当前住院记录的业务ID*/,
+            "UserId": $("#empid").val() /*授权操作人的ID*/
+        }
+        params["timestamp"] = (new Date()).valueOf();
+        //获取医院基本信息回调方法
+        window.getHospitalInfoBack = function () { };
+     
+        getHospitalInfo(getHospitalInfoBack);
+       
+        //初始化病人基本信息
+        function iniInpatientInfo() {
+            // 居民
+            if (baseInfo.Inpatient.InsuranceType === "342") {
+                $("#InsuranceBalance").val(baseInfo.Inpatient.ResidentInsuranceBalance);
+                //职工
+            } else if (baseInfo.Inpatient.InsuranceType === "310") {
+                $("#InsuranceBalance").val(baseInfo.Inpatient.WorkersInsuranceBalance);
+            }
+            var settlementVal = $('input[name="Settlement"]:checked').val();
+            //计划生育结算
+            if (settlementVal === "1") {
+                           
+                $("#DoorDiagnosisPreSettlementDiv").show();
+             
+            } else//门诊结算
+            {   //显示结算按钮
+                $("#DoorDiagnosisSettlementDiv").show();
+                //隐藏预结算按钮
+                $("#DoorDiagnosisPreSettlementDiv").hide();
+                //居民显示结算按钮
+                buttonStatus("DoorDiagnosisSettlement", true);
+            }
+            $("#InsuranceBalanceDiv").show();
+        }
+        //获取医保病人信息
+        window.getInpatientInfoBack = function () {
+            iniInpatientInfo();
+        }
+        //获取门诊结算参数
+        function getOutpatientDepartmentCostInputParam() {
+
+            params["AfferentSign"] =  baseInfo.HospitalInfo.AfferentSign;
+            params["IdentityMark"] = baseInfo.HospitalInfo.IdentityMark;
+            $.ajax({
+                type: 'post',
+                url: hostNew + '/GetOutpatientDepartmentCostInputParam',
+                data: params,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                 
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                        //样式类名:墨绿深蓝风
+
+                    } else {
+                        var activeX = document.getElementById("CSharpActiveX");
+                        //门诊结算
+                        var activeData = activeX.OutpatientMethods(data.Data,JSON.stringify(baseInfo.HospitalInfo),"OutpatientDepartmentCostInput");
+                        var activeJsonData = JSON.parse(activeData);
+                        if (activeJsonData.Success === false) {
+                            msgError(activeJsonData.Message);
+                        } else {
+                            outpatientDepartmentCostInput(activeJsonData.Data, activeJsonData.OtherInfo);
+                        }
+                       
+                    }
+                }
+
+            });
+        }
+        //普通门诊结算
+        function outpatientDepartmentCostInput(costInputData, accountBalance) {
+           
+            params["SettlementJson"] = costInputData;
+            params["InsuranceType"] = $("#InsuranceType").val();
+            params["AccountBalance"] = accountBalance;
+            $.ajax({
+                type: 'post',
+                url: hostNew + '/OutpatientDepartmentCostInput',
+                data: params,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                 
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        msgError(errData);
+
+                    } else {
+                        //$('#ReimbursementExpenses').val(data.Data.ReimbursementExpensesAmount);
+                        $('#CashPayment').val(data.Data.SelfPayFeeAmount);
+                        msgSuccess('门诊结算成功');
+                        buttonStatus("DoorDiagnosisSettlement", false);
+                        //添加结算信息
+                        if (data.Data.PayMsg !== null) {
+                            settlementData(data.Data.PayMsg);
+                        }
+                    }
+                }
+
+            });
+        }
+        //获取门诊计划生育预结算参数
+        function getOutpatientPlanBirthPreSettlementParam() {
+            params["AfferentSign"] =  baseInfo.HospitalInfo.AfferentSign;
+            params["IdentityMark"] = baseInfo.HospitalInfo.IdentityMark;
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/GetOutpatientPlanBirthPreSettlementParam',
+                data: params,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                    } else {
+                        var activeX = document.getElementById("CSharpActiveX");
+                       
+                        //门诊计划生育预结算
+                        var activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"OutpatientPlanBirthPreSettlement");
+                        var activeJsonData = JSON.parse(activeData);
+                        if (activeJsonData.Success === false) {
+                            msgError(activeJsonData.Message);
+                        } else {
+                            outpatientPlanBirthPreSettlement(activeJsonData.Data);
+                        }
+                    }
+                }
+
+            });
+
+        }
+        //门诊计划生育预结算
+        function outpatientPlanBirthPreSettlement(settlementJsonData) {
+            params["SettlementJson"] = settlementJsonData;
+            $.ajax({
+                type: 'post',
+                url: hostNew + '/OutpatientPlanBirthPreSettlement',
+                data: params,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    
+                
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        msgError(errData);
+                      
+
+                    } else {
+                        $('#CashPayment').val(data.Data.SelfPayFeeAmount);
+                        layer.alert('门诊预结算成功', { icon: 6, shade: 0.1, skin: 'layui-layer-molv' });
+                        //隐藏预结算按钮
+                        $("#DoorDiagnosisPreSettlementDiv").hide();
+                        $("#DoorDiagnosisSettlementDiv").show();
+                        $("#AccountPaymentDiv").show();
+                        //显示结算按钮
+                        buttonStatus("DoorDiagnosisSettlement", true);
+                        
+                        //添加预结算信息
+                        if (data.Data.PayMsg !== null) {
+                       
+                            settlementData(data.Data.PayMsg);
+                        }
+                    }
+                }
+
+            });
+        }
+        //获取门诊计划生育结算参数
+        function getOutpatientPlanBirthSettlementParam() {
+            params["AfferentSign"] =  baseInfo.HospitalInfo.AfferentSign;
+            params["IdentityMark"] = baseInfo.HospitalInfo.IdentityMark;
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/GetOutpatientPlanBirthSettlementParam',
+                data: params,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                    } else {
+                        var activeX = document.getElementById("CSharpActiveX");
+                        //门诊计划生育结算
+                      
+                        var activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"OutpatientPlanBirthSettlement");
+                        var activeJsonData = JSON.parse(activeData);
+                        if (activeJsonData.Success === false) {
+                            msgError(activeJsonData.Message);
+                        } else {
+                            outpatientPlanBirthSettlement(activeJsonData.Data, activeJsonData.OtherInfo);
+                        }
+                    }
+                }
+
+            });
+
+        }
+        //门诊计划生育结算
+        function outpatientPlanBirthSettlement(settlementData, accountBalance) {
+          
+            params["SettlementJson"] = settlementData;
+            params["InsuranceType"] = baseInfo.Inpatient.InsuranceType;
+            params["AccountBalance"] = accountBalance;
+            $.ajax({
+                type: 'post',
+                url: hostNew + '/OutpatientDepartmentCostInput',
+                data: params,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    
+                    if (data.Success === false) {  
+                        var errData = data.Message;
+                        msgError(errData);
+                    } else {
+                        $('#CashPayment').val(data.Data.SelfPayFeeAmount);
+                        layer.alert('门诊结算成功', { icon: 6, shade: 0.1, skin: 'layui-layer-molv' });
+                        //隐藏预结算按钮
+                        $("#DoorDiagnosisPreSettlementDiv").hide();
+                        $("#DoorDiagnosisSettlementDiv").show();
+                        $("#AccountPaymentDiv").show();
+                        //显示结算按钮
+                        buttonStatus("DoorDiagnosisSettlement", false);
+                        //添加预结算信息
+                        if (data.Data.PayMsg !== null) {
+                            settlementData(data.Data.PayMsg);
+                        }
+                    }
+                }
+
+            });
+        }
+        //门诊预结算
+        $('#DoorDiagnosisPreSettlement').on('click', function () {
+            params["IdentityMark"] = baseInfo.HospitalInfo.IdentityMark;
+            params["AfferentSign"] =  baseInfo.HospitalInfo.AfferentSign;
+            getOutpatientPlanBirthPreSettlementParam();
+        });
+        //门诊结算
+        $('#DoorDiagnosisSettlement').on('click', function () {
+            params["IdentityMark"] = baseInfo.HospitalInfo.IdentityMark;
+            params["AfferentSign"] =  baseInfo.HospitalInfo.AfferentSign;
+            var settlementVal = $('input[name="Settlement"]:checked').val();
+            if (settlementVal === "1") {
+                params["IsBirthHospital"] = 1;
+                //获取结算信息
+                var accountPayment = $("#AccountPayment").val();
+                if (accountPayment !== "" || accountPayment !== undefined) {
+                    //现金支付
+                    var cashPayment = $('#CashPayment').val();
+                    if (cashPayment !== "" || cashPayment !== undefined) {
+                        var insuranceBalance = $("#InsuranceBalance").val();
+                        if (parseFloat(accountPayment) > parseFloat(insuranceBalance)) {
+                            layer.alert("下账金额不能大于账户余额!!!", { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                            return false;
+                        }
+                        if (parseFloat(accountPayment) > parseFloat(cashPayment)) {
+                            layer.alert("下账金额不能大于现金支付金额!!!", { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                            return false;
+                        } else {
+                            params["AccountPayment"] = $("#AccountPayment").val();
+                        }
+                    }
+                }
+                //计划生育
+                getOutpatientPlanBirthSettlementParam();
+            } else {
+                //普通
+                getOutpatientDepartmentCostInputParam();
+            }
+
+        });
+        $('#queryData').on('click', function () {
+            queryData(getInpatientInfoBack);
+            $("#queryDataDiv").hide();
+        });
+
+        $.ajax({
+            type: 'get',
+            url: host + '/GetOutpatient',
+            data: params,
+            dataType: "json",
+            async: false,
+            success: function (data) {
+
+               
+                if (data.Success === false) {
+                    var errData = data.Message;
+                    //样式类名:墨绿深蓝风
+                    layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+
+                } else {
+                    jsonToForm(data.Data, "LAY-form-render");
+                    baseInfo.HospitalInfo.IdentityMark = data.Data.IdCardNo;
+                    $("#queryDataDiv").show(); 
+                 
+                }
+            }
+            ,complete: function () {
+                form.render();
+            }
+        });
+      
+      
+    });
+
+
+</script>

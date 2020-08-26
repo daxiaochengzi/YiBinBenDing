@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "读卡";
+    Layout = "~/Views/Shared/_Base.cshtml";
+}
+<link href="~/Content/js/layui/css/modules/layuiAutocomplete.css" rel="stylesheet" />
+<div id="card-container" style="overflow: hidden !important;">
+    <form class="layui-form" id="LAY-form" lay-filter="LAY-form-render">
+        <!--搜索部分-->
+        <div class="layui-form-item" style="padding-top:10px">
+            <div class="layui-inline">
+                <label class="layui-form-label">身份标识</label>
+                <div class="layui-input-inline">
+                    <select id="AfferentSign" name="AfferentSign" lay-filter="AfferentSign" lay-verify="required">
+                        <option id="AfferentSignIcCard" value="1" selected>身份证号</option>
+                        <option id="AfferentSignNum" value="2">个人编号</option>
+                        <option id="CardReading" value="3">读卡</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label" id="markTextLable">身份证号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="IdentityMark" name="IdentityMark" placeholder="请输入身份证号" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label" id="markTextLable">
+                    密码
+                </label>
+                <div class="layui-input-inline">
+                    <input type="text" id="CardPwd" name="CardPwd" placeholder="请输入卡密码" autocomplete="off" disabled class="layui-input layui-disabled">
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+<script>
+    layui.config({
+        base: '/Content/js/layui/plugin/'
+    }).extend({
+        autocomplete: 'layAutoComplete'
+    });
+
+    layui.use(['form'],
+        function() {
+            var $ = layui.$,
+                form = layui.form;
+            window.getMyData   = function () {
+                var data = {
+                    "IdentityMark": $('#IdentityMark').val(),
+                    "CardPwd": $('#CardPwd').val(),
+                    "AfferentSign": $('#AfferentSign').val(),
+                };
+                return data;
+            };
+            var getUrlParam = function (name) {
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+                var r = window.location.search.substr(1).match(reg);
+                if (r != null) return unescape(r[2]); return null;
+            }
+         
+            var idCardNo = getUrlParam('IdCardNo');
+            $("#IdentityMark").val(idCardNo);  
+            form.render();
+            //查询方式切换
+            form.on('select(AfferentSign)',
+                function (data) {
+                    var val = data.value;
+                    if (val === "2") {
+                        $("#markTextLable").text("个人编码");
+                        $("#IdentityMark").val("");
+                        $("#IdentityMark").attr("placeholder", "请输入个人编码");
+                    } else if (val === "1") {
+                        $("#markTextLable").text("身份证号");
+                    }
+                    else if (val === "3") {
+                        $("#CardPwd").attr("class", "layui-input");
+                        $("#CardPwd").removeAttr("disabled");
+                    }
+                });
+        });
+
+      
+     </script>

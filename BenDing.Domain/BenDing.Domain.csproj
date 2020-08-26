@@ -1,0 +1,354 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4941FBD9-9C5C-46CE-93B4-A41BBBF09622}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BenDing.Domain</RootNamespace>
+    <AssemblyName>BenDing.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <DocumentationFile>bin\BenDing.Domain.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\BenDing.Domain.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Models\Dto\Base\DiagnosisData.cs" />
+    <Compile Include="Models\Dto\Base\GetPostUrlDto.cs" />
+    <Compile Include="Models\Dto\Base\PaginationDto.cs" />
+    <Compile Include="Models\Dto\Base\PaginationUserDto.cs" />
+    <Compile Include="Models\Dto\Base\QueryDateBaseDto.cs" />
+    <Compile Include="Models\Dto\DifferentPlaces\CanCelDifferentPlacesHospitalizationRegisterDto.cs" />
+    <Compile Include="Models\Dto\DifferentPlaces\DifferentPlacesHospitalizationRegisterDto.cs" />
+    <Compile Include="Models\Dto\DifferentPlaces\DifferentPlacesUserInfoDto.cs" />
+    <Compile Include="Models\Dto\DifferentPlaces\LeaveHospitalHandleDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\BaseOutpatientDetailJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\CanCelDifferentPlacesHospitalizationRegisterJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\DifferentPlacesHospitalizationRegisterJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\DifferentPlacesUserInfoJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\LeaveHospitalHandleJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\HisHospitalizationPreSettlementJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\HisHospitalizationSettlementCancelJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\HospitalizationPresettlementJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\InformationJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\InpatientDetailJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\InpatientDiagnosisDataDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\InpatientInfoDetailJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\InpatientInfoJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\LeaveHospitalDiagnosisDataJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\HisHospitalizationSettlementJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\MonthlyHospitalizationJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\OutpatientDetailJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\OutpatientInfoJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\OutpatientPersonJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\QueryInpatientInfoJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\QueryOutpatientDepartmentCostjsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\ResidentUserInfoJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\UserInfoJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\WorkerBirthPreSettlementJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\WorkerHospitalizationPreSettlementJsonDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\GetOutpatientSettlementCancelDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\WorkerBirthSettlementDto.cs" />
+    <Compile Include="Models\Dto\Resident\AdmissionRegistrationCancelInfoDto.cs" />
+    <Compile Include="Models\Dto\Resident\QueryAllICD10Dto.cs" />
+    <Compile Include="Models\Dto\Web\HospitalThreeCatalogBatchUploadDto.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\MonthlyHospitalizationCancelParam.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\MonthlyHospitalizationDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\OutpatientCostReturnDataDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\OutpatientDepartmentCostInputJsonDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\OutpatientDepartmentCostInputDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\QueryOutpatientDepartmentCostDto.cs" />
+    <Compile Include="Models\Dto\Resident\DirectoryComparisonManagementDto.cs" />
+    <Compile Include="Models\Dto\Resident\HisHospitalizationSettlementCancelDto.cs" />
+    <Compile Include="Models\Dto\Resident\HospitalizationPresettlementDto.cs" />
+    <Compile Include="Models\Dto\Resident\IniXmlDto.cs" />
+    <Compile Include="Models\Dto\Resident\PrescriptionUploadDto.cs" />
+    <Compile Include="Models\Dto\Resident\ProjectDownloadCountDto.cs" />
+    <Compile Include="Models\Dto\Resident\QueryAllHospitalizationPatientsDto.cs" />
+    <Compile Include="Models\Dto\Resident\QueryMedicalInsurancePairCodeDto.cs" />
+    <Compile Include="Models\Dto\Resident\QueryPrescriptionDetailListDto.cs" />
+    <Compile Include="Models\Dto\Resident\ResidentHospitalizationRegisterDto.cs" />
+    <Compile Include="Models\Dto\Resident\ResidentProjectDownloadDto.cs" />
+    <Compile Include="Models\Dto\Resident\ResidentProjectDownloadJsonDto.cs" />
+    <Compile Include="Models\Dto\Resident\ResidentProjectDownloadRow.cs" />
+    <Compile Include="Models\Dto\Resident\ResidentUserInfoDto.cs" />
+    <Compile Include="Models\Dto\Resident\RetrunPrescriptionUploadDto.cs" />
+    <Compile Include="Models\Dto\Resident\SettlementDto.cs" />
+    <Compile Include="Models\Dto\Resident\UploadMedicalInsuranceResidentHisDto.cs" />
+    <Compile Include="Models\Dto\SystemManage\HospitalOrganizationGradeDto.cs" />
+    <Compile Include="Models\Dto\Web\AddHospitalOperatorParam.cs" />
+    <Compile Include="Models\Dto\Web\GetLeaveHospitalSettlementInfoDto.cs" />
+    <Compile Include="Models\Dto\Web\HisHospitalizationPreSettlementDto.cs" />
+    <Compile Include="Models\Dto\Web\HospitalThreeCatalogueCodeDto.cs" />
+    <Compile Include="Models\Dto\Web\ICD10PairCodeDto.cs" />
+    <Compile Include="Models\Dto\Web\InpatientDiagnosisDto.cs" />
+    <Compile Include="Models\Dto\Web\MedicalInsuranceXmlDto.cs" />
+    <Compile Include="Models\Dto\Web\QueryOutpatientDepartmentCostDataDto.cs" />
+    <Compile Include="Models\Dto\Web\QueryCatalogDto.cs" />
+    <Compile Include="Models\Dto\Web\QueryHospitalizationFeeDto.cs" />
+    <Compile Include="Models\Dto\Web\QueryHospitalOperatorAll.cs" />
+    <Compile Include="Models\Dto\Web\QueryHospitalOperatorDto.cs" />
+    <Compile Include="Models\Dto\Web\QueryICD10InfoDto.cs" />
+    <Compile Include="Models\Dto\Web\QueryInformationInfoDto.cs" />
+    <Compile Include="Models\Dto\Web\QueryInpatientInfoDetailDto.cs" />
+    <Compile Include="Models\Dto\Web\QueryMedicalInsuranceDetailDto.cs" />
+    <Compile Include="Models\Dto\Web\QueryMedicalInsuranceDetailInfoDto.cs" />
+    <Compile Include="Models\Dto\Web\QueryMedicalInsuranceDto.cs" />
+    <Compile Include="Models\Dto\Web\QueryOutpatientDto.cs" />
+    <Compile Include="Models\Dto\Web\ThreeCataloguePairCodeUploadDto.cs" />
+    <Compile Include="Models\Dto\Web\UiIniParam.cs" />
+    <Compile Include="Models\Dto\Workers\QueryWorkerHospitalizationSettlementDto.cs" />
+    <Compile Include="Models\Dto\Workers\QueryWorkerMedicalInsuranceDto.cs" />
+    <Compile Include="Models\Dto\Workers\WorkerBirthHospitalizationRegisterDto.cs" />
+    <Compile Include="Models\Dto\Workers\WorkerBirthPreSettlementDto.cs" />
+    <Compile Include="Models\Dto\Workers\WorkerHospitalizationPreSettlementDto.cs" />
+    <Compile Include="Models\Dto\Workers\WorkerStrokeCardDto.cs" />
+    <Compile Include="Models\Dto\Workers\WorkerHospitalizationRegisterDto.cs" />
+    <Compile Include="Models\Enums\LeaveHospitalInpatientState.cs" />
+    <Compile Include="Models\Enums\MedicalInsuranceState.cs" />
+    <Compile Include="Models\Enums\OrganizationGrade.cs" />
+    <Compile Include="Models\Enums\PeopleType.cs" />
+    <Compile Include="Models\Enums\ProjectCodeType.cs" />
+    <Compile Include="Models\Enums\ProjectLevel.cs" />
+    <Compile Include="Models\Enums\SummaryType.cs" />
+    <Compile Include="Models\HisXml\HospitalizationFeeUploadCancelXml.cs" />
+    <Compile Include="Models\HisXml\HospitalizationFeeUploadXml.cs" />
+    <Compile Include="Models\HisXml\HospitalizationModifyXml.cs" />
+    <Compile Include="Models\HisXml\HospitalizationRegisterCancelXml.cs" />
+    <Compile Include="Models\HisXml\HospitalizationRegisterXml.cs" />
+    <Compile Include="Models\HisXml\HospitalSettlementCancelXml.cs" />
+    <Compile Include="Models\HisXml\HospitalSettlementXml.cs" />
+    <Compile Include="Models\HisXml\Icd10PairCodeXml.cs" />
+    <Compile Include="Models\HisXml\OutpatientDepartmentCostCancelXml.cs" />
+    <Compile Include="Models\HisXml\OutpatientDepartmentCostXml.cs" />
+    <Compile Include="Models\HisXml\ReadCardXml.cs" />
+    <Compile Include="Models\Params\Base\BaseUiBusinessIdDataParam.cs" />
+    <Compile Include="Models\Params\Base\BaseUiIniParam.cs" />
+    <Compile Include="Models\Params\Base\DatabaseParam.cs" />
+    <Compile Include="Models\Params\Base\GetHisBaseParam.cs" />
+    <Compile Include="Models\Params\Base\UiBaseDataParam.cs" />
+    <Compile Include="Models\Params\Base\UserBaseParam.cs" />
+    <Compile Include="Models\Params\DifferentPlaces\CanCelDifferentPlacesHospitalizationRegisterParam.cs" />
+    <Compile Include="Models\Params\DifferentPlaces\DifferentPlacesGetUserInfoParam.cs" />
+    <Compile Include="Models\Params\DifferentPlaces\DifferentPlacesHospitalizationRegisterParam.cs" />
+    <Compile Include="Models\Params\DifferentPlaces\LeaveHospitalHandleParam.cs" />
+    <Compile Include="Models\Params\DifferentPlaces\ModifyDifferentPlacesHospitalizationParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\CancelMonthlyHospitalizationParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\CancelOutpatientDepartmentCostParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\CancelOutpatientDepartmentCostUiParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\ICD10InfoRowParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\MonthlyHospitalizationParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\OutpatientDepartmentCostInputParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\OutpatientPlanBirthSettlementCancelParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\OutpatientPlanBirthSettlementParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\OutpatientPlanBirthSettlementQueryParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\QueryOutpatientDepartmentCostParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\SaveOutpatientDetailParam.cs" />
+    <Compile Include="Models\Params\Resident\AddProjectBatchParam.cs" />
+    <Compile Include="Models\Params\Resident\BatchConfirmParam.cs" />
+    <Compile Include="Models\Params\Resident\BatchExamineDataParam.cs" />
+    <Compile Include="Models\Params\Resident\DeletePrescriptionUploadParam.cs" />
+    <Compile Include="Models\Params\Resident\GetInpatientInfoUiParam.cs" />
+    <Compile Include="Models\Params\Resident\GetPrescriptionUploadParam.cs" />
+    <Compile Include="Models\Params\Resident\GetUserInfoUiParam.cs" />
+    <Compile Include="Models\Params\Resident\HospitalizationModifyParam.cs" />
+    <Compile Include="Models\Params\Resident\HospitalizationPreSettlementInfoParam.cs" />
+    <Compile Include="Models\Params\Resident\HospitalizationPresettlementParam.cs" />
+    <Compile Include="Models\Params\Resident\HospitalizationRegisterCancelParam.cs" />
+    <Compile Include="Models\Params\Resident\LeaveHospitalSettlementCancelInfoParam.cs" />
+    <Compile Include="Models\Params\Resident\LeaveHospitalSettlementCancelParam.cs" />
+    <Compile Include="Models\Params\Resident\LeaveHospitalSettlementInfoParam.cs" />
+    <Compile Include="Models\Params\Resident\LeaveHospitalSettlementParam.cs" />
+    <Compile Include="Models\Params\Resident\LeaveHospitalSettlementUiParam.cs" />
+    <Compile Include="Models\Params\Resident\PatientLeaveHospitalInfoDto.cs" />
+    <Compile Include="Models\Params\Resident\PrescriptionUploadAutomaticParam.cs" />
+    <Compile Include="Models\Params\Resident\PrescriptionUploadParam.cs" />
+    <Compile Include="Models\Params\Resident\PrescriptionUploadUpdateDataParam.cs" />
+    <Compile Include="Models\Params\Resident\QueryLeaveHospitalSettlementParam.cs" />
+    <Compile Include="Models\Params\Resident\QueryMedicalInsurancePairCodeParam.cs" />
+    <Compile Include="Models\Params\Resident\QueryPrescriptionDetailDto.cs" />
+    <Compile Include="Models\Params\Resident\QueryPrescriptionDetailParam.cs" />
+    <Compile Include="Models\Params\SystemManage\AddHospitalLogParam.cs" />
+    <Compile Include="Models\Params\SystemManage\Icd10PairCodeParam.cs" />
+    <Compile Include="Models\Params\SystemManage\PairCodeIcd10UiParam.cs" />
+    <Compile Include="Models\Params\SystemManage\QueryMedicalInsuranceIcd10UiParam.cs" />
+    <Compile Include="Models\Params\UI\AddHospitalOrganizationGradeUiParam.cs" />
+    <Compile Include="Models\Params\UI\CancelMonthlyHospitalizationUiParam.cs" />
+    <Compile Include="Models\Params\UI\DirectoryComparisonManagementUiParam.cs" />
+    <Compile Include="Models\Params\UI\GetInformationUiParam.cs" />
+    <Compile Include="Models\Params\UI\GetMonthlyHospitalizationCancelUiParam.cs" />
+    <Compile Include="Models\Params\UI\GetOutpatientUiParam.cs" />
+    <Compile Include="Models\Params\UI\HospitalizationModifyUiParam.cs" />
+    <Compile Include="Models\Params\UI\HospitalizationPresettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\HospitalizationRegisterCancelUi.cs" />
+    <Compile Include="Models\Params\UI\Icd10PairCodeUiParam.cs" />
+    <Compile Include="Models\Params\UI\InpatientInfosUiParam.cs" />
+    <Compile Include="Models\Params\UI\LeaveHospitalSettlementCancelUiParam.cs" />
+    <Compile Include="Models\Params\UI\MedicalDirectoryCodePairUiParam.cs" />
+    <Compile Include="Models\Params\UI\MedicalInsuranceCardAuthenticationUiParam.cs" />
+    <Compile Include="Models\Params\UI\MedicalInsurancePairCodesUiParam.cs" />
+    <Compile Include="Models\Params\UI\MedicalInsurancePairCodeUiParam.cs" />
+    <Compile Include="Models\Params\Resident\ResidentConnectParam.cs" />
+    <Compile Include="Models\Params\Resident\ResidentHospitalizationRegisterParam.cs" />
+    <Compile Include="Models\Params\Resident\ResidentProjectDownloadParam.cs" />
+    <Compile Include="Models\Params\Resident\ResidentUserInfoParam.cs" />
+    <Compile Include="Models\Dto\Resident\ResultData.cs" />
+    <Compile Include="Models\Dto\Web\BasicResultDto.cs" />
+    <Compile Include="Models\Dto\Web\CatalogDto.cs" />
+    <Compile Include="Models\Dto\Web\CatalogInfoDto.cs" />
+    <Compile Include="Models\Dto\Web\ICD10InfoDto.cs" />
+    <Compile Include="Models\Dto\Web\InformationDto.cs" />
+    <Compile Include="Models\Dto\Resident\IniDto.cs" />
+    <Compile Include="Models\Dto\Web\InpatientInfoDetailDto.cs" />
+    <Compile Include="Models\Dto\Web\InpatientInfoDetaiQueryDto.cs" />
+    <Compile Include="Models\Dto\Web\InpatientInfoDto.cs" />
+    <Compile Include="Models\Dto\Web\ListCount.cs" />
+    <Compile Include="Models\Dto\Web\MedicalInsuranceDataAllDto.cs" />
+    <Compile Include="Models\Dto\Web\MedicalInsuranceDto.cs" />
+    <Compile Include="Models\Dto\Web\MedicalInsuranceResidentInfoDto.cs" />
+    <Compile Include="Models\Dto\Web\OrgDto.cs" />
+    <Compile Include="Models\Dto\Web\BaseOutpatientDetailDto.cs" />
+    <Compile Include="Models\Dto\Web\OutpatientDetailQuery.cs" />
+    <Compile Include="Models\Dto\Web\BaseOutpatientInfoDto.cs" />
+    <Compile Include="Models\Dto\Web\PairCodeDto.cs" />
+    <Compile Include="Models\Dto\Web\QueryInpatientInfoDto.cs" />
+    <Compile Include="Models\Dto\Web\ResultDataDto.cs" />
+    <Compile Include="Models\Dto\Web\SaleOrderDto.cs" />
+    <Compile Include="Models\Dto\Web\ServiceTimeDto.cs" />
+    <Compile Include="Models\Dto\Web\SingleResidentInfoDto.cs" />
+    <Compile Include="Models\Dto\Web\UpdateInpatientInfoDetail.cs" />
+    <Compile Include="Models\Dto\Web\UserInfoDto.cs" />
+    <Compile Include="Models\Enums\CatalogTypeEnum.cs" />
+    <Compile Include="Models\Params\UI\GetInpatientInfoDetailUIParam.cs" />
+    <Compile Include="Models\Params\UI\InpatientInfoUiParam.cs" />
+    <Compile Include="Models\Params\UI\MedicalInsuranceDataAllParamUIQuery.cs" />
+    <Compile Include="Models\Params\UI\MedicalInsuranceXmlUiParam.cs" />
+    <Compile Include="Models\Params\UI\ModifyWorkerHospitalizationUiParam.cs" />
+    <Compile Include="Models\Params\UI\MonthlyHospitalizationUiParam.cs" />
+    <Compile Include="Models\Params\UI\OutpatientPlanBirthPreSettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\GetOutpatientPlanBirthSettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\OutpatientPlanBirthSettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\PrescriptionUploadAutomaticUiParam.cs" />
+    <Compile Include="Models\Params\UI\PrescriptionUploadUiParam.cs" />
+    <Compile Include="Models\Params\UI\QueryCatalogUiParam.cs" />
+    <Compile Include="Models\Params\UI\QueryHospitalizationFeeUiParam.cs" />
+    <Compile Include="Models\Params\UI\QueryHospitalizationPresettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\QueryMedicalInsuranceUiParam.cs" />
+    <Compile Include="Models\Params\UI\QueryOutpatientDepartmentCostUiParam.cs" />
+    <Compile Include="Models\Params\UI\QueryPrescriptionDetailUiParam.cs" />
+    <Compile Include="Models\Params\UI\QueryProjectUiParam.cs" />
+    <Compile Include="Models\Params\UI\ResidentHospitalizationRegisterUiParam.cs" />
+    <Compile Include="Models\Params\UI\SaveXmlDataUiParam.cs" />
+    <Compile Include="Models\Params\UI\SingleResidentInfoDownloadUIParam.cs" />
+    <Compile Include="Models\Params\UI\TabelIni.cs" />
+    <Compile Include="Models\Params\UI\UiICD10Param.cs" />
+    <Compile Include="Models\Params\Base\UiInIDataParam.cs" />
+    <Compile Include="Models\Params\Base\UiInIParam.cs" />
+    <Compile Include="Models\Params\UI\BirthHospitalizationRegisterUiParam.cs" />
+    <Compile Include="Models\Params\UI\WorkerBirthPreSettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\WorkerBirthSettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\WorKerHospitalizationRegisterUiParam.cs" />
+    <Compile Include="Models\Params\UI\WorkerHospitalizationSettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\WorkerStrokeCardUiParam.cs" />
+    <Compile Include="Models\Params\Web\DeleteDatabaseParam.cs" />
+    <Compile Include="Models\Params\Web\CatalogParam.cs" />
+    <Compile Include="Models\Params\Web\DeleteMedicalInsuranceParam.cs" />
+    <Compile Include="Models\Params\Web\ExecuteSpParam.cs" />
+    <Compile Include="Models\Params\Web\GetInpatientInfoDetailParam.cs" />
+    <Compile Include="Models\Params\Web\GetInpatientInfoParam.cs" />
+    <Compile Include="Models\Params\Web\GetOutpatientPersonParam.cs" />
+    <Compile Include="Models\Params\Web\HospitalOrganizationGradeParam.cs" />
+    <Compile Include="Models\Params\Web\ICD10InfoParam.cs" />
+    <Compile Include="Models\Params\Web\InformationParam.cs" />
+    <Compile Include="Models\Params\Web\InpatientInfoDetailParam.cs" />
+    <Compile Include="Models\Params\Web\InpatientInfoDetailQueryParam.cs" />
+    <Compile Include="Models\Params\Web\InpatientInfoParam.cs" />
+    <Compile Include="Models\Params\Web\MedicalInsuranceDataAllParam.cs" />
+    <Compile Include="Models\Params\Web\MedicalInsuranceParam.cs" />
+    <Compile Include="Models\Params\Web\MedicalInsuranceResidentInfoParam.cs" />
+    <Compile Include="Models\Params\Web\OrgParam.cs" />
+    <Compile Include="Models\Params\Web\OutpatientDetailParam.cs" />
+    <Compile Include="Models\Params\Web\OutpatientParam.cs" />
+    <Compile Include="Models\Params\Web\QueryCatalogUiParam.cs" />
+    <Compile Include="Models\Params\Web\QueryHospitalOperatorParam.cs" />
+    <Compile Include="Models\Params\Web\QueryICD10UiParam.cs" />
+    <Compile Include="Models\Params\Web\QueryInpatientInfoParam.cs" />
+    <Compile Include="Models\Params\Web\QueryMedicalInsuranceResidentInfoParam.cs" />
+    <Compile Include="Models\Params\Web\QueryOutpatientParam.cs" />
+    <Compile Include="Models\Params\Web\SaveInpatientInfoDetailParam.cs" />
+    <Compile Include="Models\Params\Web\SaveInpatientSettlementParam.cs" />
+    <Compile Include="Models\Params\Web\SaveXmlData.cs" />
+    <Compile Include="Models\Params\Web\SaveXmlDataParam.cs" />
+    <Compile Include="Models\Params\Web\SettlementCancelParam.cs" />
+    <Compile Include="Models\Params\Web\SingleResidentInfQueryUiParam.cs" />
+    <Compile Include="Models\Params\Web\UiCatalogParam.cs" />
+    <Compile Include="Models\Params\Web\UpdateHospitalizationFeeParam.cs" />
+    <Compile Include="Models\Params\Web\UpdateMedicalInsuranceResidentInfoParam.cs" />
+    <Compile Include="Models\Params\Web\UpdateOutpatientParam.cs" />
+    <Compile Include="Models\Params\Web\UpdateThreeCataloguePairCodeUploadParam.cs" />
+    <Compile Include="Models\Params\Web\UserInfoParam.cs" />
+    <Compile Include="Models\Params\Web\XmlData.cs" />
+    <Compile Include="Models\Params\Workers\CancelWorkersStrokeCardParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\OutpatientPlanBirthPreSettlementParam.cs" />
+    <Compile Include="Models\Params\Workers\QueryWorkerHospitalizationSettlementParam.cs" />
+    <Compile Include="Models\Params\Workers\WorkerBirthHospitalizationRegisterParam.cs" />
+    <Compile Include="Models\Params\Workers\WorkerBirthPreSettlementParam.cs" />
+    <Compile Include="Models\Params\Workers\WorkerBirthSettlementParam.cs" />
+    <Compile Include="Models\Params\Workers\WorkerHospitalizationPreSettlementParam.cs" />
+    <Compile Include="Models\Params\Workers\ModifyWorkerHospitalizationParam.cs" />
+    <Compile Include="Models\Dto\Base\WorkerBaseParam.cs" />
+    <Compile Include="Models\Params\Workers\WorKerHospitalizationRegisterParam.cs" />
+    <Compile Include="Models\Params\Workers\WorkerHospitalizationSettlementParam.cs" />
+    <Compile Include="Models\Params\Workers\WorkerSettlementCancelParam.cs" />
+    <Compile Include="Models\Params\Workers\WorkerStrokeCardParam.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Xml\ActiveXmlHelp.cs" />
+    <Compile Include="Xml\CommonHelp.cs" />
+    <Compile Include="Xml\LogParam.cs" />
+    <Compile Include="Xml\Logs.cs" />
+    <Compile Include="Xml\MedicalInsuranceDll.cs" />
+    <Compile Include="Xml\ValidXmlDto.cs" />
+    <Compile Include="Xml\XmlHelp.cs" />
+    <Compile Include="Xml\XmlSerializeHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
