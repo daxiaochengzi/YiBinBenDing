@@ -47,7 +47,6 @@ namespace NFine.Web
         }
       
         #endregion
-
         #region Properties
 
         /// <summary>
@@ -196,8 +195,4 @@ namespace NFine.Web
             return jsonResultEntry;
         }
     }
-
-
-
-
 }

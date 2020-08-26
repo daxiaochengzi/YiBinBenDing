@@ -7,7 +7,6 @@
         padding-bottom: 15px;
         height: auto;
     }
-
     .layui-form-label-nw {
         float: left;
         display: block;
@@ -33,8 +32,8 @@
                     <div class="layui-inline">
                         <label class="layui-form-label-nw">目录类别</label>
                         <div class="layui-input-inline">
-                            <select id="UpdateDirectoryCategoryCode" name="DirectoryCategoryCode">
-                                <option value="">请选择类别</option>
+                            <select id="UpdateDirectoryCategoryCode" name="BaseDirectoryCategoryCode">
+                                <option value="" selected="selected">请选择类别</option>
                                 <option value="0">中药</option>
                                 <option value="1">西药</option>
                                 <option value="2">诊疗</option>
@@ -43,15 +42,15 @@
                         </div>
                     </div>
                     <div class="layui-inline">
-                        <label class="layui-form-label-nw">医院目录编码</label>
+                        <label class="layui-form-label-nw">医院目录编码(商品ID)</label>
                         <div class="layui-input-inline">
-                            <input type="text" name="DirectoryCode" placeholder="医院目录编码" autocomplete="off" class="layui-input">
+                            <input type="text" name="BaseDirectoryCode" placeholder="医院目录编码(商品ID)" autocomplete="off" class="layui-input">
                         </div>
                     </div>
                     <div class="layui-inline">
                         <label class="layui-form-label-nw">目录名称</label>
                         <div class="layui-input-inline">
-                            <input type="text" name="DirectoryName" placeholder="目录名称" autocomplete="off" class="layui-input">
+                            <input type="text" name="BaseDirectoryName" placeholder="目录名称" autocomplete="off" class="layui-input">
                         </div>
                     </div>
                     <div class="layui-inline">
@@ -76,7 +75,7 @@
                         <label class="layui-form-label-nw">目录类别</label>
                         <div class="layui-input-inline">
                             <select name="ProjectCodeType">
-                                <option value="">请选择类别</option>
+                                <option value="" selected="selected">请选择类别</option>
                                 <option value="0">中药</option>
                                 <option value="1">西药</option>
                                 <option value="2">诊疗</option>
@@ -124,7 +123,7 @@
                         <label class="layui-form-label-nw">目录类别</label>
                         <div class="layui-input-inline">
                             <select id="DirectoryCategoryCode" name="DirectoryCategoryCode">
-                                <option value="">请选择类别</option>
+                                <option value="" selected="selected">请选择类别</option>
                                 <option value="0">中药</option>
                                 <option value="1">西药</option>
                                 <option value="2">诊疗</option>
@@ -133,9 +132,9 @@
                         </div>
                     </div>
                     <div class="layui-inline">
-                        <label class="layui-form-label-nw">医院目录编码</label>
+                        <label class="layui-form-label-nw">医院目录编码(商品ID)</label>
                         <div class="layui-input-inline">
-                            <input type="text" name="DirectoryCode" placeholder="医院目录编码" autocomplete="off" class="layui-input">
+                            <input type="text" name="DirectoryCode" placeholder="医院目录编码(商品ID)" autocomplete="off" class="layui-input">
                         </div>
                     </div>
                     <div class="layui-inline">
@@ -148,15 +147,14 @@
                         <label class="layui-form-label-nw">关联状态</label>
                         <div class="layui-input-inline">
                             <select name="State">
-                                <option value="0">请选择状态</option>
-                                <option value="1">未对码</option>
+                                <option value="0" selected="selected">请选择状态</option>
+                                <option value="1">对码</option>
                                 <option value="2">重新对码</option>
                             </select>
                         </div>
                     </div>
                     <div class="layui-inline">
                         <button class="layui-btn" lay-submit="" lay-filter="LAY-pair-content-list">查询</button>
-                    
                         @*<button class="layui-btn" id="updateSearch"  data-type="updateSearch"  lay-filter="updateSearch">更新目录</button>*@
                     </div>
                 </div>
@@ -185,6 +183,9 @@
                 form.on('submit(LAY-app-content-list)',
                     function(data) {
                         var field = data.field;
+                        field["DirectoryName"] = field.BaseDirectoryName;
+                        field["DirectoryCode"] = field.BaseDirectoryCode;
+                        field["DirectoryCategoryCode"] = field.BaseDirectoryCategoryCode;
                         //执行重载
                         table.reload('LAY-app-content-list',
                             {
@@ -326,7 +327,6 @@
                             { field: 'LimitPaymentScope', title: '限制支付范围', width: 100 },
                             { field: 'StartTime', title: '开始时间', width: 160 },
                             { field: 'EndTime', title: '结束时间', width: 160 }
-
                             //, { field: 'NewUpdateTime', title: '变更日期', width: 160 }
                             //, { field: 'Remark', title: '医保备注', width: 100 }
                         ]
@@ -488,7 +488,7 @@
 
 <script type="text/html" id="tableBtn">
     {{#  if(d.Id == null){ }}
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="pairCode">未对码</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="pairCode">对码</a>
     {{#  } else { }}
     <a class="layui-btn layui-btn-xs" lay-event="updatePairCode">重新对码</a>
     {{#  }}}
