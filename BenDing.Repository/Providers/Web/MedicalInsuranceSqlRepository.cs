@@ -392,8 +392,7 @@ namespace BenDing.Repository.Providers.Web
             foreach (DataRow dr in dt.Rows)
             {
                 if (!string.IsNullOrWhiteSpace(dr["本位码"].ToString()))
-                {  //是否有效
-                    string effectiveSign = "1";
+                {  
                     //string endTime = dr["终止日期"].ToString();
                     //if (!string.IsNullOrWhiteSpace(endTime))
                     //{
@@ -405,29 +404,33 @@ namespace BenDing.Repository.Providers.Web
 
                     var item = new ResidentProjectDownloadRowDataRowDto
                     {
-                        EffectiveSign = effectiveSign,
-                        RestrictionSign= dr["限制标志编码"].ToString()=="1"?"1":"0",
+                        EffectiveSign = dr["有效标志"].ToString(),
+                        RestrictionSign= dr["限制药标志"].ToString()=="1"?"1":"0",
                         ProjectCode = dr["本位码"].ToString(),
-                        ProjectName = CommonHelp.FilterSqlStr(dr["名称"].ToString()),
+                        ProjectName = CommonHelp.FilterSqlStr(dr["项目名称"].ToString()),
                         StartTime = dr["开始日期"].ToString(),
-                        EndTime = dr["终止日期"].ToString(),
-                        ProjectLevel = dr["等级"].ToString(),
+                        EndTime = dr["结束日期"].ToString(),
+                        ProjectLevel = dr["项目等级"].ToString(),
                         WorkersSelfPayProportion = CommonHelp.getNum(dr["职工自付比例"].ToString()),
                         ResidentSelfPayProportion = CommonHelp.getNum(dr["居民自付比例"].ToString()),
                         Formulation = dr["剂型"].ToString(),
                         Specification = dr["规格"].ToString(),
-                        Manufacturer = dr["厂家"].ToString(),
-                        LimitPaymentScope = CommonHelp.FilterSqlStr(dr["限制范围"].ToString()),
-                        ZeroBlock = CommonHelp.getNum(dr["二级乙等以下"].ToString()),
-                         OneBlock = CommonHelp.getNum(dr["二级乙等医院"].ToString()),
-                         TwoBlock = CommonHelp.getNum(dr["二级甲等医院"].ToString()),
-                         ThreeBlock = CommonHelp.getNum(dr["三级乙等医院"].ToString()),
-                         FourBlock =CommonHelp.getNum(dr["三级甲等医院"].ToString()),
-                         NewCodeMark = dr["新码老码标识"].ToString()== "新码"?"1":"0",
-                         MnemonicCode = "",
+                        Manufacturer = dr["生产厂家"].ToString(),
+                        LimitPaymentScope = CommonHelp.FilterSqlStr(dr["限制支付范围"].ToString()),
+                        ZeroBlock = CommonHelp.getNum(dr["二乙以下限价"].ToString()),
+                         OneBlock = CommonHelp.getNum(dr["二级乙等限价"].ToString()),
+                         TwoBlock = CommonHelp.getNum(dr["二级甲等限价"].ToString()),
+                         ThreeBlock = CommonHelp.getNum(dr["三级乙等限价"].ToString()),
+                         FourBlock =CommonHelp.getNum(dr["三级甲等限价"].ToString()),
+                         NewCodeMark = dr["是否新码"].ToString()== "新码"?"1":"0",
+                         MnemonicCode = CommonHelp.FilterSqlStr(dr["拼音助记码"].ToString()),
+                         QuasiFontSize = CommonHelp.FilterSqlStr(dr["批准文号"].ToString()),
+                         ProjectCodeType = CommonHelp.FilterSqlStr(dr["医保分类"].ToString()),
+                         Unit = CommonHelp.FilterSqlStr(dr["单位"].ToString()),
+                         ProjectBigType= CommonHelp.FilterSqlStr(dr["目录大类"].ToString()),// 1 药品 2 诊疗 3 材料 4 其他
+                         NewUpdateTime= dr["更新日期"].ToString(),
+                         Remark = dr["备注"].ToString(),
                         
-                         ProjectCodeType = CommonHelp.FilterSqlStr(dr["收费项目类别代码"].ToString()),
-
                     };
                     drugCatalogData.Add(item);
 
@@ -466,18 +469,18 @@ namespace BenDing.Repository.Providers.Web
                         {
                           
                             var projectName = FilteSqlStr(item.ProjectName);
-                            insterSql = $@"INSERT INTO [dbo].[MedicalInsuranceProject]
+                            insterSql = $@"INSERT INTO [dbo].[MedicalInsuranceProjectBak]
                                (id,[ProjectCode],[ProjectName] ,[ProjectCodeType] ,[ProjectLevel],[WorkersSelfPayProportion]
                                ,[Unit],[MnemonicCode] ,[Formulation],[ResidentSelfPayProportion],[RestrictionSign]
                                ,[ZeroBlock],[OneBlock],[TwoBlock],[ThreeBlock],[FourBlock],[EffectiveSign],[ResidentOutpatientSign]
                                ,[ResidentOutpatientBlock],[Manufacturer] ,[QuasiFontSize] ,[Specification],[Remark],[NewCodeMark]
-                               ,[NewUpdateTime],[StartTime] ,[EndTime],[LimitPaymentScope],[CreateTime],[CreateUserId],[IsDelete]
+                               ,[NewUpdateTime],[StartTime] ,[EndTime],[LimitPaymentScope],[CreateTime],[CreateUserId],[IsDelete],[ProjectBigType]
                                )
                               VALUES('{Guid.NewGuid()}','{item.ProjectCode}','{projectName}','{item.ProjectCodeType}','{item.ProjectLevel}',{CommonHelp.ValueToDecimal(item.WorkersSelfPayProportion)}
                                       ,'{item.Unit}','{item.MnemonicCode}', '{item.Formulation}',{CommonHelp.ValueToDecimal(item.ResidentSelfPayProportion)},'{item.RestrictionSign}'
                                       ,{CommonHelp.ValueToDecimal(item.ZeroBlock)},{CommonHelp.ValueToDecimal(item.OneBlock)},{CommonHelp.ValueToDecimal(item.TwoBlock)},{CommonHelp.ValueToDecimal(item.ThreeBlock)},{CommonHelp.ValueToDecimal(item.FourBlock)},'{item.EffectiveSign}','{item.ResidentOutpatientSign}'
                                       ,{CommonHelp.ValueToDecimal(item.ResidentOutpatientBlock)},'{item.Manufacturer}','{item.QuasiFontSize}','{item.Specification}','{item.Remark}','{item.NewCodeMark}'
-                                      ,GETDATE(),'{item.StartTime}','{item.EndTime}','{item.LimitPaymentScope}',GETDATE(),'{userId}',0
+                                      ,'{item.NewUpdateTime}','{item.StartTime}','{item.EndTime}','{item.LimitPaymentScope}',GETDATE(),'{userId}',0,'{item.ProjectBigType}'
                                    );";
                             insterCount += insterSql;
                         }

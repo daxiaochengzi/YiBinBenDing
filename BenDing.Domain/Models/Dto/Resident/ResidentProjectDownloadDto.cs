@@ -41,6 +41,12 @@ namespace BenDing.Domain.Models.Dto.Resident
         [JsonProperty(PropertyName = "AKA063")]
         public string ProjectCodeType { get; set; }
         /// <summary>
+        /// 项目大类别
+        /// </summary>
+        [XmlElementAttribute("AKA0633", IsNullable = false)]
+        [JsonProperty(PropertyName = "AKA0633")]
+        public string ProjectBigType { get; set; }
+        /// <summary>
         /// 收费项目等级
         /// </summary>
         [XmlElementAttribute("AKA065", IsNullable = false)]
