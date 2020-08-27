@@ -391,7 +391,7 @@ namespace BenDing.Repository.Providers.Web
             int totalNum = 0;
             foreach (DataRow dr in dt.Rows)
             {
-                if (!string.IsNullOrWhiteSpace(dr["本位码"].ToString()))
+                if (!string.IsNullOrWhiteSpace(CommonHelp.FilterSqlStr(dr["本位码"].ToString())))
                 {  
                     //string endTime = dr["终止日期"].ToString();
                     //if (!string.IsNullOrWhiteSpace(endTime))
@@ -406,7 +406,7 @@ namespace BenDing.Repository.Providers.Web
                     {
                         EffectiveSign = dr["有效标志"].ToString(),
                         RestrictionSign= dr["限制药标志"].ToString()=="1"?"1":"0",
-                        ProjectCode = dr["本位码"].ToString(),
+                        ProjectCode = CommonHelp.FilterSqlStr(dr["本位码"].ToString()),
                         ProjectName = CommonHelp.FilterSqlStr(dr["项目名称"].ToString()),
                         StartTime = dr["开始日期"].ToString(),
                         EndTime = dr["结束日期"].ToString(),
