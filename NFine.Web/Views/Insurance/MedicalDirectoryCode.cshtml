@@ -148,7 +148,7 @@
                         <div class="layui-input-inline">
                             <select name="State">
                                 <option value="0" selected="selected">请选择状态</option>
-                                <option value="1">对码</option>
+                                <option value="1">未对码</option>
                                 <option value="2">重新对码</option>
                             </select>
                         </div>
@@ -370,8 +370,8 @@
                             { field: 'ProjectLevel', title: '医保报销类别', width: 140 },
                             { field: 'PairCodeTime', title: '对码时间', width: 160 },
                             { field: 'PairCodeUser', title: '对码操作人员', width: 100 },
-                            { field: 'LimitPaymentScope', title: '限制支付范围', width: 100 },
-                            { field: 'Remark', title: '医保备注', width: 100 }
+                            { field: 'LimitPaymentScope', title: '限制支付范围', width: 100 }
+                            //{ field: 'Remark', title: '医保备注', width: 100 }
                            
                         ]
                     ]
@@ -488,7 +488,7 @@
 
 <script type="text/html" id="tableBtn">
     {{#  if(d.Id == null){ }}
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="pairCode">对码</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="pairCode">未对码</a>
     {{#  } else { }}
     <a class="layui-btn layui-btn-xs" lay-event="updatePairCode">重新对码</a>
     {{#  }}}

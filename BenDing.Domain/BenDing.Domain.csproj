@@ -317,7 +317,9 @@
     <Compile Include="Models\Params\Web\SettlementCancelParam.cs" />
     <Compile Include="Models\Params\Web\SingleResidentInfQueryUiParam.cs" />
     <Compile Include="Models\Params\Web\UiCatalogParam.cs" />
+    <Compile Include="Models\Params\Web\UpdateDatabaseParam.cs" />
     <Compile Include="Models\Params\Web\UpdateHospitalizationFeeParam.cs" />
+    <Compile Include="Models\Params\Web\UpdateHospitalizationFeeUploadMarkParam.cs" />
     <Compile Include="Models\Params\Web\UpdateMedicalInsuranceResidentInfoParam.cs" />
     <Compile Include="Models\Params\Web\UpdateOutpatientParam.cs" />
     <Compile Include="Models\Params\Web\UpdateThreeCataloguePairCodeUploadParam.cs" />

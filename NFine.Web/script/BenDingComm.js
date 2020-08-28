@@ -151,7 +151,6 @@ function getHospitalInfo(getHospitalInfoParam) {
 //获取患者基本信息
 function getInpatientInfo(getInpatientInfoBack)
 {
-  
       var activeX = document.getElementById("CSharpActiveX");
       var activeData = activeX.OutpatientMethods(JSON.stringify(baseInfo.HospitalInfo), JSON.stringify(baseInfo.HospitalInfo),"GetUserInfo");
         var activeJsonData = JSON.parse(activeData);

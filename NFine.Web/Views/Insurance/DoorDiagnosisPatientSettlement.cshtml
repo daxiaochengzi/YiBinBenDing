@@ -32,7 +32,7 @@
                     <a id="BenDingDownloadFile" href="/api/BenDing/DownloadFile">医保插件下载</a>
                 </div>
                 <!--病人信息-->
-                <div class="layui-form-item">
+                @*<div class="layui-form-item">
                     <label class="layui-form-label">结算方式</label>
                     <div class="layui-input-block">
                         <input type="radio" name="Settlement" value="0" title="门诊结算" checked="">
@@ -40,7 +40,7 @@
 
                     </div>
 
-                </div>
+                </div>*@
                 <div class="layui-inline">
                     <label class="layui-form-label">主诊断编码</label>
                     <div class="layui-input-inline">
@@ -145,10 +145,10 @@
             </div>
             <div class="layui-form-item" id="DoorDiagnosisPreSettlementDiv" style="text-align: center; margin-top: 20px;">
                
-                <button type="button" Id="DoorDiagnosisPreSettlement" class="layui-btn layui-btn-radius">门诊预结算</button>
+                <button type="button" Id="DoorDiagnosisPreSettlement" class="layui-btn layui-btn-radius">门诊计划生育预结算</button>
             </div>
             <div class="layui-form-item" style="text-align: center; margin-top: 20px;" id="DoorDiagnosisSettlementDiv">
-                <button type="button" Id="DoorDiagnosisSettlement" class="layui-btn layui-btn-disabled layui-btn-radius">门诊结算</button>
+                <button type="button" Id="DoorDiagnosisSettlement" class="layui-btn layui-btn-disabled layui-btn-radius">门诊计划生结算</button>
 
             </div>
             <div class="layui-card-body" lay-size="sm">
@@ -184,7 +184,7 @@
         $("#DoorDiagnosisPreSettlementDiv").hide();
         $("#DoorDiagnosisSettlementDiv").hide();
         $("#queryDataDiv").hide();
-
+    
        // 插件检查
         var verification = DetectActiveX();
         if (verification === false) {
@@ -249,7 +249,7 @@
             } else if (baseInfo.Inpatient.InsuranceType === "310") {
                 $("#InsuranceBalance").val(baseInfo.Inpatient.WorkersInsuranceBalance);
             }
-            var settlementVal = $('input[name="Settlement"]:checked').val();
+            var settlementVal = "1"; //$('input[name="Settlement"]:checked').val();
             //计划生育结算
             if (settlementVal === "1") {
                            
@@ -337,6 +337,8 @@
         }
         //获取门诊计划生育预结算参数
         function getOutpatientPlanBirthPreSettlementParam() {
+            //隐藏预结算按钮
+            $("#DoorDiagnosisPreSettlementDiv").hide();
             params["AfferentSign"] =  baseInfo.HospitalInfo.AfferentSign;
             params["IdentityMark"] = baseInfo.HospitalInfo.IdentityMark;
             $.ajax({
@@ -454,11 +456,10 @@
                     } else {
                         $('#CashPayment').val(data.Data.SelfPayFeeAmount);
                         layer.alert('门诊结算成功', { icon: 6, shade: 0.1, skin: 'layui-layer-molv' });
-                        //隐藏预结算按钮
-                        $("#DoorDiagnosisPreSettlementDiv").hide();
+                       
                         $("#DoorDiagnosisSettlementDiv").show();
                         $("#AccountPaymentDiv").show();
-                        //显示结算按钮
+                        //取消显示结算按钮
                         buttonStatus("DoorDiagnosisSettlement", false);
                         //添加预结算信息
                         if (data.Data.PayMsg !== null) {

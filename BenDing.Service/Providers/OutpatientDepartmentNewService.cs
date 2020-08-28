@@ -455,11 +455,7 @@ namespace BenDing.Service.Providers
             };
             var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
             if (outpatientPerson == null) throw new Exception("his中未获取到当前病人!!!");
-            var outpatientDetailPerson = _serviceBasicService.GetOutpatientDetailPerson(new OutpatientDetailParam()
-            {
-                User = userBase,
-                BusinessId = param.BusinessId,
-            });
+         
             
             //保存门诊病人
             outpatientParam.IsSave = true;
@@ -542,11 +538,12 @@ namespace BenDing.Service.Providers
             var accountPayment = resultData.AccountPayment + resultData.CivilServantsSubsidies +
                                  resultData.CivilServantsSubsidy + resultData.OtherPaymentAmount +
                                  resultData.BirthAallowance + resultData.SupplementPayAmount;
-            var updateData = new UpdateMedicalInsuranceResidentSettlementParam()
+            var cashPayment = CommonHelp.ValueToDouble((outpatientPerson.MedicalTreatmentTotalCost - accountPayment));
+              var updateData = new UpdateMedicalInsuranceResidentSettlementParam()
             {
                 UserId = userBase.UserId,
                 ReimbursementExpensesAmount = CommonHelp.ValueToDouble(accountPayment),
-                SelfPayFeeAmount = resultData.CashPayment,
+                SelfPayFeeAmount = cashPayment,
                 OtherInfo = JsonConvert.SerializeObject(resultData),
                 Id = residentData.Id,
                 SettlementNo = resultData.DocumentNo,
@@ -571,9 +568,8 @@ namespace BenDing.Service.Providers
             var xmlData = new OutpatientDepartmentCostXml()
             {
                 AccountBalance = !string.IsNullOrWhiteSpace(param.AccountBalance) == true ? Convert.ToDecimal(param.AccountBalance) : 0,
-
                 MedicalInsuranceOutpatientNo = resultData.DocumentNo,
-                CashPayment = resultData.CashPayment,
+                CashPayment = cashPayment,
                 SettlementNo = resultData.DocumentNo,
                 AllAmount = outpatientPerson.MedicalTreatmentTotalCost,
                 PatientName = outpatientPerson.PatientName,

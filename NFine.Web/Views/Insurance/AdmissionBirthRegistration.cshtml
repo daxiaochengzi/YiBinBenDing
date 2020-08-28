@@ -408,16 +408,17 @@
                 field.DiagnosisList = diagnosisList;
                 field["IdentityMark"] = baseInfo.HospitalInfo.IdentityMark;
                 field["AfferentSign"] = baseInfo.HospitalInfo.AfferentSign;
-                if ($("#InsuranceType").val() === "310") {
-                    field["AfferentSign"] = "3";
-                    field.AfferentSign = "3";
-                }
+                //if ($("#InsuranceType").val() === "310") {
+                //    field["AfferentSign"] = "3";
+                //    field.AfferentSign = "3";
+                //}
 
                 return field;
             }
             //获取医保入院登记参数
             function getBirthHospitalizationRegisterParam(paramData) {
                 var fieldParam = getBirthHospitalizationRegisterParamIni(paramData);
+                if (fieldParam === false) return false;
                 $.ajax({
                     type: 'POST',
                     url: hostNew + '/GetBirthHospitalizationRegisterParam',
@@ -490,8 +491,6 @@
                     }
                 });
             }
-
-
             $('#queryData').on('click', function () {
 
                 queryData(getInpatientInfoBack);
@@ -504,6 +503,66 @@
                     getBirthHospitalizationRegisterParam(data);
                     return false; 
                 });
+            //------
+            //定义事件集合
+            var active = {
+                updateRow: function (obj) {
+                    var oldData = table.cache[layTableId];
+                    console.log(oldData);
+                    for (var i = 0, row; i < oldData.length; i++) {
+                        row = oldData[i];
+                        if (row.DiseaseCoding === obj.DiseaseCoding) {
+                            $.extend(oldData[i], obj);
+                            return;
+                        }
+                    }
+                    tableIns.reload({
+                        data: oldData
+                    });
+                },
+                removeEmptyTableCache: function () {
+                    var oldData = table.cache[layTableId];
+                    for (var i = 0, row; i < oldData.length; i++) {
+                        row = oldData[i];
+                        if (!row || !row.Id) {
+                            oldData.splice(i, 1); //删除一项
+                        }
+                        continue;
+                    }
+                    tableIns.reload({
+                        data: oldData
+                    });
+                }
+            };
+            //激活事件
+            var activeByType = function (type, arg) {
+                if (arguments.length === 2) {
+                    active[type] ? active[type].call(this, arg) : '';
+                } else {
+                    active[type] ? active[type].call(this) : '';
+                }
+            }
+            //监听工具条
+            table.on('tool(dataTable)',
+                function (obj) {
+                  
+                    switch (event) {
+                        case "diagnosis":
+                            var stateVal = tr.find("input[name='IsMainDiagnosis']").prop('checked') ? true : false;
+                            $.extend(obj.data, { 'IsMainDiagnosis': stateVal });
+                            activeByType('updateRow', obj.data); //更新行记录对象
+                            break;
+                        case "del":
+                            layer.confirm('真的删除行么？',
+                                function (index) {
+                                    obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                    layer.close(index);
+                                    //activeByType('removeEmptyTableCache');
+                                });
+                            break;
+                    }
+                });
+            //---
           
         });
 

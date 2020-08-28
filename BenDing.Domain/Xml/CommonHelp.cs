@@ -121,7 +121,7 @@ namespace BenDing.Domain.Xml
         /// <returns></returns>
         public static decimal ValueToDouble(decimal param)
         {
-            return Math.Round(param, 1, MidpointRounding.AwayFromZero);
+            return Math.Round(param, 2, MidpointRounding.AwayFromZero);
         }
         /// <summary>
         ///  字符串转换数值型

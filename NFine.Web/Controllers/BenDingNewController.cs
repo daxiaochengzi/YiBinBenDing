@@ -8,6 +8,7 @@ using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
 using BenDing.Domain.Models.Enums;
+using BenDing.Domain.Models.Params;
 using BenDing.Domain.Models.Params.Base;
 using BenDing.Domain.Models.Params.OutpatientDepartment;
 using BenDing.Domain.Models.Params.Resident;
@@ -1204,6 +1205,10 @@ namespace NFine.Web.Controllers
 
                     }
                 }
+                //更新住院明细状态
+                string sql = $@" update HospitalizationFee set UpdateUserId='{param.UserId}',UpdateTime=GETDATE(),UploadMark=0 
+                               where HospitalizationId='{param.BusinessId}' and IsDelete=0";
+                _hisSqlRepository.ExecuteSql(sql);
             });
         }
         /// <summary>

@@ -24,7 +24,7 @@ namespace BenDing.Domain.Models.Dto.JsonEntity
         /// </summary>
         [XmlElement("PO_SYBZ", IsNullable = false)]
         [JsonProperty(PropertyName = "PO_SYBZ")]
-        public decimal BirthAallowance { get; set; }
+        public decimal BirthAllowance { get; set; }
         /// <summary>
         /// 基本统筹支付
         /// </summary>

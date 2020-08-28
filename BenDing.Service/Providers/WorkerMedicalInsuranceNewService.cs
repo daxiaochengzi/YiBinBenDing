@@ -485,17 +485,17 @@ namespace BenDing.Service.Providers
                 Remark = "职工住院结算",
                 RelationId = residentData.Id,
             };
-      
 
+            var cashPayment = CommonHelp.ValueToDouble(hisSettlement.AllAmount - reimbursementExpenses);
             // 回参构建
             var xmlData = new HospitalSettlementXml()
             {
 
                 MedicalInsuranceHospitalizationNo = residentData.MedicalInsuranceHospitalizationNo,
-                CashPayment = resultData.CashPayment,
+                CashPayment = cashPayment,
                 SettlementNo = resultDataDocumentNo.DocumentNo,
                 PaidAmount = resultData.PaidAmount,
-                AllAmount = resultData.TotalAmount,
+                AllAmount = hisSettlement.AllAmount,
                 PatientName = inpatientInfoData.PatientName,
                 AccountBalance = param.InsuranceBalance,
                 AccountAmountPay = resultData.AccountPayment,
@@ -1005,9 +1005,9 @@ namespace BenDing.Service.Providers
 
             //// 医保
             //var resultData = _workerMedicalInsuranceRepository.WorkerBirthSettlement(infoParam);
-            //报销金额 =统筹支付+补充医疗保险支付金额+专项基金支付金额+
+            //报销金额 =统筹支付+补充医疗保险支付金额+生育补助+
             //公务员补贴+公务员补助+其它支付金额
-            decimal reimbursementExpenses = resultData.BasicOverallPay + resultData.SupplementPayAmount + resultData.SpecialFundPayAmount
+            decimal reimbursementExpenses = resultData.BasicOverallPay + resultData.SupplementPayAmount + dataIni.BirthAllowance
             + resultData.CivilServantsSubsidies + resultData.CivilServantsSubsidy + resultData.OtherPaymentAmount;
             resultData.ReimbursementExpenses = reimbursementExpenses;
             var updateData = new UpdateMedicalInsuranceResidentSettlementParam()
@@ -1033,17 +1033,16 @@ namespace BenDing.Service.Providers
                 Remark = "职工住院结算",
                 RelationId = residentData.Id,
             };
-     
 
+            var cashPayment = CommonHelp.ValueToDouble(hisSettlement.AllAmount - reimbursementExpenses);
             // 回参构建
             var xmlData = new HospitalSettlementXml()
             {
-
                 MedicalInsuranceHospitalizationNo = residentData.MedicalInsuranceHospitalizationNo,
-                CashPayment = resultData.CashPayment,
+                CashPayment = cashPayment,
                 SettlementNo = resultData.DocumentNo,
                 PaidAmount = resultData.PaidAmount,
-                AllAmount = resultData.TotalAmount,
+                AllAmount = hisSettlement.AllAmount,
                 PatientName = inpatientInfoData.PatientName,
                 AccountBalance = param.InsuranceBalance,
                 AccountAmountPay = resultData.AccountPayment,

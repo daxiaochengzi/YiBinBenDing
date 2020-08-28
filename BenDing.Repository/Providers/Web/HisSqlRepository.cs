@@ -1332,6 +1332,37 @@ namespace BenDing.Repository.Providers.Web
 
             }
         }
+       /// <summary>
+       /// 执行sql
+       /// </summary>
+       /// <param name="param"></param>
+        public void ExecuteSql(string param)
+        {
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                string strSql = param;
+                try
+                {
+                   
+                    if (!string.IsNullOrWhiteSpace(strSql))
+                    {
+                        sqlConnection.Open();
+                        var data = sqlConnection.Execute(strSql);
+                        sqlConnection.Close();
+                       
+                    }
+
+                  
+                  
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(strSql);
+                    throw new Exception(e.Message);
+                }
+
+            }
+        }
         public List<T> QueryDatabase<T>(T t, DatabaseParam param)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))

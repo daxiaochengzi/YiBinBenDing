@@ -185,7 +185,11 @@ namespace BenDing.Repository.Interfaces.Web
         /// <param name="param"></param>
         /// <returns></returns>
         QueryInpatientInfoDto QueryInpatientInfo(QueryInpatientInfoParam param);
-
+        /// <summary>
+        /// 执行sql
+        /// </summary>
+        /// <param name="param"></param>
+         void ExecuteSql(string param);
 
 
 

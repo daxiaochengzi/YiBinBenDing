@@ -274,7 +274,7 @@
 
                         layer.alert('门诊取消结算成功', { icon: 6, shade: 0.1, skin: 'layui-layer-molv', title: '温馨提示' });
 
-                        buttonStatus("DoorDiagnosisSettlementCancel", false);
+                      
                     }
                 }
 
@@ -282,8 +282,19 @@
         }
         //门诊取消结算
         $('#DoorDiagnosisSettlementCancel').on('click', function () {
-            params["CancelSettlementRemarks"] = $("#CancelSettlementRemarks").val();
-            getCancelOutpatientDepartmentCostParam();
+            //备注
+            var remarks = $("#CancelSettlementRemarks").val();
+            if (remarks === "" && remarks === null) {
+                msgError("取消结算原因不能为空");
+                return false;
+            } else
+            {
+                buttonStatus("DoorDiagnosisSettlementCancel", false);
+                getCancelOutpatientDepartmentCostParam();
+            }
+          
+
+          
         });
     });
 

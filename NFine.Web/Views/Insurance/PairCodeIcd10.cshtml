@@ -13,10 +13,22 @@
         overflow-y: scroll;
     }
 </style>
-<div class="demoTable" id="PairCodeTable">
+<div class="demoTable">
     <div class="layui-form layui-card-header layui-card-header-auto" lay-filter="data-form">
         <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">目录类别</label>
+                <div class="layui-input-inline">
+                    <select name="ProjectCodeType">
+                        <option value="">请选择类别</option>
 
+                        <option value="0">中药</option>
+                        <option value="1">西药</option>
+                        <option value="2">诊疗</option>
+                        <option value="3">耗材</option>
+                    </select>
+                </div>
+            </div>
             <div class="layui-inline">
                 <label class="layui-form-label">目录编码</label>
                 <div class="layui-input-inline">
@@ -26,21 +38,35 @@
             <div class="layui-inline">
                 <label class="layui-form-label">目录名称</label>
                 <div class="layui-input-inline">
-                    <input type="text" id="ProjectName" name="ProjectName" value="@ViewBag.ProjectName" placeholder="请输入名称" autocomplete="off" class="layui-input">
+                    <input type="text" id="ProjectName" name="ProjectName" value="@ViewBag.DirectoryName" placeholder="请输入名称" autocomplete="off" class="layui-input">
                 </div>
             </div>
-           
-        </div>
-        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">生产厂家</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="Manufacturer" name="Manufacturer" value="@ViewBag.Manufacturer" placeholder="生产厂家" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">国药准字号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="QuasiFontSize" name="QuasiFontSize" placeholder="国药准字号" autocomplete="off" class="layui-input">
+                </div>
+            </div>
 
+            @*<div class="layui-inline">
+                    <label class="layui-form-label">助记码 </label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="MnemonicCode" name="MnemonicCode" placeholder="请输入助记码" autocomplete="off" class="layui-input">
+                    </div>
+                </div>*@
             <div class="layui-inline">
                 <button class="layui-btn" lay-submit lay-filter="dataSearch" data-type="dataSearch">查询</button>
-                <button class="layui-btn" data-type="cleanSearch">清除</button>
+
             </div>
-            <input type="hidden" id="EmpId" value="@ViewBag.EmpId" />
-            <input type="hidden" id="DiseaseId" value="@ViewBag.DiseaseId" />
-            <input type="hidden" id="BId" value="@ViewBag.BId" />
-            <input type="hidden" id="TransKey" value="@ViewBag.TransKey" />
+            <input type="hidden" id="empid" value="@ViewBag.empid" />
+            <input type="hidden" id="DirectoryCode" value="@ViewBag.DirectoryCode" />
+            <input type="hidden" id="DirectoryCategoryCode" value="@ViewBag.DirectoryCategoryCode" />
         </div>
     </div>
     <table class="layui-hide" id="dataTable" lay-filter="dataTable"></table>
@@ -48,7 +74,7 @@
 
 
 <script>
-    layui.use(['table','form'], function () {
+    layui.use(['table', 'form'], function () {
         var $ = layui.$
             , table = layui.table
             , form = layui.form;
@@ -57,13 +83,14 @@
         //方法级渲染
         table.render({
             elem: '#dataTable'
-            , url: host +'/QueryMedicalInsuranceIcd10' //数据接口
+            , url: host + '/QueryProjectDownload' //数据接口
             , where: {
-                  UserId: $("#empid").val() //必传参数
+                UserId: $("#empid").val() //必传参数
                 , ProjectName: $("#ProjectName").val()
+                , ProjectCodeType: $("#ProjectCodeType").val()
                 , ProjectCode: $("#ProjectCode").val()
-                 ,DiseaseId: $("#DiseaseId").val()
-
+                , QuasiFontSize: $("#QuasiFontSize").val()
+                , Manufacturer: $("#Manufacturer").val()
             }
             , parseData: function (res) { //res 即为原始返回的数据
                 return {
@@ -75,10 +102,22 @@
             }
             , cols: [[
                 { type: 'numbers', fixed: 'left' }
-                , { title: '对码', toolbar: '#tableCodeBtn', width: 100 ,align: 'center', fixed: true }
-                , { field: 'DiseaseCoding', title: '医保项目编码', width: 160, sort: true }
-                , { field: 'DiseaseName', title: '医保项目名称', width: 160}
-                , { field: 'MnemonicCode', title: '助记码', width: 300 }
+                , { title: '对码', toolbar: '#tableCodeBtn', width: 100, align: 'center', fixed: true }
+                , { field: 'PairCodeId', title: '对码ID', width: 160, hide: true }
+                , { field: 'ProjectCode', title: '医保项目编码', width: 160 }
+                , { field: 'ProjectName', title: '医保项目名称', width: 160, sort: true }
+                , { field: 'ProjectCodeType', title: '医保类别', width: 100 }
+                , { field: 'ProjectLevel', title: '项目等级', width: 160 }
+                , { field: 'Manufacturer', title: '生产厂家', width: 300 }
+                , { field: 'QuasiFontSize', title: '国药准字号', width: 150 }
+                //, { field: 'Unit', title: '单位', width: 100 }
+                , { field: 'Specification', title: '规格', width: 100 }
+                , { field: 'Formulation', title: '剂型', width: 160 }
+                , { field: 'RestrictionSign', title: '限制用药标志', width: 100 }
+                , { field: 'NewCodeMark', title: '新码标志', width: 100 }
+                , { field: 'LimitPaymentScope', title: '限制支付范围', width: 100 }
+                , { field: 'StartTime', title: '开始时间', width: 160 }
+                , { field: 'EndTime', title: '结束时间', width: 160 }
             ]]
             , height: $(window).height() - 128
             , page: true
@@ -87,9 +126,8 @@
 
         //监听搜索
         form.on('submit(dataSearch)', function (data) {
-          
             var field = data.field;
-            
+            //执行重载
             table.reload('dataTable', {
                 where: field
             });
@@ -98,45 +136,51 @@
         //监听工具条
         table.on('tool(dataTable)', function (obj) {
             var data = obj.data;
-            var pairCodeIcd10UiParam = {
-                DiseaseId: $("#DiseaseId").val(),
-                ProjectCode: data.DiseaseCoding,
-                ProjectName: data.DiseaseName,
-                UserId: $("#EmpId").val(),
-                BusinessId: $("#BId").val(),
-                TransKey: $("#TransKey").val()
+            var userId = $("#empid").val();
+            //获取HIS编码DirectoryCode
+            var directoryCode = $("#DirectoryCode").val();
+            //医院目录类别
+            var directoryCategoryCode = $("#DirectoryCategoryCode").val();
+            //医保编码
+            var projectCode = data.ProjectCode;
+            //已对码ID
+            var pairCodeId = "";
+            if (data.PairCodeId !== undefined) {
+                pairCodeId = data.PairCodeId;
+            }
+            var medicalInsurancePairCodeUiParam = {
+                DirectoryCode: directoryCode,
+                DirectoryCategoryCode: directoryCategoryCode,
+                ProjectCode: projectCode,
+                PairCodeId: pairCodeId
             };
-          
-            //var pairCodeList = []; //对码数据
-            //pairCodeList.push(pairCodeIcd10UiParam);
-            //var sendData = { PairCodeList: pairCodeList, UserId:userId };
+            var pairCodeList = []; //对码数据
+            pairCodeList.push(medicalInsurancePairCodeUiParam);
+            var sendData = { PairCodeList: pairCodeList, UserId: userId };
             if (obj.event === 'pairCodeTo') {
                 $.ajax({
-                    url: host +'/Icd10PairCode',
+                    url: host + '/MedicalInsurancePairCode',
                     type: 'POST',
-                    data: pairCodeIcd10UiParam,
+                    data: JSON.stringify(sendData),
                     dataType: "json",
-                    //contentType: 'application/json',
+                    contentType: 'application/json',
                     success: function (data) {
                         if (data.Success === false) {
                             var errData = data.Message;
-                            layer.msg('对码失败\n' + errData, { time: 2000, icon: 5 })
+                            layer.msg('对码失败\n' + errData, { time: 2000, icon: 5 });
                         } else {
+                            //layer.alert('对码成功', { icon: 6, title: '温馨提示', shade: 0.1, skin: 'layui-layer-molv' });
 
-                            layer.alert('对码成功', { icon: 6, title: '温馨提示', shade: 0.1, skin: 'layui-layer-molv' });
-                           
                         }
                     },
                     complete: function () {
                         layer.close(this.layerIndex);
-                    },
-                });
-            } else {
-                layer.msg('数据不一致，请查证！', {
-                    time: 2000, icon: 6, end: function () {
-                        location.reload();
                     }
                 });
+            } else {
+
+                layer.alert('数据不一致，请查证！', { icon: 5, title: '错误提示', skin: 'layui-layer-molv' });
+
             }
             return false;
         });
@@ -169,5 +213,5 @@
 
 
 <script type="text/html" id="tableCodeBtn">
-    <a class="layui-btn layui-btn-xs" lay-event="pairCodeTo"><i class="layui-icon layui-icon-add-1"></i></a>
+    <a class="layui-btn layui-btn-xs" lay-event="pairCodeTo"> 对码 @*<i class="layui-icon layui-icon-add-1"></i>*@</a>
 </script>

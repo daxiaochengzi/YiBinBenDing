@@ -475,16 +475,16 @@ namespace BenDing.Service.Providers
 
             decimal insuranceBalance = !string.IsNullOrWhiteSpace(param.InsuranceBalance) == true
                 ? Convert.ToDecimal(param.InsuranceBalance) : 0;
-
+            var cashPayment = CommonHelp.ValueToDouble(hisSettlement.AllAmount - reimbursementExpenses);
             // 回参构建
             var xmlData = new HospitalSettlementXml()
             {
 
                 MedicalInsuranceHospitalizationNo = residentData.MedicalInsuranceHospitalizationNo,
-                CashPayment = data.CashPayment,
+                CashPayment = cashPayment,
                 SettlementNo = data.DocumentNo,
                 PaidAmount = data.PaidAmount,
-                AllAmount = data.TotalAmount,
+                AllAmount = hisSettlement.AllAmount,
                 PatientName = inpatientInfoData.PatientName,
                 AccountBalance = insuranceBalance,
                 AccountAmountPay = 0,
