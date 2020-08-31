@@ -537,7 +537,7 @@ namespace BenDing.Service.Providers
             _serviceBasicService.GetOutpatientPerson(outpatientParam);
             var accountPayment = resultData.AccountPayment + resultData.CivilServantsSubsidies +
                                  resultData.CivilServantsSubsidy + resultData.OtherPaymentAmount +
-                                 resultData.BirthAallowance + resultData.SupplementPayAmount;
+                                 resultData.BirthAllowance + resultData.SupplementPayAmount;
             var cashPayment = CommonHelp.ValueToDouble((outpatientPerson.MedicalTreatmentTotalCost - accountPayment));
               var updateData = new UpdateMedicalInsuranceResidentSettlementParam()
             {

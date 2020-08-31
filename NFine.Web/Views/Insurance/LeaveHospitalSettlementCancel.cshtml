@@ -338,6 +338,7 @@
      
         //结算取消
         $('#SettlementCancel').on('click', function () {
+            buttonStatus("SettlementCancel", false);
             getLeaveHospitalSettlementCancelParam();
         });
       

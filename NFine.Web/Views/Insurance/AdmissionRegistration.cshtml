@@ -387,6 +387,7 @@
             function getHospitalizationRegisterParam(data) {
                 var fieldParam = getHospitalizationRegisterParamIni(data);
                 if (fieldParam === false) return false;
+                buttonStatus("register", false);
                 $.ajax({
                     type: 'POST',
                     url: hostNew + '/GetHospitalizationRegisterParam',
@@ -412,8 +413,9 @@
                                 activeJsonData = JSON.parse(activeData);
                                 if (activeJsonData.Success === false) {
                                     msgError(activeJsonData.Message);
+                                    return false;
                                 } else {
-                                    fieldParam["SettlementJson"] = activeJsonData.Data
+                                    fieldParam["SettlementJson"] = activeJsonData.Data;
                                     hospitalizationRegister(fieldParam);
                                 }
                             }
@@ -423,8 +425,9 @@
                                 activeJsonData = JSON.parse(activeData);
                                 if (activeJsonData.Success === false) {
                                     msgError(activeJsonData.Message);
+                                    return false;
                                 } else {
-                                    fieldParam["SettlementJson"] = activeJsonData.Data
+                                    fieldParam["SettlementJson"] = activeJsonData.Data;
                                     hospitalizationRegister(fieldParam);
 
                                 }

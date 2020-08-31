@@ -544,7 +544,7 @@ namespace BenDing.Service.Providers
             WorKerHospitalizationRegisterUiParam param, InpatientInfoDto paramDto, UserInfoDto user)
         {
             var iniParam = new WorKerHospitalizationRegisterParam();
-            var diagnosisData = CommonHelp.GetDiagnosis(param.DiagnosisList);
+            var diagnosisData = CommonHelp.GetWorkDiagnosis(param.DiagnosisList);
             iniParam.AdmissionMainDiagnosisIcd10 = diagnosisData.AdmissionMainDiagnosisIcd10;
             iniParam.DiagnosisIcd10Two = diagnosisData.DiagnosisIcd10Two;
             iniParam.DiagnosisIcd10Three = diagnosisData.DiagnosisIcd10Three;
@@ -593,7 +593,7 @@ namespace BenDing.Service.Providers
                 Operators = user.UserName,
                 OrganizationCode = gradeData.MedicalInsuranceAccount
             };
-            var diagnosisData = CommonHelp.GetDiagnosis(param.DiagnosisList);
+            var diagnosisData = CommonHelp.GetWorkDiagnosis(param.DiagnosisList);
             modifyParam.AdmissionMainDiagnosisIcd10 = diagnosisData.AdmissionMainDiagnosisIcd10;
             modifyParam.DiagnosisIcd10Two = diagnosisData.DiagnosisIcd10Two;
             modifyParam.DiagnosisIcd10Three = diagnosisData.DiagnosisIcd10Three;

@@ -419,6 +419,7 @@
             function getBirthHospitalizationRegisterParam(paramData) {
                 var fieldParam = getBirthHospitalizationRegisterParamIni(paramData);
                 if (fieldParam === false) return false;
+                buttonStatus("BirthRegister", false);
                 $.ajax({
                     type: 'POST',
                     url: hostNew + '/GetBirthHospitalizationRegisterParam',

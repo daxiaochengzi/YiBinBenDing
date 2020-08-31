@@ -320,7 +320,9 @@
         }
         //获取医保预结算参数
         function getHospitalizationPreSettlementParam() {
-            getHospitalizationPreSettlementParamIni();
+            var paramIni = getHospitalizationPreSettlementParamIni();
+            if (paramIni === false) return false;
+            buttonStatus("PreSettlement", false);
             $.ajax({
                 type: 'POST',
                 url: hostNew + '/GetHospitalizationPreSettlementParam',

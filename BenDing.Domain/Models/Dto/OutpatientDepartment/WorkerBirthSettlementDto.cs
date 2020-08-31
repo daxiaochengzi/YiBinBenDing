@@ -20,7 +20,7 @@ namespace BenDing.Domain.Models.Dto.OutpatientDepartment
         /// </summary>
       
         [JsonProperty(PropertyName = "生育补助")]
-        public decimal BirthAallowance { get; set; }
+        public decimal BirthAllowance { get; set; }
         /// <summary>
         /// 基本统筹支付
         /// </summary>

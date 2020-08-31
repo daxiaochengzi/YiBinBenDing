@@ -195,6 +195,7 @@
         //获取医保入院登记参数
         function getHospitalizationModifyParam(data) {
             var fieldParam = getHospitalizationModifyParamIni(data);
+            buttonStatus("updateRegister", false);
             $.ajax({
                 type: 'POST',
                 url: hostNew + '/GetHospitalizationModifyParam',

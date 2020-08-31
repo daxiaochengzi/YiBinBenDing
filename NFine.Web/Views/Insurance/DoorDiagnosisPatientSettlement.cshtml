@@ -478,9 +478,11 @@
         });
         //门诊结算
         $('#DoorDiagnosisSettlement').on('click', function () {
+          
             params["IdentityMark"] = baseInfo.HospitalInfo.IdentityMark;
             params["AfferentSign"] =  baseInfo.HospitalInfo.AfferentSign;
-            var settlementVal = $('input[name="Settlement"]:checked').val();
+            //var settlementVal = $('input[name="Settlement"]:checked').val();
+            var settlementVal = "1";
             if (settlementVal === "1") {
                 params["IsBirthHospital"] = 1;
                 //获取结算信息
@@ -503,9 +505,13 @@
                     }
                 }
                 //计划生育
+                //取消显示结算按钮
+                buttonStatus("DoorDiagnosisSettlement", false);
                 getOutpatientPlanBirthSettlementParam();
             } else {
                 //普通
+                //取消显示结算按钮
+                buttonStatus("DoorDiagnosisSettlement", false);
                 getOutpatientDepartmentCostInputParam();
             }
 

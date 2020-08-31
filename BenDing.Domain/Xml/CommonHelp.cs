@@ -123,6 +123,7 @@ namespace BenDing.Domain.Xml
         {
             return Math.Round(param, 2, MidpointRounding.AwayFromZero);
         }
+     
         /// <summary>
         ///  字符串转换数值型
         /// </summary>
@@ -188,7 +189,7 @@ namespace BenDing.Domain.Xml
         /// <returns></returns>
         public static string DiagnosisStr(List<InpatientDiagnosisDto> param)
         {
-            var dataList = param.Select(c => c.DiseaseCoding).ToList();
+            var dataList = param.Select(c => c.ProjectCode).ToList();
             string str = string.Join(",", dataList.ToArray());
             string resultData = str.Length > 20 ? string.Join(",", dataList.Take(2).ToArray()) : str;
             return resultData;
@@ -273,9 +274,10 @@ namespace BenDing.Domain.Xml
 
 
             //主诊断
-                var mainDiagnosisList = param.Where(c => c.IsMainDiagnosis == true)
+            var mainDiagnosisList = param.Where(c => c.IsMainDiagnosis == true)
                 .Take(3).ToList();
             if (mainDiagnosisList.Any() == false) throw new Exception("主诊断不能为空!!!");
+            if (mainDiagnosisList.Count >1) throw new Exception("主诊断只能一个!!!");
             resultData.DiagnosisDescribe = GetDiagnosisDescribe(resultData.DiagnosisDescribe, mainDiagnosisList);
             resultData.AdmissionMainDiagnosisIcd10 = CommonHelp.DiagnosisStr(mainDiagnosisList);
             //第二诊断
@@ -295,6 +297,69 @@ namespace BenDing.Domain.Xml
 
             return resultData;
         }
+
+        /// <summary>
+        /// 获取职工诊断
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static DiagnosisData GetWorkDiagnosis(List<InpatientDiagnosisDto> param)
+        {
+
+            var resultData = new DiagnosisData();
+
+
+            //判断医保诊断不能为空
+
+            var emptyData = param.Where(c => c.ProjectCode == null).ToList();
+            if (emptyData.Any())
+            {
+                string msg = "";
+                foreach (var item in emptyData)
+                {
+                    msg += "[" + item.DiseaseName + "]" + "[" + item.DiseaseCoding + "]:";
+                }
+                throw new Exception("当前未对码诊断:" + msg);
+            }
+
+
+            //主诊断
+            var mainDiagnosisList = param.Where(c => c.IsMainDiagnosis == true)
+                .Take(3).ToList();
+            if (mainDiagnosisList.Any() == false) throw new Exception("主诊断不能为空!!!");
+            if (mainDiagnosisList.Count > 1) throw new Exception("主诊断只能一个!!!");
+            var mainDiagnosis = mainDiagnosisList.FirstOrDefault();
+            if (mainDiagnosis==null) throw  new Exception("主诊断不能为空!!!");
+            resultData.AdmissionMainDiagnosisIcd10 = mainDiagnosis.ProjectCode;
+            resultData.DiagnosisDescribe = mainDiagnosis.DiseaseName;
+            //第二诊断
+            var nextDiagnosisList = param.Where(c => c.IsMainDiagnosis == false)
+                .ToList();
+            int num = 2;
+            foreach (var item in nextDiagnosisList)
+            {
+                if (num == 2)
+                {
+                    resultData.DiagnosisIcd10Two = item.ProjectCode;
+                    resultData.DiagnosisDescribe = resultData.DiagnosisDescribe + ',' + item.DiseaseName;
+                }
+                if (num == 3)
+                {
+                    resultData.DiagnosisIcd10Three = item.ProjectCode;
+                    if (resultData.DiagnosisDescribe.Length + item.DiseaseName.Length < 150)
+                    {
+                        resultData.DiagnosisDescribe = resultData.DiagnosisDescribe + ',' + item.DiseaseName;
+                    }
+
+                  
+                }
+
+                num++;
+            }
+            
+
+            return resultData;
+        }
         /// <summary>
         /// 获取诊断描述
         /// </summary>
@@ -309,16 +374,18 @@ namespace BenDing.Domain.Xml
             {
                 if (!string.IsNullOrEmpty(resultData))
                 {
-                    if (resultData.Length < 100)//控制长度小于100
+                    if ((resultData.Length + item.DiseaseName.Length)< 150)//控制长度小于150
                     {
+                      
                         resultData = resultData + "," + item.DiseaseName;
+                        
                     }
 
                 }
-                else
-                {
-                    resultData = item.DiseaseName;
-                }
+                //else
+                //{
+                //    resultData = item.DiseaseName;
+                //}
             }
 
             return resultData;

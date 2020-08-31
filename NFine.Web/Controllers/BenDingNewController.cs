@@ -239,7 +239,7 @@ namespace NFine.Web.Controllers
                 var settlementData = _outpatientDepartmentNewService.OutpatientPlanBirthPreSettlement(param);
                 var accountPayment = settlementData.AccountPayment + settlementData.CivilServantsSubsidies +
                                 settlementData.CivilServantsSubsidy + settlementData.OtherPaymentAmount +
-                                settlementData.BirthAallowance + settlementData.SupplementPayAmount;
+                                settlementData.BirthAllowance + settlementData.SupplementPayAmount;
 
                 var cashPayment = settlementData.TotalAmount - accountPayment;
                 y.Data = new OutpatientCostReturnDataDto()
@@ -514,8 +514,18 @@ namespace NFine.Web.Controllers
                 //职工
                 if (residentData.InsuranceType == "310")
                 {
-                    var hospitalizationModifyParam = _workerMedicalInsuranceNewService.GetModifyWorkerHospitalizationParam(param);
-                    y.Data =  JsonConvert.SerializeObject(hospitalizationModifyParam);  
+                   
+                    //生育
+                    if (residentData.IsBirthHospital == 1)
+                    {
+                        var modifyParam = _residentMedicalInsuranceNewService.GetHospitalizationModifyParam(param);
+                        y.Data = XmlSerializeHelper.XmlSerialize(modifyParam);
+                    }
+                    else 
+                    {
+                        var hospitalizationModifyParam = _workerMedicalInsuranceNewService.GetModifyWorkerHospitalizationParam(param);
+                        y.Data = JsonConvert.SerializeObject(hospitalizationModifyParam);
+                    }
                 }
                
                 //居民

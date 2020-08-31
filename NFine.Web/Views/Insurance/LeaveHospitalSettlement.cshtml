@@ -391,10 +391,8 @@
         function getHospitalizationSettlementParam() {
            
             var settlementParam = getHospitalizationSettlementParamIni();
-            if (settlementParam === false)
-            {
-                return false;
-            }
+            if (settlementParam === false) return false;
+            buttonStatus("Settlement", false);
             $.ajax({
                 type: 'POST',
                 url: hostNew + '/GetLeaveHospitalSettlementParam',

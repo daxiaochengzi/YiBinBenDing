@@ -255,6 +255,7 @@
             }
             //form数据回显:数据回显到Form表单主体部分
             $('#HospitalizationRegisterCancel').on('click', function () {
+                buttonStatus("HospitalizationRegisterCancel", false);
                 getLeaveHospitalSettlementCancelParam();
                 return false; 
             });
