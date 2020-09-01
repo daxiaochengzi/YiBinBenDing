@@ -216,6 +216,7 @@ namespace BenDing.Service.Providers
             logParam.RelationId = queryData.Id;
             logParam.JoinOrOldJson = queryData.AdmissionInfoJson;
             logParam.ReturnOrNewJson = paramStr;
+            logParam.BusinessId = param.BusinessId;
             logParam.Remark = "医保入院登记修改";
             _systemManageRepository.AddHospitalLog(logParam);
 
@@ -337,6 +338,7 @@ namespace BenDing.Service.Providers
                 JoinOrOldJson = JsonConvert.SerializeObject(param),
                 ReturnOrNewJson = JsonConvert.SerializeObject(resultData),
                 User = userBase,
+                BusinessId = param.BusinessId,
                 Remark = "职工住院病人预结算"
             };
             _systemManageRepository.AddHospitalLog(logParam);
@@ -484,18 +486,19 @@ namespace BenDing.Service.Providers
                 User = userBase,
                 Remark = "职工住院结算",
                 RelationId = residentData.Id,
+                BusinessId = param.BusinessId,
             };
-
+            _systemManageRepository.AddHospitalLog(logParam);
             var cashPayment = CommonHelp.ValueToDouble(hisSettlement.AllAmount - reimbursementExpenses);
             // 回参构建
             var xmlData = new HospitalSettlementXml()
             {
 
                 MedicalInsuranceHospitalizationNo = residentData.MedicalInsuranceHospitalizationNo,
-                CashPayment = cashPayment,
+                CashPayment = cashPayment < 0 ? 0 : cashPayment ,
                 SettlementNo = resultDataDocumentNo.DocumentNo,
                 PaidAmount = resultData.PaidAmount,
-                AllAmount = hisSettlement.AllAmount,
+                AllAmount = CommonHelp.ValueToDouble(hisSettlement.AllAmount),
                 PatientName = inpatientInfoData.PatientName,
                 AccountBalance = param.InsuranceBalance,
                 AccountAmountPay = resultData.AccountPayment,
@@ -663,6 +666,7 @@ namespace BenDing.Service.Providers
                     User = param.User,
                     Remark = "职工住院结算取消",
                     RelationId = param.Id,
+                    BusinessId = param.BusinessId,
                 };
                 _systemManageRepository.AddHospitalLog(logParam);
             }
@@ -896,6 +900,7 @@ namespace BenDing.Service.Providers
                 JoinOrOldJson = JsonConvert.SerializeObject(param),
                 ReturnOrNewJson = JsonConvert.SerializeObject(resultData),
                 User = userBase,
+                BusinessId = param.BusinessId,
                 Remark = "职工生育住院病人预结算"
             };
             _systemManageRepository.AddHospitalLog(logParam);
@@ -1032,17 +1037,18 @@ namespace BenDing.Service.Providers
                 User = userBase,
                 Remark = "职工住院结算",
                 RelationId = residentData.Id,
+                BusinessId = param.BusinessId,
             };
-
+            _systemManageRepository.AddHospitalLog(logParam);
             var cashPayment = CommonHelp.ValueToDouble(hisSettlement.AllAmount - reimbursementExpenses);
             // 回参构建
             var xmlData = new HospitalSettlementXml()
             {
                 MedicalInsuranceHospitalizationNo = residentData.MedicalInsuranceHospitalizationNo,
-                CashPayment = cashPayment,
+                CashPayment = cashPayment < 0 ? 0 : cashPayment,
                 SettlementNo = resultData.DocumentNo,
                 PaidAmount = resultData.PaidAmount,
-                AllAmount = hisSettlement.AllAmount,
+                AllAmount = CommonHelp.ValueToDouble(hisSettlement.AllAmount),
                 PatientName = inpatientInfoData.PatientName,
                 AccountBalance = param.InsuranceBalance,
                 AccountAmountPay = resultData.AccountPayment,

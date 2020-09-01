@@ -250,7 +250,10 @@ namespace BenDing.Repository.Providers.Web
                     User = infoParam.User,
                     Remark = "居民住院结算取消",
                     RelationId = infoParam.Id,
+                    BusinessId = infoParam.BusinessId
+
                 };
+                _systemManageRepository.AddHospitalLog(logParam);
                 //回参构建
                 var xmlData = new HospitalizationRegisterXml()
                 {

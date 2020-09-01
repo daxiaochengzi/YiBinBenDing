@@ -125,7 +125,10 @@ namespace BenDing.Service.Providers
                 JoinOrOldJson = JsonConvert.SerializeObject(inputParam),
                 ReturnOrNewJson = JsonConvert.SerializeObject(resultData),
                 RelationId = param.Id,
-                Remark = "[R][OutpatientDepartment]门诊病人结算"
+                BusinessId = param.UiParam.BusinessId,
+                
+                Remark = "[R][OutpatientDepartment]门诊病人结算",
+                
             });
         
             //回参构建
@@ -231,6 +234,7 @@ namespace BenDing.Service.Providers
                 User = userBase,
                 Remark = "门诊取消结算",
                 RelationId = residentData.Id,
+                BusinessId = param.BusinessId,
             };
             _systemManageRepository.AddHospitalLog(logParam);
 
@@ -484,6 +488,7 @@ namespace BenDing.Service.Providers
                 JoinOrOldJson = JsonConvert.SerializeObject(iniParam),
                 ReturnOrNewJson = JsonConvert.SerializeObject(resultData),
                 RelationId = outpatientParam.Id,
+                BusinessId = param.BusinessId,
                 Remark = "[R][OutpatientDepartment]门诊计划生育预结算"
             });
             //明细存入
@@ -520,11 +525,11 @@ namespace BenDing.Service.Providers
             };
             var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
             if (outpatientPerson == null) throw new Exception("his中未获取到当前病人!!!");
-            var outpatientDetailPerson = _serviceBasicService.GetOutpatientDetailPerson(new OutpatientDetailParam()
-            {
-                User = userBase,
-                BusinessId = param.BusinessId,
-            });
+            //var outpatientDetailPerson = _serviceBasicService.GetOutpatientDetailPerson(new OutpatientDetailParam()
+            //{
+            //    User = userBase,
+            //    BusinessId = param.BusinessId,
+            //});
             var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
             {
                 BusinessId = param.BusinessId,
@@ -534,7 +539,7 @@ namespace BenDing.Service.Providers
             if (residentData.MedicalInsuranceState != MedicalInsuranceState.MedicalInsurancePreSettlement) throw new Exception("当前病人未办理预结算,不能办理结算!!!");
             if (residentData.MedicalInsuranceState == MedicalInsuranceState.HisSettlement) throw new Exception("当前病人已办理医保结算,不能办理再次结算!!!");
             
-            _serviceBasicService.GetOutpatientPerson(outpatientParam);
+            //_serviceBasicService.GetOutpatientPerson(outpatientParam);
             var accountPayment = resultData.AccountPayment + resultData.CivilServantsSubsidies +
                                  resultData.CivilServantsSubsidy + resultData.OtherPaymentAmount +
                                  resultData.BirthAllowance + resultData.SupplementPayAmount;
@@ -561,17 +566,19 @@ namespace BenDing.Service.Providers
                 JoinOrOldJson = JsonConvert.SerializeObject(iniParam),
                 ReturnOrNewJson = JsonConvert.SerializeObject(resultData),
                 RelationId = outpatientParam.Id,
+                BusinessId = param.BusinessId,
                 Remark = "[R][OutpatientDepartment]门诊生育结算"
             });
+         
            
             // 回参构建
             var xmlData = new OutpatientDepartmentCostXml()
             {
                 AccountBalance = !string.IsNullOrWhiteSpace(param.AccountBalance) == true ? Convert.ToDecimal(param.AccountBalance) : 0,
                 MedicalInsuranceOutpatientNo = resultData.DocumentNo,
-                CashPayment = cashPayment,
+                CashPayment =cashPayment < 0 ? 0 : cashPayment,
                 SettlementNo = resultData.DocumentNo,
-                AllAmount = outpatientPerson.MedicalTreatmentTotalCost,
+                AllAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost),
                 PatientName = outpatientPerson.PatientName,
                 AccountAmountPay = resultData.AccountPayment,
                 MedicalInsuranceType = param.InsuranceType == "310" ? "1" : param.InsuranceType,
@@ -669,6 +676,7 @@ namespace BenDing.Service.Providers
                 User = userBase,
                 Remark = "门诊月结汇总",
                 RelationId = insertParam.Id,
+               
             };
             _systemManageRepository.AddHospitalLog(logParam);
         }

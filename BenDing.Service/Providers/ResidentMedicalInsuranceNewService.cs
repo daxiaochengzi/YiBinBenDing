@@ -140,6 +140,7 @@ namespace BenDing.Service.Providers
                 User = userBase,
                 RelationId = saveData.Id,
                 JoinOrOldJson = JsonConvert.SerializeObject(param),
+                BusinessId = param.BusinessId,
                 ReturnOrNewJson = JsonConvert.SerializeObject(residentData),
                 Remark = "医保入院登记;TransactionId:" + userBase.TransKey
             };
@@ -236,6 +237,7 @@ namespace BenDing.Service.Providers
                 RelationId = queryData.Id,
                 JoinOrOldJson = queryData.AdmissionInfoJson,
                 ReturnOrNewJson = paramStr,
+                BusinessId = param.BusinessId,
                 Remark = "医保入院登记修改"
             };
             _systemManageRepository.AddHospitalLog(logParam);
@@ -329,6 +331,7 @@ namespace BenDing.Service.Providers
             {
                 JoinOrOldJson = JsonConvert.SerializeObject(param),
                 ReturnOrNewJson = JsonConvert.SerializeObject(data),
+                BusinessId = param.BusinessId,
                 User = userBase,
                 Remark = "居民住院病人预结算"
             };
@@ -429,14 +432,7 @@ namespace BenDing.Service.Providers
             settlementParam.LeaveHospitalDiagnosisIcd10Two = diagnosisData.DiagnosisIcd10Two;
             settlementParam.LeaveHospitalDiagnosisIcd10Three = diagnosisData.DiagnosisIcd10Three;
             settlementParam.LeaveHospitalMainDiagnosis = diagnosisData.DiagnosisDescribe;
-            var infoParam = new LeaveHospitalSettlementInfoParam()
-            {
-                User = userBase,
-                Id = residentData.Id,
-                InsuranceNo = residentData.InsuranceNo,
-                BusinessId = inpatientInfoData.BusinessId,
-                IdCardNo = inpatientInfoData.IdCardNo,
-            };
+           
             var dataIni = JsonConvert.DeserializeObject<HospitalizationPresettlementJsonDto>(param.SettlementJson);
            var data = AutoMapper.Mapper.Map<HospitalizationPresettlementDto>(dataIni);
             //报销金额 =统筹支付+补充险支付+生育补助+民政救助+民政重大疾病救助+精准扶贫+民政优抚+其它支付
@@ -468,10 +464,11 @@ namespace BenDing.Service.Providers
                 JoinOrOldJson = JsonConvert.SerializeObject(param),
                 ReturnOrNewJson = JsonConvert.SerializeObject(data),
                 User = userBase,
-                Remark = "居民住院结算",
+                Remark = "医保居民住院结算",
                 RelationId = residentData.Id,
+                BusinessId = param.BusinessId,
             };
-
+            _systemManageRepository.AddHospitalLog(logParam);
 
             decimal insuranceBalance = !string.IsNullOrWhiteSpace(param.InsuranceBalance) == true
                 ? Convert.ToDecimal(param.InsuranceBalance) : 0;
@@ -481,10 +478,10 @@ namespace BenDing.Service.Providers
             {
 
                 MedicalInsuranceHospitalizationNo = residentData.MedicalInsuranceHospitalizationNo,
-                CashPayment = cashPayment,
+                CashPayment = cashPayment < 0 ? 0 : cashPayment ,
                 SettlementNo = data.DocumentNo,
                 PaidAmount = data.PaidAmount,
-                AllAmount = hisSettlement.AllAmount,
+                AllAmount = CommonHelp.ValueToDouble(hisSettlement.AllAmount),
                 PatientName = inpatientInfoData.PatientName,
                 AccountBalance = insuranceBalance,
                 AccountAmountPay = 0,
@@ -503,7 +500,17 @@ namespace BenDing.Service.Providers
             //结算存基层
             _webBasicRepository.SaveXmlData(saveXml);
 
-
+            //添加日志
+       
+            _systemManageRepository.AddHospitalLog(new AddHospitalLogParam()
+            {
+                JoinOrOldJson = JsonConvert.SerializeObject(xmlData),
+                ReturnOrNewJson = "",
+                User = userBase,
+                Remark = "基层居民住院结算",
+                RelationId = residentData.Id,
+                BusinessId = param.BusinessId
+            });
             var updateParamData = new UpdateMedicalInsuranceResidentSettlementParam()
             {
                 UserId = param.UserId,
@@ -511,6 +518,7 @@ namespace BenDing.Service.Providers
                 MedicalInsuranceState = MedicalInsuranceState.HisSettlement,
                 IsHisUpdateState = true
             };
+
             //  更新中间层
             _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateParamData);
             //结算后保存信息
@@ -710,7 +718,7 @@ namespace BenDing.Service.Providers
         public void LeaveHospitalSettlementCancel(LeaveHospitalSettlementCancelParam param,
             LeaveHospitalSettlementCancelInfoParam infoParam)
         {
-            var cancelLimit = param.CancelLimit;
+           
 
             if (param.CancelLimit == "1")
             {
@@ -729,9 +737,11 @@ namespace BenDing.Service.Providers
                 {
                     JoinOrOldJson = JsonConvert.SerializeObject(param),
                     User = infoParam.User,
-                    Remark = "居民住院结算取消",
+                    Remark = "医保居民住院结算取消",
                     RelationId = infoParam.Id,
+                    BusinessId = infoParam.BusinessId,
                 };
+                _systemManageRepository.AddHospitalLog(logParam);
                 //回参构建
                 var xmlData = new HospitalSettlementCancelXml()
                 {
@@ -748,6 +758,16 @@ namespace BenDing.Service.Providers
                 };
                 //存基层
                 _webBasicRepository.SaveXmlData(saveXml);
+                //添加日志
+
+                _systemManageRepository.AddHospitalLog(new AddHospitalLogParam()
+                {
+                    JoinOrOldJson = JsonConvert.SerializeObject(xmlData),
+                    User = infoParam.User,
+                    Remark = "基层居民住院结算取消",
+                    RelationId = infoParam.Id,
+                    BusinessId = infoParam.BusinessId,
+                });
             }
             else if (param.CancelLimit == "2") //取消入院登记并删除资料
             {
@@ -768,6 +788,16 @@ namespace BenDing.Service.Providers
                 };
                 //存基层
                 _webBasicRepository.SaveXmlData(saveXml);
+                //添加日志
+                var logParam = new AddHospitalLogParam()
+                {
+                    JoinOrOldJson = JsonConvert.SerializeObject(param),
+                    User = infoParam.User,
+                    Remark = "基层取消入院登记",
+                    RelationId = infoParam.Id,
+                    BusinessId = infoParam.BusinessId,
+                };
+                _systemManageRepository.AddHospitalLog(logParam);
             }
            
         }
@@ -1009,9 +1039,10 @@ namespace BenDing.Service.Providers
                     var logParam = new AddHospitalLogParam
                     {
                         User = userBase,
-                        RelationId = Guid.Parse(param.BusinessId),
+                        RelationId =Guid.Parse(param.BusinessId) ,
                         JoinOrOldJson = joinJson,
                         ReturnOrNewJson = "",
+                        BusinessId = param.BusinessId,
                         Remark = "医保取消处方明细id执行成功"
                     };
                     _systemManageRepository.AddHospitalLog(logParam);

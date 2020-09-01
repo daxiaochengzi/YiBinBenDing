@@ -111,6 +111,7 @@ namespace BenDing.Service.Providers
                 RelationId = saveData.Id,
                 JoinOrOldJson = JsonConvert.SerializeObject(param),
                 ReturnOrNewJson = JsonConvert.SerializeObject(residentData),
+                BusinessId = param.BusinessId,
                 Remark = "医保入院登记;TransactionId:" + userBase.TransKey
             };
             _systemManageRepository.AddHospitalLog(logParam);
@@ -180,6 +181,7 @@ namespace BenDing.Service.Providers
                 RelationId = queryData.Id,
                 JoinOrOldJson = queryData.AdmissionInfoJson,
                 ReturnOrNewJson = paramStr,
+                BusinessId = param.BusinessId,
                 Remark = "医保入院登记修改"
             };
             _systemManageRepository.AddHospitalLog(logParam);
@@ -256,6 +258,7 @@ namespace BenDing.Service.Providers
                         RelationId = Guid.Parse(param.BusinessId),
                         JoinOrOldJson = joinJson,
                         ReturnOrNewJson = "",
+                        BusinessId = param.BusinessId,
                         Remark = "医保取消处方明细id执行成功"
                     };
                     _systemManageRepository.AddHospitalLog(logParam);
@@ -347,7 +350,7 @@ namespace BenDing.Service.Providers
                 JoinOrOldJson = JsonConvert.SerializeObject(param),
                 ReturnOrNewJson = JsonConvert.SerializeObject(data),
                 User = userBase,
-
+                BusinessId = param.BusinessId,
                 Remark = "居民住院病人预结算"
             };
             _systemManageRepository.AddHospitalLog(logParam);
@@ -432,6 +435,7 @@ namespace BenDing.Service.Providers
                 User = userBase,
                 Remark = "居民住院结算",
                 RelationId = residentData.Id,
+                BusinessId = param.BusinessId,
             };
 
        

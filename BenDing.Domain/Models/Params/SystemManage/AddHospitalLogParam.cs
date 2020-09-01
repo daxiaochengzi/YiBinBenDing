@@ -13,7 +13,7 @@ namespace BenDing.Domain.Models.Params.SystemManage
     {/// <summary>
      /// 关联id
      /// </summary>
-        public Guid? RelationId { get; set; } = Guid.Empty;
+        public Guid? RelationId { get; set; }=Guid.Empty;
         /// <summary>
         /// 入参或者旧数据
         /// </summary>
@@ -26,7 +26,11 @@ namespace BenDing.Domain.Models.Params.SystemManage
         /// 备注
         /// </summary>
         public string Remark { get; set; }
-       
+        /// <summary>
+        /// 业务id
+        /// </summary>
+        public  string BusinessId { get; set; }
+
         /// <summary>
         /// 用户id
         /// </summary>

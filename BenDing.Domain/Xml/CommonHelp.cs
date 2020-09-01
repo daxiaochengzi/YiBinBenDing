@@ -25,9 +25,9 @@ namespace BenDing.Domain.Xml
         {
             string resultData = null;
             //测试a
-           // resultData = "http://47.111.29.88:11013/WebService.asmx";
+            //resultData = "http://47.111.29.88:11013/WebService.asmx";
             //正式
-            resultData = "http://11.21.1.11:8002/WebService.asmx";
+           resultData = "http://11.21.1.11:8002/WebService.asmx";
             return resultData;
         }
         
@@ -382,10 +382,10 @@ namespace BenDing.Domain.Xml
                     }
 
                 }
-                //else
-                //{
-                //    resultData = item.DiseaseName;
-                //}
+                else
+                {
+                    resultData = item.DiseaseName;
+                }
             }
 
             return resultData;
