@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BenDing.Domain.Models.Dto.Base;
 
 namespace BenDing.Domain.Models.Params.Resident
-{/// <summary>
-/// 
-/// </summary>
-   public class PrescriptionUploadAutomaticParam
+{
+   public class QueryOrganizationInpatientInfoParam:PaginationDto
     {/// <summary>
-    /// 是否当日上传
+    /// 组织机构
     /// </summary>
-       public Boolean IsTodayUpload { get; set; }=true;
+        public string OrganizationCode { get; set; }
         /// <summary>
-        /// 组织机构
+        /// 查询关键字
         /// </summary>
-       public  string OrganizationCode { get; set; }
+        public  string SearchKey { get; set; }
 
     }
 }

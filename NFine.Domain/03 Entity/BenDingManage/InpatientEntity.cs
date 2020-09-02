@@ -212,6 +212,11 @@ namespace NFine.Domain._03_Entity.BenDingManage
         [StringLength(100)]
         public string LeaveHospitalOperator { get; set; }
         /// <summary>
+        /// 是否取消基层入院登记
+        /// </summary>
+        [DisplayName("是否取消基层入院登记")]
+        public int? IsCanCelHospitalized { get; set; }
+        /// <summary>
         /// 创建时间
         /// </summary>
         [DisplayName("创建时间")]

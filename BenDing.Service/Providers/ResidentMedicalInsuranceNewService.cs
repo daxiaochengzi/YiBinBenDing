@@ -798,6 +798,7 @@ namespace BenDing.Service.Providers
                     BusinessId = infoParam.BusinessId,
                 };
                 _systemManageRepository.AddHospitalLog(logParam);
+                _hisSqlRepository.ExecuteSql($"update [dbo].[Inpatient] set [IsCanCelHospitalized]=1 where BusinessId='{infoParam.BusinessId}' and IsDelete=0");
             }
            
         }

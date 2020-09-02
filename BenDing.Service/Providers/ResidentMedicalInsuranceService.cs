@@ -290,6 +290,11 @@ namespace BenDing.Service.Providers
             }
         }
 
+        //public void PrescriptionUploadAll(UploadAllParam param)
+        //{
+        //    //更新费用
+        //}
+
         /// <summary>
         /// 居民住院预结算
         /// </summary>

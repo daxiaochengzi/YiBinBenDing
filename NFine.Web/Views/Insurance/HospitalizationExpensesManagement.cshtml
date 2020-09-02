@@ -8,10 +8,9 @@
     <ul class="layui-tab-title">
         <li class="layui-this">院内费用明细</li>
         <li>已传费用明细</li>
+        <li>全院费用上传</li>
     </ul>
     <div class="layui-tab-content">
-        
-
         <div class="layui-tab-item layui-show">
 
             <div class="layui-form" lay-filter="LAY-bill-data-list">
@@ -67,6 +66,23 @@
             </div>
         </div>
         <table id="dataTableUpdatedId" lay-filter="dataTableUpdatedId"></table>
+    </div>
+    <div class="layui-tab-item">
+        <div class="layui-form">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">查询关键字</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="DirectoryName" placeholder="姓名/住院号/身份证" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit lay-filter="LAY-dataTableOrganization-list">查询</button>
+                 
+                </div>
+            </div>
+        </div>
+        <table id="dataTableOrganization" lay-filter="dataTableOrganization"></table>
     </div>
 </div>
 
@@ -314,8 +330,6 @@
                         msgError(errData);
                         //样式类名:墨绿深蓝风
                     } else {
-
-
                         tableDataLoad(layTableId);
                         msgSuccess("审核成功!!!");
                     }
@@ -421,13 +435,7 @@
                                     uploadParam["UploadData"] = uploadDataParam;
                                     prescriptionUploadDatas(uploadParam);
                                 }
-                                
-                                
-
                             }
-
-
-
                         } else {
                             msgError("获取上传数据失败!!!");
                             return false;

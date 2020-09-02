@@ -1214,8 +1214,9 @@ namespace BenDing.Repository.Providers.Web
                         strSql = @"
                                 select a.OrganizationCode,a.HospitalizationNo,a.BusinessId,b.InsuranceType from [dbo].[Inpatient]  as a 
                                 inner join [dbo].[MedicalInsurance] as b on b.BusinessId=a.BusinessId
-                                where a.IsDelete=0 and b.IsDelete=0 and a.HospitalizationId 
+                                where a.IsDelete=0 and b.IsDelete=0 and  b.MedicalInsuranceState<5 and a.HospitalizationId 
                                 in(select HospitalizationId from [dbo].[HospitalizationFee] where IsDelete=0 and UploadMark=0 Group by HospitalizationId)";
+                        //if string.is
                     }
                     var data = sqlConnection.Query<QueryAllHospitalizationPatientsDto>(strSql);
                     sqlConnection.Close();
@@ -1363,6 +1364,123 @@ namespace BenDing.Repository.Providers.Web
 
             }
         }
+        /// <summary>
+        /// 查询组织机构病人信息
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<int, List<QueryOrganizationInpatientInfoDto>> QueryOrganizationInpatientInfo(QueryOrganizationInpatientInfoParam param )
+        {
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                var resultData = new Dictionary<int, List<QueryOrganizationInpatientInfoDto>>();
+               
+                var dataListNew = new List<QueryOrganizationInpatientInfoDto>();
+                string executeSql = null;
+                try
+                {
+                    string querySql = $@"select  a.BusinessId,a.[PatientName],a.AdmissionDate,a.[IdCardNo] 
+                             from [dbo].[Inpatient] as a inner join [dbo].[MedicalInsurance]  as b
+                             on a.BusinessId=b.BusinessId 
+                             where a.IsDelete=0 and b.IsDelete=0  and a.IsCanCelHospitalized<>1 
+                             and b.MedicalInsuranceState<5 and a.OrganizationCode='{param.OrganizationCode}' and 
+                             b.OrganizationCode='{param.OrganizationCode}'";
+
+                    string countSql = $@"select  COUNT(*) 
+                             from [dbo].[Inpatient] as a inner join [dbo].[MedicalInsurance]  as b
+                             on a.BusinessId=b.BusinessId 
+                             where a.IsDelete=0 and b.IsDelete=0 and a.IsCanCelHospitalized<>1 
+                             and b.MedicalInsuranceState<5 and a.OrganizationCode='{param.OrganizationCode}' and 
+                             b.OrganizationCode='{param.OrganizationCode}'";
+                    string regexstr = @"[\u4e00-\u9fa5]";
+                    string whereSql = "";
+                    if (!string.IsNullOrWhiteSpace(param.SearchKey))
+                    {
+                        if (Regex.IsMatch(param.SearchKey, regexstr))
+                        {
+                            whereSql += " and PatientName like '%" + param.SearchKey + "%'";
+                        }
+                        else
+                        {
+                            whereSql += " and HospitalizationNo like '%" + param.SearchKey + "%' and IdCardNo like '%" + param.SearchKey + "%'";
+                        }
+                    }
+
+
+                    if (param.Limit != 0 && param.Page > 0)
+                    {
+                        var skipCount = param.Limit * (param.Page - 1);
+                        querySql += whereSql + " order by a.CreateTime desc OFFSET " + skipCount + " ROWS FETCH NEXT " + param.Limit + " ROWS ONLY;";
+                    }
+
+                   
+                    executeSql = countSql + whereSql + ";" + querySql;
+                    if (!string.IsNullOrWhiteSpace(executeSql))
+                    {
+                        sqlConnection.Open();
+
+                        var result = sqlConnection.QueryMultiple(executeSql);
+                       
+                        int totalPageCount = result.Read<int>().FirstOrDefault();
+                        var  dataList = (from t in result.Read<QueryOrganizationInpatientInfoDto>()
+                            select t).ToList();
+                        //查询费用明细
+
+                        if (dataList.Any())
+                        {
+                            var businessIdList = dataList.Select(c => c.BusinessId).ToList();
+                            string businessIdStr =  CommonHelp.ListToStr(businessIdList);
+                            string queryDetailSql = $@"select  [HospitalizationId] as BusinessId,[DetailId],[UploadMark] from
+                                                    [dbo].[HospitalizationFee] where HospitalizationId in ({businessIdStr}) and IsDelete=0";
+                            var queryDetailData = sqlConnection.Query<OrganizationInpatientDetailDto>(queryDetailSql).ToList();
+                            if (queryDetailData.Any())
+                            {
+                                foreach (var item in dataList)
+                                {
+                                    var detailData = queryDetailData.Where(c => c.BusinessId == item.BusinessId)
+                                        .ToList();
+                                    int allNum=0, notUploadNum=0, uploadNum=0;
+                                    if (detailData.Any())
+                                    {
+                                        allNum = detailData.Count;
+                                        uploadNum = detailData.Select(c => c.UploadMark = 1).Count();
+                                        notUploadNum = allNum - uploadNum;
+                                    }
+
+                                    var itemData = new QueryOrganizationInpatientInfoDto
+                                    {
+                                        BusinessId = item.BusinessId,
+                                        IdCardNo = item.IdCardNo,
+                                        AdmissionDate = item.AdmissionDate,
+                                        HospitalizationNo = item.HospitalizationNo,
+                                        AllNum = allNum,
+                                        NotUploadNum = notUploadNum,
+                                        UploadNum = uploadNum
+
+                                    };
+                                    dataListNew.Add(itemData);
+                                }
+
+                            }
+
+                            if (dataListNew.Count == 0) dataListNew = dataList;
+                        }
+
+                        resultData.Add(totalPageCount, dataListNew);
+                        sqlConnection.Close();
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(executeSql);
+                    throw new Exception(e.Message);
+                }
+
+                return resultData;
+            }
+        }
+
+        //public  void 
         public List<T> QueryDatabase<T>(T t, DatabaseParam param)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))

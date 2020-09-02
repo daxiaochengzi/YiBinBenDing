@@ -157,10 +157,10 @@ namespace BenDing.Service.Providers
             var param = GetWorkerHospitalizationModify(uiParam, userBase);
           
             // 回参构建
-            var xmlData = new HospitalizationModifyXml()
-            {
-                MedicalInsuranceHospitalizationNo = param.MedicalInsuranceHospitalizationNo,
-            };
+            //var xmlData = new HospitalizationModifyXml()
+            //{
+            //    MedicalInsuranceHospitalizationNo = param.MedicalInsuranceHospitalizationNo,
+            //};
             //var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
             //var saveXml = new SaveXmlDataParam()
             //{
@@ -568,7 +568,7 @@ namespace BenDing.Service.Providers
             iniParam.AdministrativeArea = gradeData.AdministrativeArea;
             iniParam.InpatientArea = paramDto.AdmissionWard;
             //iniParam.DiagnosisList = param.DiagnosisList;
-            var userData = _systemManageRepository.QueryHospitalOperator(
+            _systemManageRepository.QueryHospitalOperator(
                 new QueryHospitalOperatorParam() { UserId = param.UserId });
             iniParam.OrganizationCode = gradeData.MedicalInsuranceAccount;
             return iniParam;

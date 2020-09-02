@@ -148,7 +148,7 @@
                         <div class="layui-input-inline">
                             <select name="State">
                                 <option value="0" selected="selected">请选择状态</option>
-                                <option value="1">未对码</option>
+                                <option value="1">对码</option>
                                 <option value="2">重新对码</option>
                             </select>
                         </div>
@@ -488,7 +488,7 @@
 
 <script type="text/html" id="tableBtn">
     {{#  if(d.Id == null){ }}
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="pairCode">未对码</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="pairCode">对码</a>
     {{#  } else { }}
     <a class="layui-btn layui-btn-xs" lay-event="updatePairCode">重新对码</a>
     {{#  }}}

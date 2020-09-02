@@ -19,6 +19,7 @@ using BenDing.Domain.Xml;
 using BenDing.Repository.Interfaces.Web;
 using BenDing.Service.Interfaces;
 using Newtonsoft.Json;
+using NFine.Domain._03_Entity.BenDingManage;
 
 namespace NFine.Web.Controllers
 {    /// <summary>
@@ -493,7 +494,6 @@ namespace NFine.Web.Controllers
             });
 
         }
-
         /// <summary>
         /// 获取医保入院登记修改参数
         /// </summary>
@@ -1261,6 +1261,89 @@ namespace NFine.Web.Controllers
             });
 
         }
+        /// <summary>
+        /// 更新组织机构数据
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData UpdateOrganizationData([FromBody]PrescriptionUploadUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+                var iniParam = new DatabaseParam()
+                {
+                    Field = "OrganizationCode",
+                    Value = userBase.OrganizationCode,
+                    TableName = "Inpatient"
+                };
+                var inpatientData = _hisSqlRepository.QueryDatabase(new InpatientEntity(), iniParam);
+                if (inpatientData != null)
+                {
+                    if (inpatientData.Any())
+                    {
+                        foreach (var item in inpatientData)
+                        {
+                           _webServiceBasicService.GetInpatientInfoDetail(userBase, item.BusinessId);
+                        }
+                    }
+                }
+
+
+            });
+
+        }
+
+        /// <summary>
+        /// 根据组织机构获取有未传费用的住院病人
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetOrganizationNotUploadCostInpatient([FromBody] PrescriptionUploadUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+
+               var inpatientData = _hisSqlRepository.QueryAllHospitalizationPatients(new PrescriptionUploadAutomaticParam()
+                {
+                   OrganizationCode = userBase.OrganizationCode
+               });
+                if (inpatientData != null)
+                {
+                    y.Data = inpatientData.Select(c => c.BusinessId).ToList();
+                }
+
+            });
+        }
+        /// <summary>
+        /// 查询组织机构病人信息
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiJsonResultData QueryOrganizationInpatientInfo([FromUri]QueryOrganizationInpatientInfoUiParam param)
+        {
+            return new ApiJsonResultData(ModelState, new QueryCatalogDto()).RunWithTry(y =>
+            {
+                var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+                param.OrganizationCode = userBase.OrganizationCode;
+                var queryData = _hisSqlRepository.QueryOrganizationInpatientInfo(param);
+                var data = new
+                {
+                    data = queryData.Values.FirstOrDefault(),
+                    count = queryData.Keys.FirstOrDefault()
+                };
+                y.Data = data;
+
+            });
+
+
+
+        }
+        
         /// <summary>
         /// 获取处方取消上传参数
         /// </summary>

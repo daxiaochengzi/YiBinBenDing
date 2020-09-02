@@ -284,7 +284,7 @@
         $('#DoorDiagnosisSettlementCancel').on('click', function () {
             //备注
             var remarks = $("#CancelSettlementRemarks").val();
-            if (remarks === "" && remarks === null) {
+            if (remarks === "" || remarks === null) {
                 msgError("取消结算原因不能为空");
                 return false;
             } else

@@ -85,7 +85,9 @@
     <Compile Include="Models\Dto\OutpatientDepartment\GetOutpatientSettlementCancelDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\WorkerBirthSettlementDto.cs" />
     <Compile Include="Models\Dto\Resident\AdmissionRegistrationCancelInfoDto.cs" />
+    <Compile Include="Models\Dto\Resident\OrganizationInpatientDetailDto.cs" />
     <Compile Include="Models\Dto\Resident\QueryAllICD10Dto.cs" />
+    <Compile Include="Models\Dto\Resident\QueryOrganizationInpatientInfoDto.cs" />
     <Compile Include="Models\Dto\Web\HospitalThreeCatalogBatchUploadDto.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\MonthlyHospitalizationCancelParam.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\MonthlyHospitalizationDto.cs" />
@@ -201,6 +203,8 @@
     <Compile Include="Models\Params\Resident\PrescriptionUploadUpdateDataParam.cs" />
     <Compile Include="Models\Params\Resident\QueryLeaveHospitalSettlementParam.cs" />
     <Compile Include="Models\Params\Resident\QueryMedicalInsurancePairCodeParam.cs" />
+    <Compile Include="Models\Params\Resident\QueryOrganizationInpatientInfoParam.cs" />
+    <Compile Include="Models\Params\Resident\QueryOrganizationInpatientInfoUiParam.cs" />
     <Compile Include="Models\Params\Resident\QueryPrescriptionDetailDto.cs" />
     <Compile Include="Models\Params\Resident\QueryPrescriptionDetailParam.cs" />
     <Compile Include="Models\Params\SystemManage\AddHospitalLogParam.cs" />

@@ -41,6 +41,7 @@ namespace NFine.Web.Controllers
         private readonly IWebServiceBasicService webServiceBasicService;
         private readonly IWebBasicRepository webServiceBasic;
         private readonly IHisSqlRepository hisSqlRepository;
+        private readonly ISystemManageRepository _systemManageRepository;
         private readonly IMedicalInsuranceSqlRepository ImedicalInsuranceSqlRepository;
 
         /// <summary>
@@ -55,13 +56,16 @@ namespace NFine.Web.Controllers
             IWebServiceBasicService _webServiceBasicService,
             IWebBasicRepository _WebBasicRepository,
             IHisSqlRepository _hisSqlRepository,
-            IMedicalInsuranceSqlRepository _imedicalInsuranceSqlRepository)
+            IMedicalInsuranceSqlRepository _imedicalInsuranceSqlRepository,
+            ISystemManageRepository systemManageRepository
+            )
         {
             userService = _userService;
             webServiceBasicService = _webServiceBasicService;
             webServiceBasic = _WebBasicRepository;
             hisSqlRepository = _hisSqlRepository;
             ImedicalInsuranceSqlRepository = _imedicalInsuranceSqlRepository;
+            _systemManageRepository = systemManageRepository;
         }
 
         /// <summary>
@@ -73,9 +77,12 @@ namespace NFine.Web.Controllers
         {
             return new ApiJsonResultData().RunWithTry(y =>
             {
-                var ddd = Guid.Parse("16DEABB5A8E242A980444AC130913431");
-                var resultStr = XmlHelp.DeSerializerXmlInfo("123");
-                var iniData = XmlHelp.DeSerializer<OutpatientDepartmentCostInputJsonDto>(resultStr);
+                string mzNo = "451238747000M202006020001";
+                string[] arr = mzNo.Split('M');
+                string mz = arr[1];
+                //var ddd = Guid.Parse("16DEABB5A8E242A980444AC130913431");
+                //var resultStr = XmlHelp.DeSerializerXmlInfo("123");
+                //var iniData = XmlHelp.DeSerializer<OutpatientDepartmentCostInputJsonDto>(resultStr);
                 //HospitalizationPresettlementDto data = null;
                 //var dataIni = XmlHelp.DeSerializerModel(new HospitalizationPresettlementJsonDto(), true);
                 //data = AutoMapper.Mapper.Map<HospitalizationPresettlementDto>(dataIni);
@@ -455,7 +462,16 @@ namespace NFine.Web.Controllers
             });
             var ddds = CommonHelp.GetDiagnosis(ddd);
 
-
+            //添加日志
+            var logParam = new AddHospitalLogParam()
+            {
+                JoinOrOldJson = "123",
+                User = new UserInfoDto(){UserId = "76EDB472F6E544FD8DC8D354BB088BD7" },
+                Remark = "测试",
+             
+                BusinessId = "87A8875BA6F9433AB493B8CB8A05EC43",
+            };
+            _systemManageRepository.AddHospitalLog(logParam);
 
 
             //var data = new HospitalizationFeeUploadXml();
@@ -746,6 +762,29 @@ namespace NFine.Web.Controllers
                 //存基层
                 webServiceBasic.SaveXmlData(saveXml);
                 //_outpatientDepartmentNewService.CancelOutpatientDepartmentCost(param);
+            });
+
+        }
+        /// <summary>
+        /// 获取住院病人明细费用
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiJsonResultData GetInpatientInfoDetail([FromUri]GetInpatientInfoDetailParam param)
+        {
+            return new ApiJsonResultData(ModelState, new InpatientInfoDetailDto()).RunWithTry(y =>
+            {
+                var userBase = webServiceBasicService.GetUserBaseInfo(param.UserId);
+                var xmlData = new MedicalInsuranceXmlDto();
+                var transactionId = Guid.NewGuid().ToString("N");
+                xmlData.BusinessId =param.BusinessId ;
+                xmlData.HealthInsuranceNo = "31";
+                xmlData.TransactionId = transactionId;
+                xmlData.AuthCode = userBase.AuthCode;
+                xmlData.UserId = userBase.UserId;
+                xmlData.OrganizationCode = userBase.OrganizationCode;
+                var data = webServiceBasic.HIS_Interface("39", JsonConvert.SerializeObject(xmlData));
+
             });
 
         }

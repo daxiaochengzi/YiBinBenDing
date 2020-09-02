@@ -438,7 +438,7 @@ namespace BenDing.Service.Providers
                         TableName = "Inpatient"
                     });
                     //添加病人信息
-                    var inpatientEntity = new InpatientEntity();
+                    //var inpatientEntity = new InpatientEntity();
                     var insertEntity = AutoMapper.Mapper.Map<InpatientEntity>(resultData);
                     insertEntity.Id = Guid.NewGuid();
                    

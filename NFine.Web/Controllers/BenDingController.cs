@@ -422,6 +422,11 @@ namespace NFine.Web.Controllers
                     paramIni.IsSave = false;
                     paramIni.UiParam = param;
                     var data = _webServiceBasicService.GetOutpatientPerson(paramIni);
+                    var outpatientNumber = data.OutpatientNumber;
+                    //拆分门诊号
+                    string[] arr = outpatientNumber.Split('M');
+                    string mz = arr[1];
+                    data.OutpatientNumber = mz;
                     y.Data = data;
 
                 }
