@@ -1378,17 +1378,17 @@ namespace BenDing.Repository.Providers.Web
                 string executeSql = null;
                 try
                 {
-                    string querySql = $@"select  a.BusinessId,a.[PatientName],a.AdmissionDate,a.[IdCardNo] 
+                    string querySql = $@"select  a.BusinessId,a.[HospitalizationNo],a.[PatientName],a.AdmissionDate,a.[IdCardNo] 
                              from [dbo].[Inpatient] as a inner join [dbo].[MedicalInsurance]  as b
                              on a.BusinessId=b.BusinessId 
-                             where a.IsDelete=0 and b.IsDelete=0  and a.IsCanCelHospitalized<>1 
+                             where a.IsDelete=0 and b.IsDelete=0  and a.IsCanCelHospitalized is null
                              and b.MedicalInsuranceState<5 and a.OrganizationCode='{param.OrganizationCode}' and 
                              b.OrganizationCode='{param.OrganizationCode}'";
 
                     string countSql = $@"select  COUNT(*) 
                              from [dbo].[Inpatient] as a inner join [dbo].[MedicalInsurance]  as b
                              on a.BusinessId=b.BusinessId 
-                             where a.IsDelete=0 and b.IsDelete=0 and a.IsCanCelHospitalized<>1 
+                             where a.IsDelete=0 and b.IsDelete=0 and a.IsCanCelHospitalized is null 
                              and b.MedicalInsuranceState<5 and a.OrganizationCode='{param.OrganizationCode}' and 
                              b.OrganizationCode='{param.OrganizationCode}'";
                     string regexstr = @"[\u4e00-\u9fa5]";
@@ -1401,7 +1401,7 @@ namespace BenDing.Repository.Providers.Web
                         }
                         else
                         {
-                            whereSql += " and HospitalizationNo like '%" + param.SearchKey + "%' and IdCardNo like '%" + param.SearchKey + "%'";
+                            whereSql += " and (HospitalizationNo like '%" + param.SearchKey + "%' or IdCardNo like '%" + param.SearchKey + "%')";
                         }
                     }
 
@@ -1442,7 +1442,12 @@ namespace BenDing.Repository.Providers.Web
                                     if (detailData.Any())
                                     {
                                         allNum = detailData.Count;
-                                        uploadNum = detailData.Select(c => c.UploadMark = 1).Count();
+                                        uploadNum = 0;
+                                        foreach (var c in detailData)
+                                        {
+                                            if (c.UploadMark == 1) uploadNum++;
+                                        }
+
                                         notUploadNum = allNum - uploadNum;
                                     }
 
@@ -1451,10 +1456,12 @@ namespace BenDing.Repository.Providers.Web
                                         BusinessId = item.BusinessId,
                                         IdCardNo = item.IdCardNo,
                                         AdmissionDate = item.AdmissionDate,
+                                        
                                         HospitalizationNo = item.HospitalizationNo,
                                         AllNum = allNum,
                                         NotUploadNum = notUploadNum,
-                                        UploadNum = uploadNum
+                                        UploadNum = uploadNum,
+                                        PatientName = item.PatientName
 
                                     };
                                     dataListNew.Add(itemData);

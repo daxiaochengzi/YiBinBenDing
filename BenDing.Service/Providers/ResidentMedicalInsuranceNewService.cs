@@ -603,19 +603,19 @@ namespace BenDing.Service.Providers
                     //获取医保对码数据
                     var queryPairCode =
                         _medicalInsuranceSqlRepository.QueryMedicalInsurancePairCode(queryPairCodeParam);
-                    //处方上传数据金额验证
-                    var validData = PrescriptionDataUnitPriceValidation(queryData, queryPairCode, user);
-                    var validDataList = validData.Values.FirstOrDefault();
+                    ////处方上传数据金额验证
+                    //var validData = PrescriptionDataUnitPriceValidation(queryData, queryPairCode, user);
+                    //var validDataList = validData.Values.FirstOrDefault();
                     //错误提示信息
-                    var validDataMsg = validData.Keys.FirstOrDefault();
-                    if (!string.IsNullOrWhiteSpace(validDataMsg))
-                    {
-                        resultUpload.Msg += validDataMsg;
-                    }
+                    //var validDataMsg = queryData.Keys.FirstOrDefault();
+                    //if (!string.IsNullOrWhiteSpace(validDataMsg))
+                    //{
+                    //    resultUpload.Msg += validDataMsg;
+                    //}
 
                     //获取处方上传入参
-                    var paramIni = GetPrescriptionUploadParam(validDataList, queryPairCode, user,
-                        medicalInsurance.InsuranceType);
+                    var paramIni = GetPrescriptionUploadParam(queryData, queryPairCode, user,
+                        medicalInsurance.InsuranceType,param.IsOrganizationCodeUpload);
                     //医保住院号
                     paramIni.MedicalInsuranceHospitalizationNo = medicalInsurance.MedicalInsuranceHospitalizationNo;
                     int num = paramIni.RowDataList.Count;
@@ -864,7 +864,8 @@ namespace BenDing.Service.Providers
         /// </summary>
         /// <returns></returns>
         private PrescriptionUploadParam GetPrescriptionUploadParam(List<QueryInpatientInfoDetailDto> param,
-            List<QueryMedicalInsurancePairCodeDto> pairCodeList, UserInfoDto user, string insuranceType)
+            List<QueryMedicalInsurancePairCodeDto> pairCodeList, UserInfoDto user, string insuranceType,
+            bool isOrganizationCodeUpload)
         {
 
             var resultData = new PrescriptionUploadParam();
@@ -884,12 +885,15 @@ namespace BenDing.Service.Providers
                         residentSelfPayProportion = CommonHelp.ValueToDouble(
                             (item.Amount + item.AdjustmentDifferenceValue) *
                             pairCodeData.ResidentSelfPayProportion);
+                      
+                       
                     }
 
                     if (insuranceType == "310") //职工
                     {
                         residentSelfPayProportion = CommonHelp.ValueToDouble(
                             (item.Amount + item.AdjustmentDifferenceValue) * pairCodeData.WorkersSelfPayProportion);
+                        
                     }
 
                     var rowData = new PrescriptionUploadRowParam()
@@ -926,20 +930,37 @@ namespace BenDing.Service.Providers
                         LimitApprovalMark = item.ApprovalMark.ToString(),
                         LimitApprovalRemark = ""
                     };
+                 
                     //是否现在使用药品
                     if (pairCodeData.RestrictionSign == "1")
                     {
-                        if (item.ApprovalMark == 0)
+                        if (isOrganizationCodeUpload==false)
                         {
-                            throw new Exception(item.DirectoryName + "为限制性药品未审核");
-                        } 
-                        rowData.LimitApprovalDate =Convert.ToDateTime(item.ApprovalTime).ToString("yyyyMMddHHmmss");
-                        rowData.LimitApprovalUser = item.ApprovalUserName;
-                        rowData.LimitApprovalMark = item.ApprovalMark.ToString();
+                            if (item.ApprovalMark == 0)
+                            {
+                                throw new Exception(item.DirectoryName + "为限制性药品未审核");
+                            }
+                            rowData.LimitApprovalDate = Convert.ToDateTime(item.ApprovalTime).ToString("yyyyMMddHHmmss");
+                            rowData.LimitApprovalUser = item.ApprovalUserName;
+                            rowData.LimitApprovalMark = item.ApprovalMark.ToString();
+                        }
+
+                       
 
                     }
 
-                    rowDataList.Add(rowData);
+                    if (isOrganizationCodeUpload == true &&
+                        pairCodeData.RestrictionSign == "1"
+                        && item.ApprovalMark == 0)
+                    {
+                        //不做处理
+                    }
+                    else
+                    {
+                        rowDataList.Add(rowData);
+                    }
+
+                   
                 }
 
 

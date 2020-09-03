@@ -12,7 +12,7 @@ namespace BenDing.Domain.Models.Params.Resident
     {/// <summary>
     /// 是否当日上传
     /// </summary>
-       public Boolean IsTodayUpload { get; set; }=true;
+       public Boolean IsTodayUpload { get; set; }
         /// <summary>
         /// 组织机构
         /// </summary>

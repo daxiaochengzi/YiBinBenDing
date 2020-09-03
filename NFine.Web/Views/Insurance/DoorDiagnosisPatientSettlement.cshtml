@@ -251,7 +251,7 @@
             }
             var settlementVal = "1"; //$('input[name="Settlement"]:checked').val();
             //计划生育结算
-            if (settlementVal === "1") {
+            if (settlementVal === "1" && baseInfo.Inpatient.InsuranceType === "310") {
                            
                 $("#DoorDiagnosisPreSettlementDiv").show();
              

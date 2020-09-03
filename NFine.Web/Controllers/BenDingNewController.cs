@@ -1267,7 +1267,7 @@ namespace NFine.Web.Controllers
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpPost]
-        public ApiJsonResultData UpdateOrganizationData([FromBody]PrescriptionUploadUiParam param)
+        public ApiJsonResultData UpdateOrganizationData([FromBody]UiInIParam param)
         {
             return new ApiJsonResultData(ModelState).RunWithTry(y =>
             {
