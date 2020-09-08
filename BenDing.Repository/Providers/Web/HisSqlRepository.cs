@@ -1028,8 +1028,8 @@ namespace BenDing.Repository.Providers.Web
                 string whereSql = "";
 
                 //是否上传标志
-                if (param.UploadMark == 1)
-                    whereSql += "  and UploadMark=1";
+                if (!string.IsNullOrWhiteSpace(param.UploadMark))
+                    whereSql += $"  and UploadMark='{param.UploadMark}'";
              
                 //药品名称模糊查询
                 if (!string.IsNullOrWhiteSpace(param.DirectoryName))

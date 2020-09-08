@@ -20,7 +20,7 @@ namespace BenDing.Domain.Models.Params.UI
         /// 上传状态查询
         /// </summary>
 
-        public int UploadMark { get; set; }
+        public string UploadMark { get; set; }
         /// <summary>
         /// 日期
         /// </summary>

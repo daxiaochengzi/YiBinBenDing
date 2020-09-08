@@ -551,7 +551,8 @@ namespace BenDing.Service.Providers
             //4.2.2 获取医院等级判断金额是否符合要求
             //4.2.3 数据上传
             //4.2.3.1 数据上传失败,数据回写到日志
-
+            var isOrganizationCodeUpload = true;
+            var isDataIdList = false;
             var resultData = new GetPrescriptionUploadParam();
             var resultUpload = new RetrunPrescriptionUploadDto();
             var uploadList=new List<PrescriptionUploadParam>(); 
@@ -562,6 +563,8 @@ namespace BenDing.Service.Providers
             {
                 queryParam.IdList = param.DataIdList;
                 queryParam.UploadMark = 0;
+                isOrganizationCodeUpload = false;
+                isDataIdList = true;
             }
             else
             {
@@ -615,9 +618,10 @@ namespace BenDing.Service.Providers
 
                     //获取处方上传入参
                     var paramIni = GetPrescriptionUploadParam(queryData, queryPairCode, user,
-                        medicalInsurance.InsuranceType,param.IsOrganizationCodeUpload);
+                        medicalInsurance.InsuranceType, isOrganizationCodeUpload, isDataIdList);
                     //医保住院号
                     paramIni.MedicalInsuranceHospitalizationNo = medicalInsurance.MedicalInsuranceHospitalizationNo;
+                 
                     int num = paramIni.RowDataList.Count;
                     resultUpload.Count = num;
                     int a = 0;
@@ -631,11 +635,15 @@ namespace BenDing.Service.Providers
                         var rowDataListAll = paramIni.RowDataList.Where(d => !idList.Contains(d.Id))
                             .OrderBy(c => c.PrescriptionSort).ToList();
                         var sendList = rowDataListAll.Take(limit).Select(s => s.Id).ToList();
-                        //新的数据上传参数
-                        var uploadDataParam = paramIni;
-                        uploadDataParam.RowDataList = rowDataListAll.Where(c => sendList.Contains(c.Id)).ToList();
+                        ////新的数据上传参数
+                        //var uploadDataParam = paramIni;
+                        //uploadDataParam.RowDataList 
+                        var uploadRowParam = new PrescriptionUploadParam();
+                        uploadRowParam.MedicalInsuranceHospitalizationNo = paramIni.MedicalInsuranceHospitalizationNo;
+                        uploadRowParam.Operators = paramIni.Operators;
+                        uploadRowParam.RowDataList = rowDataListAll.Where(c => sendList.Contains(c.Id)).ToList();
                         ////数据上传
-                        uploadList.Add(uploadDataParam);
+                        uploadList.Add(uploadRowParam);
                         //var uploadData = PrescriptionUploadData(uploadDataParam, param.BusinessId, user);
                         //if (uploadData.ReturnState != "1")
                         //{
@@ -648,6 +656,7 @@ namespace BenDing.Service.Providers
                         //    //获取总行数
                         //resultUpload.Num += sendList.Count();
                         //}
+                        idList.AddRange(sendList);
                         resultUpload.Num += sendList.Count();
                         a++;
                     }
@@ -865,7 +874,7 @@ namespace BenDing.Service.Providers
         /// <returns></returns>
         private PrescriptionUploadParam GetPrescriptionUploadParam(List<QueryInpatientInfoDetailDto> param,
             List<QueryMedicalInsurancePairCodeDto> pairCodeList, UserInfoDto user, string insuranceType,
-            bool isOrganizationCodeUpload)
+            bool isOrganizationCodeUpload,bool isDataIdList )
         {
 
             var resultData = new PrescriptionUploadParam();
@@ -883,7 +892,7 @@ namespace BenDing.Service.Providers
                     if (insuranceType == "342") //居民   
                     {
                         residentSelfPayProportion = CommonHelp.ValueToDouble(
-                            (item.Amount + item.AdjustmentDifferenceValue) *
+                            item.Amount *
                             pairCodeData.ResidentSelfPayProportion);
                       
                        
@@ -892,7 +901,7 @@ namespace BenDing.Service.Providers
                     if (insuranceType == "310") //职工
                     {
                         residentSelfPayProportion = CommonHelp.ValueToDouble(
-                            (item.Amount + item.AdjustmentDifferenceValue) * pairCodeData.WorkersSelfPayProportion);
+                            item.Amount  * pairCodeData.WorkersSelfPayProportion);
                         
                     }
 
@@ -925,9 +934,9 @@ namespace BenDing.Service.Providers
                         DetailId = item.DetailId,
                         DoctorJobNumber = item.OperateDoctorId,
                         Id = item.Id,
-                        LimitApprovalDate = item.ApprovalTime,
-                        LimitApprovalUser = item.ApprovalUserName,
-                        LimitApprovalMark = item.ApprovalMark.ToString(),
+                        //LimitApprovalDate = item.ApprovalTime,
+                        //LimitApprovalUser = item.ApprovalUserName,
+                        //LimitApprovalMark = item.ApprovalMark.ToString(),
                         LimitApprovalRemark = ""
                     };
                  
@@ -961,6 +970,13 @@ namespace BenDing.Service.Providers
                     }
 
                    
+                }
+                else
+                {
+                    if (isDataIdList)
+                    {
+                       throw new Exception("商品id:"+item.DetailId+"项目名称:"+ item.DirectoryName+"未医保对码!!!");
+                    }
                 }
 
 

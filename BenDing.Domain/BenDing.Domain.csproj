@@ -182,6 +182,7 @@
     <Compile Include="Models\Params\OutpatientDepartment\QueryOutpatientDepartmentCostParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\SaveOutpatientDetailParam.cs" />
     <Compile Include="Models\Params\Resident\AddProjectBatchParam.cs" />
+    <Compile Include="Models\Params\Resident\AdjustmentDifferenceValueParam.cs" />
     <Compile Include="Models\Params\Resident\BatchConfirmParam.cs" />
     <Compile Include="Models\Params\Resident\BatchExamineDataParam.cs" />
     <Compile Include="Models\Params\Resident\DeletePrescriptionUploadParam.cs" />

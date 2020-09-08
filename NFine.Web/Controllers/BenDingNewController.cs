@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -12,6 +13,7 @@ using BenDing.Domain.Models.Params;
 using BenDing.Domain.Models.Params.Base;
 using BenDing.Domain.Models.Params.OutpatientDepartment;
 using BenDing.Domain.Models.Params.Resident;
+using BenDing.Domain.Models.Params.SystemManage;
 using BenDing.Domain.Models.Params.UI;
 using BenDing.Domain.Models.Params.Web;
 using BenDing.Domain.Models.Params.Workers;
@@ -1231,9 +1233,64 @@ namespace NFine.Web.Controllers
             return new ApiJsonResultData(ModelState).RunWithTry(y =>
             {
                 var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+              
+
                 //处方上传
                 var data = _residentMedicalInsuranceNewService.GetPrescriptionUploadParam(param,userBase);
                 y.Data = data;
+            });
+
+        }
+        /// <summary>
+        /// 调整差值
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData AdjustmentDifferenceValue([FromBody]AdjustmentDifferenceValueParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+                List<string> idList = new List<string>();
+                idList.Add(param.Id);
+                //费用数据
+              var feeDataList=_hisSqlRepository.InpatientInfoDetailQuery(new InpatientInfoDetailQueryParam()
+                {
+                    IdList = idList,
+                    UploadMark = 0,
+
+                });
+                if (feeDataList != null && feeDataList.Any())
+                {
+                    var feeData = feeDataList.FirstOrDefault();
+                    if (string.IsNullOrWhiteSpace(feeData.ProjectCode)) throw new Exception("当前项目未医保对码,不能调整!!!");
+                   
+
+                    string sql = $@"update [dbo].[HospitalizationFee] set [UnitPrice]={param.UnitPrice},[Quantity]={param.Quantity},[Amount]={param.Amount},
+                                 [AdjustmentDifferenceValue]={feeData.Amount} where id='{param.Id}'";
+                    _hisSqlRepository.ExecuteSql(sql);
+                    _systemManageRepository.AddHospitalLog(new AddHospitalLogParam()
+                    {
+                        BusinessId = param.BusinessId,
+                        RelationId = Guid.Parse(param.Id),
+                        Remark = "调整费用明细",
+                        User = userBase,
+                        JoinOrOldJson = JsonConvert.SerializeObject(feeData) 
+
+
+                    });
+                }
+                else
+                {
+
+                    throw new Exception("查询数据失败");
+                }
+               
+               
+                //var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+                //处方上传
+                //var data = _residentMedicalInsuranceNewService.GetPrescriptionUploadParam(param, userBase);
+                //y.Data = data;
             });
 
         }

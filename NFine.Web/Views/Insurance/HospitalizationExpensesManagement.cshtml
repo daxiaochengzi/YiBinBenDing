@@ -16,12 +16,17 @@
             <div class="layui-form" lay-filter="LAY-bill-data-list">
                 <div class="layui-inline">
                     <label class="layui-form-label">限制项目</label>
-                    <div class="layui-input-inline">
-                        <input type="radio" name="Examine" value="1">
+                    <div class="layui-input-inline" >
+                        <div class="layui-input-block" style="margin-left:0px">
+                            <input type="radio" name="Examine" value="1" title="是" >
+                            <input type="radio" name="Examine" value="0" title="否" checked="checked">
+                        </div>
+                      
                     </div>
+                   
 
                 </div>
-                <div class="layui-inline">
+                <div class="layui-inline" >
                     <label class="layui-form-label">项目名称</label>
                     <div class="layui-input-inline">
                         <input type="text" id="DirectoryName" name="DirectoryName" placeholder="项目名称" autocomplete="off" class="layui-input">
@@ -31,6 +36,16 @@
                     <label class="layui-form-label">费用日期</label>
                     <div class="layui-input-inline">
                         <input type="text" id="date1" name="BillTime" placeholder="费用日期" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">上传状态</label>
+                    <div class="layui-input-inline">
+                        <select id="UploadMark" name="UploadMark" >
+                            <option value="" selected="selected">请选择上传状态</option>
+                            <option value="0">未上传</option>
+                            <option value="1">已上传</option>
+                        </select>
                     </div>
                 </div>
                 <div class="layui-inline">
@@ -150,7 +165,7 @@
         }
 
         
-        //插件检查
+        ////插件检查
         var verification = DetectActiveX(null);
         if (verification === false) {
             return false;
@@ -162,7 +177,7 @@
         //未传
         function inHospitalContentsTable() {
             var params = {
-                "UploadMark": "0" /*上传状态*/
+                "UploadMark": $("#UploadMark").val() /*上传状态*/
                 , "DirectoryName": $("#DirectoryName").val()  /*药品名称*/
                 , "BillTime": $("#date1").val() /*费用日期*/
                 , "BusinessId": $("#bid").val() /*业务ID*/
@@ -201,9 +216,9 @@
                     , { field: 'DirectoryCode', title: '医院目录编码(商品ID)', width: 320, hide: true }
                     , { field: 'DirectoryName', title: '项目名称', width: 280 }
                     , { field: 'DirectoryCategoryCode', title: '项目类别', width: 100 }
-                    , { field: 'Quantity', title: '数量', width: 100 }
-                    , { field: 'UnitPrice', title: '单价', width: 100 }
-                    , { field: 'Amount', title: '金额', width: 100 }
+                    , { field: 'Quantity', title: '数量', width: 100, edit: 'text'}
+                    , { field: 'UnitPrice', title: '单价', width: 100, edit: 'text' }
+                    , { field: 'Amount', title: '金额', width: 100, edit: 'text' }
                     , { field: 'BillTime', title: '费用日期', width: 160 }
                     , { field: 'RecipeCode', title: '处方号', width: 310, hide: true }
                     , { field: 'BillDepartment', title: '科室', width: 100 }
@@ -320,7 +335,7 @@
                 , "UserId": $("#empid").val() /*授权操作人的ID*/
                 , "DataIdList": null
                 , "TransKey": $("#transkey").val()
-                , "IsOrganizationCodeUpload": true
+               
             }
             $.ajax({
                 type: 'POST',
@@ -437,8 +452,9 @@
                     }
                 });
             });
-        
 
+       
+       
         //处方上传（费用清单上传）
         var prescriptionUpload = function (tableData) {
             getPrescriptionUploadParam(tableData);
@@ -471,7 +487,31 @@
             });
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         }
+        //调整差值
+        function adjustmentDifferenceValue(valueParam) {
+           
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/AdjustmentDifferenceValue',
+                async: false,
+                data: JSON.stringify(valueParam),
+                dataType: "json",
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        msgError(errData);
+                      
+                    } else {
+                        inHospitalContentsTable();
+                        msgSuccess("操作成功!!!");
 
+                    }
+                        
+
+                }
+            });
+        }
         //头工具栏事件
         table.on('toolbar(dataTableBillId)', function (obj) {
             var checkStatus = table.checkStatus(obj.config.id);
@@ -502,6 +542,52 @@
                     //layer.msg('选中了：' + dataIds.length + ' 个未上传的数据');
                     batchExamineData(dataIds);
                     break;
+                case "UpdateFeeData": 
+                    var dataValue = checkStatus.data; //选中行的数据
+                  
+                    if(dataValue.length === 0)
+                    {
+                        msgError("请勾选调整选项!!!");
+                        return false;
+                    } 
+                    if (dataValue.length > 1) {
+                        msgError("调整费用只能单条调整!!!");
+                        return false;
+                    } else {
+                       
+                        if (dataValue[0].UploadMark === 1) {
+                            msgError("已传费用不能调整!!!");
+                            return false;
+                        }
+                        if (dataValue[0].ProjectCode === "" || dataValue[0].ProjectCode === null) {
+                            msgError("未对码不能调整!!!");
+                            return false;
+                        }
+                      
+                        var projectCodeTypeValue = dataValue[0].ProjectCodeType;
+                        if (projectCodeTypeValue === "中草药" ||
+                            projectCodeTypeValue === "西药费" ||
+                            projectCodeTypeValue === "中成药" ||
+                            projectCodeTypeValue === "材料费")
+                        {
+                            var valueParam = {
+                                "Id": dataValue[0].Id,
+                                "Amount": dataValue[0].Amount,
+                                "Quantity": dataValue[0].Quantity,
+                                "UnitPrice": dataValue[0].UnitPrice,
+                                "UserId": $("#empid").val() /*授权操作人的ID*/,
+                                "BusinessId": $("#bid").val() /*当前住院记录的业务ID*/
+                              
+                            };
+                            adjustmentDifferenceValue(valueParam);
+                          
+                        } else {
+                            msgError("只能调整药费或者材料费项目!!!");
+                            return false;
+                        }
+                        
+                    }
+                    break;
 
             };
         });
@@ -531,12 +617,15 @@
                 }
             });
         }
+
         function getPrescriptionUploadParam(tableData) {
+           
             var uploadParam = {
                 "BusinessId": $("#bid").val() /*当前住院记录的业务ID*/
                 , "UserId": $("#empid").val() /*授权操作人的ID*/
                 , "DataIdList": tableData
                 , "TransKey": $("#transkey").val()
+                
             }
             $.ajax({
                 type: 'POST',
@@ -608,6 +697,7 @@
 
         });
        
+     
 
     });
 
@@ -619,6 +709,7 @@
     <div class="layui-btn-container">
         <button class="layui-btn layui-btn-sm" id="batchUpdateData" lay-event="batchUpdateData">批量上传</button>
         <button class="layui-btn layui-btn-sm" id="batchExamineData" lay-event="batchExamineData">批量审核</button>
+        <button class="layui-btn layui-btn-sm" id="UpdateFeeData" lay-event="UpdateFeeData">调整费用</button>
     </div>
 
 </script>

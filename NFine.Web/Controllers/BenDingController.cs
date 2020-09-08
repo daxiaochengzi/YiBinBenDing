@@ -1036,8 +1036,8 @@ namespace NFine.Web.Controllers
         public ApiJsonResultData QueryHospitalizationFee([FromUri]QueryHospitalizationFeeUiParam param)
         {
             return new ApiJsonResultData(ModelState, new QueryHospitalizationFeeDto()).RunWithTry(y =>
-           {
-               if (param.IsLoad)
+            {//ModelState, new QueryHospitalizationFeeDto()
+                if (param.IsLoad)
                {//获取病人明细
                    var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
                    _webServiceBasicService.GetInpatientInfoDetail(userBase, param.BusinessId);

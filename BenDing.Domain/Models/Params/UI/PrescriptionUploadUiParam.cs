@@ -27,10 +27,11 @@ namespace BenDing.Domain.Models.Params.UI
         /// 批次号
         /// </summary>
         public string ProjectBatch { get; set; }
-        /// <summary>
-        /// 是否组织机构上传
-        /// </summary>
-        public  bool IsOrganizationCodeUpload { get; set; }
+
+        ///// <summary>
+        ///// 是否组织机构上传
+        ///// </summary>
+        //public bool IsOrganizationCodeUpload { get; set; } = true;
         /// <summary>
         /// 根据数据id上传
         /// </summary>
