@@ -1,0 +1,141 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+
+<!DOCTYPE html>
+<script>
+
+    $(function() {
+        gridList();
+    });
+
+    function gridList() {
+        var $gridList = $("#gridList");
+        $gridList.dataGrid({
+            url: "/SystemManage/BaseDataMaintenance/GetGridJson",
+            height: $(window).height() - 96,
+            postData:
+            {
+                StartTime: $("#startTime").val(),
+                EndTime: $("#endTime").val(),
+                OrganizationCode: $("#OrganizationCode").val()
+            },
+            colModel: [
+                { label: "主键", name: "Id", hidden: true, key: true },
+                { label: '住院或门诊号', name: 'NumCode', width: 150, align: 'left' },
+                { label: '病人姓名', name: 'PatientName', width: 150, align: 'left' },
+                { label: '身份证号', name: 'IdCardNo', width: 250, align: 'left' },
+                { label: '状态', name: 'MedicalInsuranceState', width: 200, align: 'left' },
+                {
+                    label: '操作时间',
+                    name: 'CreateTime',
+                    width: 120,
+                    align: 'left',
+                    formatter: "date",
+                    formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }
+                }
+                //{
+                //    label: "有效",
+                //    name: "IsRevoke",
+                //    width: 60,
+                //    align: "center",
+                //    formatter: function(cellvalue) {
+                //        return cellvalue === false
+                //            ? "<i class=\"fa fa-toggle-on\"></i>"
+                //            : "<i class=\"fa fa-toggle-off\"></i>";
+                //    }
+                //}
+            ],
+            pager: "#gridPager",
+            sortname: 'CreateTime asc',
+            viewrecords: true
+        });
+        $("#btn_search").click(function() {
+            $gridList.jqGrid('setGridParam',
+                {
+                    postData:
+                    {
+                        StartTime: $("#startTime").val(),
+                        EndTime: $("#endTime").val(),
+                        OrganizationCode: $("#OrganizationCode").val(),
+                        KeyWord: $("#txt_keyword").val(),
+                        IsOutpatient: $("#PatientState").val()
+
+                    }
+                }).trigger('reloadGrid');
+        });
+
+        function btnBaseCancelSettlement() {
+            if ($("#txt_TransKey").val() === "") {
+                $.modalAlert("取消结算医保交易码不能为空!!!", "error");
+                return;
+            }
+          
+        }
+        //删除基层数据
+        function btnBaseDeleteData() {
+            if ($("#txt_TransKey").val() === "") {
+                $.modalAlert("取消结算医保交易码不能为空!!!", "error");
+                return;
+            }
+
+            //$.submitForm({
+            //    url: "/SystemManage/DataImport/BaseDownload",
+            //    success: function () {
+
+            //    }
+            //});
+        }
+</script>
+<div class="topPanel">
+    <div class="toolbar" style="float: left">
+        <div class="btn-group" style="margin-left: 20px; width: 60px;height: 32px;">
+            <select id="PatientState" name="DirectoryType" class="form-control" style="padding: 0px;height: 32px;">
+                <option value="0">住院</option>
+                <option value="1">门诊</option>
+            </select>
+        </div>
+        <div class="btn-group"  style="margin-left: 15px;" >
+            <span >查询关键字:</span>
+        </div>
+        <div class="btn-group" style="height: 30px;">
+            
+            <input id="txt_keyword" type="text" class="form-control" placeholder="病人姓名/身份证号" style="width: 200px; height: 20px">
+        </div>
+            <div class="btn-group" style="margin-left: 5px;">
+                操作开始日期：
+                <input type="text" class="Wdate" name="SettlementStartTime" id="startTime"
+                       onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', maxDate: '#F{$dp.$D(\'endTime\')||\'new Date()\'}', readOnly: true });" style="width: 120px;"/>
+                操作结束日期：
+                <input type="text" class="Wdate" name="SettlementEndTime" id="endTime"
+                       onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', minDate: '#F{$dp.$D(\'startTime\')}', maxDate: new Date(), readOnly: true });" style="width: 120px;"/>
+            </div>
+            <div class="btn-group" style="margin-left: 5px;">
+                <a class="btn btn-primary" id="btn_search">查询</a>
+            </div>
+          
+            <div class="operate">
+                <ul class="nav nav-pills">
+                    <li class="first">已选中<span>1</span>项</li>
+                    <li> <input id="txt_TransKey" class="form-control" type="text" placeholder="取消结算医保交易码" style="width: 150px; height: 20px"></li>
+                    <li><a onclick="btnBaseCancelSettlement();"><i class="fa fa-trash-o"></i>取消结算</a></li>
+                    <li><a  onclick="btnBaseDeleteData();"><i class="fa fa-trash-o"></i>取消基层上传数据</a></li>
+                    <li><a  onclick="btn_delete();"><i class="fa fa-trash-o"></i>取消基层入院登记</a></li>
+                </ul>
+                <a href="javascript:;" class="close"></a>
+            </div>
+
+        </div>
+    <div class="search">
+        <input type="hidden" id="empid" name="UserId" value="@ViewBag.empid" placeholder="用户ID" />
+        <input type="hidden" id="OrganizationCode" name="UserId" value="@ViewBag.OrganizationCode" placeholder="组织机构" />
+      
+       
+    </div>
+</div>
+<div class="gridPanel">
+    <table id="gridList"></table>
+</div>
+

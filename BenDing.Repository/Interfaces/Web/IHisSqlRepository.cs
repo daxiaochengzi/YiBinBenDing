@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
 using BenDing.Domain.Models.Enums;
@@ -112,7 +113,7 @@ namespace BenDing.Repository.Interfaces.Web
         /// <param name="type"></param>
         /// <returns></returns>
 
-        void AddCatalog(UserInfoDto user, List<CatalogDto> param, CatalogTypeEnum type);
+        int AddCatalog(UserInfoDto user, List<CatalogDto> param, CatalogTypeEnum type);
         /// <summary>
         /// 获取所有未传费用的住院病人
         /// </summary>
@@ -198,8 +199,12 @@ namespace BenDing.Repository.Interfaces.Web
         /// <returns></returns>
         Dictionary<int, List<QueryOrganizationInpatientInfoDto>> QueryOrganizationInpatientInfo(
             QueryOrganizationInpatientInfoParam param);
-
-
+        /// <summary>
+        /// 查询病人信息
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+         Dictionary<int, List<QueryPatientInfoDto>> QueryPatientInfo(QueryPatientInfoParam param);
 
     }
 }

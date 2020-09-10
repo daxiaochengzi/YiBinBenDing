@@ -77,6 +77,21 @@ namespace NFine.Web.Controllers
         {
             return new ApiJsonResultData().RunWithTry(y =>
             {
+                string sss= "<ROW xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema'>";
+
+                sss += @"  <PI_CRBZ>2</PI_CRBZ>
+                      <PI_SFBZ>1027384812</PI_SFBZ>
+                      <PI_YLLB>11</PI_YLLB>
+                      <PI_RYRQ>20200909</PI_RYRQ>
+                      <PI_ICD10>I10.x05</PI_ICD10>
+                      <PI_ICD10_2>K81.000</PI_ICD10_2>
+                      <PI_ICD10_3>M51.202</PI_ICD10_3>
+                      <PI_RYZD>高血压3级,急性胆囊炎,腰间盘突出</PI_RYZD>
+                      <PI_ZYBQ>综合科</PI_ZYBQ>
+                      <PI_CWH>36</PI_CWH>
+                      <PI_YYZYH>100220200907002</PI_YYZYH>
+                      <PI_JBR>李茜</PI_JBR>
+                    </ROW>";
                 string mzNo = "451238747000M202006020001";
                 string[] arr = mzNo.Split('M');
                 string mz = arr[1];
@@ -462,16 +477,16 @@ namespace NFine.Web.Controllers
             });
             var ddds = CommonHelp.GetDiagnosis(ddd);
 
-            //添加日志
-            var logParam = new AddHospitalLogParam()
-            {
-                JoinOrOldJson = "123",
-                User = new UserInfoDto(){UserId = "76EDB472F6E544FD8DC8D354BB088BD7" },
-                Remark = "测试",
+            ////添加日志
+            //var logParam = new AddHospitalLogParam()
+            //{
+            //    JoinOrOldJson = "123",
+            //    User = new UserInfoDto(){UserId = "76EDB472F6E544FD8DC8D354BB088BD7" },
+            //    Remark = "测试",
              
-                BusinessId = "87A8875BA6F9433AB493B8CB8A05EC43",
-            };
-            _systemManageRepository.AddHospitalLog(logParam);
+            //    BusinessId = "87A8875BA6F9433AB493B8CB8A05EC43",
+            //};
+            //_systemManageRepository.AddHospitalLog(logParam);
 
 
             //var data = new HospitalizationFeeUploadXml();

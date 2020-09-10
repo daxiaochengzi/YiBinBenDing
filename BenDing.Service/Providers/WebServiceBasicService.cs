@@ -173,6 +173,7 @@ namespace BenDing.Service.Providers
             nums = GetResultData(init, data);
             var cnt = Convert.ToInt32(nums?.FirstOrDefault()?.行数);
             var resultCatalogDtoList = new List<CatalogDto>();
+            Int64 allNum = 0;
             var i = 0;
             while (i < cnt)
             {
@@ -188,16 +189,15 @@ namespace BenDing.Service.Providers
                     resultCatalogDtoList.AddRange(resultCatalogDto);
                 }
 
-                if (resultCatalogDto.Count > 1) //排除单条更新
+                if (resultCatalogDto.Count > 0) //排除单条更新
                 {
-                   _hisSqlRepository.AddCatalog(user, resultCatalogDto, param.CatalogType);
+                    allNum += _hisSqlRepository.AddCatalog(user, resultCatalogDto, param.CatalogType);
                 }
-
 
                 i = i + param.Nums;
             }
 
-            Int64 allNum = resultCatalogDtoList.Count() == 1 ? 0 : resultCatalogDtoList.Count();
+            //Int64 allNum = resultCatalogDtoList.Count() == 1 ? 0 : resultCatalogDtoList.Count();
             return "下载【" + param.CatalogType + "】成功 共" + allNum.ToString() + "条记录";
         }
 

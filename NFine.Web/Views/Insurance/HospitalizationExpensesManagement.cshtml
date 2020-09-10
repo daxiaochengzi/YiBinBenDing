@@ -15,15 +15,18 @@
 
             <div class="layui-form" lay-filter="LAY-bill-data-list">
                 <div class="layui-inline">
-                    <label class="layui-form-label">限制项目</label>
-                    <div class="layui-input-inline" >
-                        <div class="layui-input-block" style="margin-left:0px">
-                            <input type="radio" name="Examine" value="1" title="是" >
+                    
+                    @*<label class="layui-form-label">限制项目</label>*@
+
+                    <input type="checkbox"  title="限制项目" value="1" name="Examine" lay-skin="primary" >
+                    @*<div class="layui-input-inline">
+                        <div class="layui-input-block" style="margin-left: 0px">
+                            <input type="radio" name="Examine" value="1" title="是">
                             <input type="radio" name="Examine" value="0" title="否" checked="checked">
                         </div>
                       
-                    </div>
-                   
+                    </div>*@
+
 
                 </div>
                 <div class="layui-inline" >
@@ -44,7 +47,7 @@
                         <select id="UploadMark" name="UploadMark" >
                             <option value="" selected="selected">请选择上传状态</option>
                             <option value="0">未上传</option>
-                            <option value="1">已上传</option>
+                            @*<option value="1">已上传</option>*@
                         </select>
                     </div>
                 </div>
@@ -163,9 +166,7 @@
             }
             form.render();
         }
-
-        
-        ////插件检查
+        //插件检查
         var verification = DetectActiveX(null);
         if (verification === false) {
             return false;
@@ -236,7 +237,7 @@
 
                 ]]
             });
-
+            queryHospitalizationFeeAmount();
         }
         //已传费用明细
         function uploadCompleteContentsTable() {
@@ -262,7 +263,7 @@
                     };
                 }
                 , limits: [10, 20, 50]
-
+                , toolbar: '#uploadToolBarOne'
                 , page: true
                 , cols: [[
 
@@ -291,6 +292,7 @@
                     { field: 'Specification', title: '规格', width: 100 }
                 ]]
             });
+            queryHospitalizationFeeAmount();
         }
 
         function uploadOrganizationContentsTable() {
@@ -328,6 +330,7 @@
                     
                 ]]
             });
+         
         }
         function getPrescriptionAllUploadParam(businessId) {
             var uploadParam = {
@@ -383,14 +386,46 @@
             function() {
                 uploadCompleteContentsTable();
             });
+        //费用合计查询
+        function queryHospitalizationFeeAmount () {
+            var amountParam = {
+                "BusinessId": $("#bid").val() /*业务ID*/
+                , "UserId": $("#empid").val() /*授权操作人的ID*/
+                , "TransKey": $("#transkey").val()
+
+            }
+         
+            $.ajax({
+                type: 'POST',
+                url: host + '/QueryHospitalizationFeeAmount',
+                async: false,
+                data: JSON.stringify(amountParam),
+                dataType: "json",
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        msgError(errData);
+                    } else {
+                     
+                        $("#UploadAllAmount").text("已传合计: " + data.Data.UploadAllAmount);
+                        $("#AllAmount").text("费用合计: " + data.Data.Amount);
+                        $("#UnUploadAllAmount").text("未传合计: " + data.Data.UnUploadAllAmount);
+                    }
+                }
+            });
+        }
         ////*处方明细查询*/
         $('#QueryInHospital').on('click',
             function() {
                 inHospitalContentsTable();
+              
+              
             });
         $('#OrganizationSearch').on('click',
             function () {
                 uploadOrganizationContentsTable();
+               
             });
         $('#OrganizationUpdate').on('click',
             function () {
@@ -452,8 +487,7 @@
                     }
                 });
             });
-
-       
+      
        
         //处方上传（费用清单上传）
         var prescriptionUpload = function (tableData) {
@@ -544,7 +578,7 @@
                     break;
                 case "UpdateFeeData": 
                     var dataValue = checkStatus.data; //选中行的数据
-                  
+                 
                     if(dataValue.length === 0)
                     {
                         msgError("请勾选调整选项!!!");
@@ -621,7 +655,7 @@
         function getPrescriptionUploadParam(tableData) {
            
             var uploadParam = {
-                "BusinessId": $("#bid").val() /*当前住院记录的业务ID*/
+                 "BusinessId": $("#bid").val() /*当前住院记录的业务ID*/
                 , "UserId": $("#empid").val() /*授权操作人的ID*/
                 , "DataIdList": tableData
                 , "TransKey": $("#transkey").val()
@@ -710,6 +744,15 @@
         <button class="layui-btn layui-btn-sm" id="batchUpdateData" lay-event="batchUpdateData">批量上传</button>
         <button class="layui-btn layui-btn-sm" id="batchExamineData" lay-event="batchExamineData">批量审核</button>
         <button class="layui-btn layui-btn-sm" id="UpdateFeeData" lay-event="UpdateFeeData">调整费用</button>
+        <button type="button" id="AllAmount" class="layui-btn layui-btn-primary layui-btn-sm" style="margin-left: 30%">费用合计:</button>
+        <button type="button" id="UnUploadAllAmount" class="layui-btn layui-btn-primary layui-btn-sm">未传合计:</button>
+    </div>
+  
+</script>
+<script type="text/html" id="uploadToolBarOne">
+
+    <div class="layui-btn-container">
+        <button type="button" id="UploadAllAmount" class="layui-btn layui-btn-primary layui-btn-sm" style="margin-left: 30%">已传合计:</button>
     </div>
 
 </script>

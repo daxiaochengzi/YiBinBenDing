@@ -1043,13 +1043,42 @@ namespace NFine.Web.Controllers
                    _webServiceBasicService.GetInpatientInfoDetail(userBase, param.BusinessId);
                }
                var queryData = _hisSqlRepository.QueryHospitalizationFee(param);
-               var data = new
-               {
-                   data = queryData.Values.FirstOrDefault(),
-                   count = queryData.Keys.FirstOrDefault()
-               };
-               y.Data = data;
+                var dataAllAmount = queryData.Values.FirstOrDefault();
+                var data = new
+                {
+                    data = dataAllAmount,
+                    count = queryData.Keys.FirstOrDefault(),
+                    AllAmount= dataAllAmount!=null? CommonHelp.ValueToDouble(dataAllAmount.Select(c => c.Amount).Sum()) :0
+                };
+                y.Data = data;
            });
+
+        }
+        /// <summary>
+        /// 住院清单合计费用
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData QueryHospitalizationFeeAmount([FromBody]UiInIDataParam param)
+        {
+            return new ApiJsonResultData(ModelState, new QueryHospitalizationFeeDto()).RunWithTry(y =>
+            {//ModelState, new QueryHospitalizationFeeDto()
+             
+                 var queryData = _hisSqlRepository.InpatientInfoDetailQuery(new InpatientInfoDetailQueryParam()
+                 {
+                       BusinessId = param.BusinessId
+                  });
+                var amount = CommonHelp.ValueToDouble(queryData.Select(c => c.Amount).Sum());
+                var uploadAllAmount = CommonHelp.ValueToDouble(queryData.Where(d=>d.UploadMark==1).Select(c => c.Amount).Sum());
+                var data = new
+                {
+                    Amount = amount,
+                    UploadAllAmount = uploadAllAmount,
+                    UnUploadAllAmount = amount - uploadAllAmount
+                  };
+                y.Data = data;
+            });
 
         }
         /// <summary>

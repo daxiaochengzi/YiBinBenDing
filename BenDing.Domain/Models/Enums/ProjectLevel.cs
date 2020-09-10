@@ -9,7 +9,7 @@ namespace BenDing.Domain.Models.Enums
     public enum ProjectLevel
     {
         甲类 = 1,
-        已类 = 2,
+        乙类 = 2,
         丙类 = 3,
     }
 }

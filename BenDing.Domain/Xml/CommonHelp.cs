@@ -13,24 +13,26 @@ using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
 
 namespace BenDing.Domain.Xml
-{/// <summary>
-/// 
-/// </summary>
-    public static class CommonHelp
-    {/// <summary>
+{
+    /// <summary>
     /// 
-    /// </summary>   
-    /// <returns></returns>
+    /// </summary>
+    public static class CommonHelp
+    {
+        /// <summary>
+        /// 
+        /// </summary>   
+        /// <returns></returns>
         public static string GetWebServiceUrl()
         {
             string resultData = null;
             //测试a
-          // resultData = "http://47.111.29.88:11013/WebService.asmx";
+            // resultData = "http://47.111.29.88:11013/WebService.asmx";
             //正式
-           resultData = "http://11.21.1.11:8002/WebService.asmx";
+            resultData = "http://11.21.1.11:8002/WebService.asmx";
             return resultData;
         }
-        
+
         //入参字符串为空则为0
         public static string getNum(string num)
         {
@@ -42,6 +44,7 @@ namespace BenDing.Domain.Xml
 
             return numValue;
         }
+
         /// <summary>
         /// sql过滤不安全字符串
         /// </summary>
@@ -79,8 +82,10 @@ namespace BenDing.Domain.Xml
             {
                 encode = code;
             }
+
             return encode;
         }
+
         ///解码
         public static string DecodeBase64(string code_type, string code)
         {
@@ -94,8 +99,10 @@ namespace BenDing.Domain.Xml
             {
                 decode = code;
             }
+
             return decode;
         }
+
         /// <summary>
         /// 根据GUID获取19位的唯一数字序列  
         /// </summary>
@@ -105,6 +112,7 @@ namespace BenDing.Domain.Xml
         {
             return BitConverter.ToInt64(Guid.Parse(param).ToByteArray(), 0).ToString();
         }
+
         /// <summary>
         /// 日志字符串格式化
         /// </summary>
@@ -114,6 +122,7 @@ namespace BenDing.Domain.Xml
         {
             return Convert.ToDateTime(param).ToString("yyyy-MM-dd HH:mm:ss");
         }
+
         /// <summary>
         /// 四舍五入到2位等同于Double
         /// </summary>
@@ -123,7 +132,7 @@ namespace BenDing.Domain.Xml
         {
             return Math.Round(param, 2, MidpointRounding.AwayFromZero);
         }
-     
+
         /// <summary>
         ///  字符串转换数值型
         /// </summary>
@@ -139,6 +148,7 @@ namespace BenDing.Domain.Xml
 
             return resultData;
         }
+
         /// <summary>
         /// sql in串联
         /// </summary>
@@ -154,6 +164,7 @@ namespace BenDing.Domain.Xml
                     result += "'" + item + "'" + ",";
                 }
             }
+
             return result?.Substring(0, result.Length - 1);
         }
 
@@ -172,7 +183,7 @@ namespace BenDing.Domain.Xml
                 string summary = GetPropertySummary(propertyNameDict[simpleName]);
                 if (string.IsNullOrEmpty(summary))
                 {
-                    summary = simpleName;//如果找不到对象的名称，那么取其属性名称作为Summary信息
+                    summary = simpleName; //如果找不到对象的名称，那么取其属性名称作为Summary信息
                 }
 
                 if (!dict.ContainsKey(simpleName))
@@ -180,8 +191,10 @@ namespace BenDing.Domain.Xml
                     dict.Add(simpleName, summary);
                 }
             }
+
             return dict;
         }
+
         /// <summary>
         /// 获取诊断字符串
         /// </summary>
@@ -212,8 +225,10 @@ namespace BenDing.Domain.Xml
                     dict.Add(info.Name, string.Format("{0}.{1}", t.FullName, info.Name));
                 }
             }
+
             return dict;
         }
+
         /// <summary>
         /// 根据类属性名称，获取对应的备注信息（如果键名不存在，返回空）
         /// </summary>
@@ -226,6 +241,7 @@ namespace BenDing.Domain.Xml
             {
                 throw new SystemException("BenDing.Domain.xml文件不存在!!!" + pathXml);
             }
+
             string keyName = string.Format("//doc/members/member[@name='P:{0}']/summary", classPropertyName);
 
             XPathDocument doc = new XPathDocument(pathXml);
@@ -248,6 +264,7 @@ namespace BenDing.Domain.Xml
 
             return result.Trim();
         }
+
         /// <summary>
         /// 诊断获取
         /// </summary>
@@ -267,33 +284,57 @@ namespace BenDing.Domain.Xml
                 string msg = "";
                 foreach (var item in emptyData)
                 {
-                    msg += "["+item.DiseaseName+"]"+"["+ item.DiseaseCoding+ "]:";
+                    msg += "[" + item.DiseaseName + "]" + "[" + item.DiseaseCoding + "]:";
                 }
+
                 throw new Exception("当前未对码诊断:" + msg);
             }
-
 
             //主诊断
             var mainDiagnosisList = param.Where(c => c.IsMainDiagnosis == true)
                 .Take(3).ToList();
             if (mainDiagnosisList.Any() == false) throw new Exception("主诊断不能为空!!!");
-            if (mainDiagnosisList.Count >1) throw new Exception("主诊断只能一个!!!");
+            if (mainDiagnosisList.Count > 1) throw new Exception("主诊断只能一个!!!");
             resultData.DiagnosisDescribe = GetDiagnosisDescribe(resultData.DiagnosisDescribe, mainDiagnosisList);
             resultData.AdmissionMainDiagnosisIcd10 = CommonHelp.DiagnosisStr(mainDiagnosisList);
             //第二诊断
             var nextDiagnosisList = param.Where(c => c.IsMainDiagnosis == false)
                 .ToList();
-            if (mainDiagnosisList.Any())
+            int num = 2;
+            foreach (var item in nextDiagnosisList)
             {
-                var diagnosisIcd10Two = nextDiagnosisList.Take(3).ToList();
-                resultData.DiagnosisDescribe = GetDiagnosisDescribe(resultData.DiagnosisDescribe, diagnosisIcd10Two);
-                resultData.DiagnosisIcd10Two = CommonHelp.DiagnosisStr(diagnosisIcd10Two);
-                if (nextDiagnosisList.Count > 3)
-                {//第三诊断
-                    resultData.DiagnosisIcd10Three = CommonHelp.DiagnosisStr(nextDiagnosisList.Where(d => !diagnosisIcd10Two.Contains(d)).Take(3).ToList());
-                    resultData.DiagnosisDescribe = GetDiagnosisDescribe(resultData.DiagnosisDescribe, diagnosisIcd10Two);
+                if (num == 2)
+                {
+                    resultData.DiagnosisIcd10Two = item.ProjectCode;
+
                 }
+
+                if (num == 3)
+                {
+                    resultData.DiagnosisIcd10Three = item.ProjectCode;
+
+
+
+                }
+
+                num++;
             }
+
+            resultData.DiagnosisDescribe = GetDiagnosisDescribeNew(param);
+            //if (mainDiagnosisList.Any())
+            //{
+            //    var diagnosisIcd10Two = nextDiagnosisList.Take(3).ToList();
+            //    resultData.DiagnosisDescribe = GetDiagnosisDescribe(resultData.DiagnosisDescribe, diagnosisIcd10Two);
+            //    resultData.DiagnosisIcd10Two = CommonHelp.DiagnosisStr(diagnosisIcd10Two);
+            //    if (nextDiagnosisList.Count > 3)
+            //    {
+            //        //第三诊断
+            //        resultData.DiagnosisIcd10Three = CommonHelp.DiagnosisStr(nextDiagnosisList
+            //            .Where(d => !diagnosisIcd10Two.Contains(d)).Take(3).ToList());
+            //        resultData.DiagnosisDescribe =
+            //            GetDiagnosisDescribe(resultData.DiagnosisDescribe, diagnosisIcd10Two);
+            //    }
+            //}
 
             return resultData;
         }
@@ -319,6 +360,7 @@ namespace BenDing.Domain.Xml
                 {
                     msg += "[" + item.DiseaseName + "]" + "[" + item.DiseaseCoding + "]:";
                 }
+
                 throw new Exception("当前未对码诊断:" + msg);
             }
 
@@ -329,7 +371,7 @@ namespace BenDing.Domain.Xml
             if (mainDiagnosisList.Any() == false) throw new Exception("主诊断不能为空!!!");
             if (mainDiagnosisList.Count > 1) throw new Exception("主诊断只能一个!!!");
             var mainDiagnosis = mainDiagnosisList.FirstOrDefault();
-            if (mainDiagnosis==null) throw  new Exception("主诊断不能为空!!!");
+            if (mainDiagnosis == null) throw new Exception("主诊断不能为空!!!");
             resultData.AdmissionMainDiagnosisIcd10 = mainDiagnosis.ProjectCode;
             resultData.DiagnosisDescribe = mainDiagnosis.DiseaseName;
             //第二诊断
@@ -341,26 +383,56 @@ namespace BenDing.Domain.Xml
                 if (num == 2)
                 {
                     resultData.DiagnosisIcd10Two = item.ProjectCode;
-                    resultData.DiagnosisDescribe = resultData.DiagnosisDescribe + ',' + item.DiseaseName;
+                   
                 }
+
                 if (num == 3)
                 {
                     resultData.DiagnosisIcd10Three = item.ProjectCode;
-                    if (resultData.DiagnosisDescribe.Length + item.DiseaseName.Length < 150)
-                    {
-                        resultData.DiagnosisDescribe = resultData.DiagnosisDescribe + ',' + item.DiseaseName;
-                    }
+            
 
-                  
+
                 }
 
                 num++;
             }
-            
 
+            resultData.DiagnosisDescribe = GetDiagnosisDescribeNew(param);
             return resultData;
         }
         /// <summary>
+        /// 获取诊断描述
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static string GetDiagnosisDescribeNew(List<InpatientDiagnosisDto> param)
+        {
+            string resultData = "";
+            int num = 1;
+            foreach (var item in param)
+            {
+                if ((resultData.Length + item.DiseaseName.Length) < 150 && num <= 9) //控制长度小于150
+                {
+                   
+                    if (!string.IsNullOrWhiteSpace(resultData))
+                    {
+                        resultData = resultData + "," + item.DiseaseName;
+                    }
+                    else
+                    {
+                        resultData = item.DiseaseName;
+                    }
+
+                    num++;
+                }
+
+            }
+
+            return resultData;
+        }
+    
+
+    /// <summary>
         /// 获取诊断描述
         /// </summary>
         /// <param name="describe">描述参数</param>

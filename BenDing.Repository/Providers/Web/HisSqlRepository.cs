@@ -105,17 +105,24 @@ namespace BenDing.Repository.Providers.Web
         /// <param name="userInfo"></param>
         /// <param name="param"></param>
         /// <param name="type"></param>
-        public void AddCatalog(UserInfoDto userInfo, List<CatalogDto> param, CatalogTypeEnum type)
+        public int AddCatalog(UserInfoDto userInfo, List<CatalogDto> param, CatalogTypeEnum type)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
                 sqlConnection.Open();
                 string insterCount = null;
+                var paramNew =new List<CatalogDto>();
                 try
                 {
                     if (param.Any())
                     {
-                        foreach (var itmes in param)
+                        var directoryCodeList = CommonHelp.ListToStr(param.Select(d => d.DirectoryCode).ToList());
+                        string strSql =
+                            $@" select [DirectoryCode] from [dbo].[HospitalThreeCatalogue] where [IsDelete]=0 
+                               and [OrganizationCode]='{userInfo.OrganizationCode}' and [DirectoryCode] in({directoryCodeList})";
+                        var data = sqlConnection.Query<string>(strSql).ToList();
+                        paramNew = data.Any() ? param.Where(c => !data.Contains(c.DirectoryCode)).ToList() : param;
+                        foreach (var itmes in paramNew)
                         {
                             string insterSql = $@"
                                     insert into [dbo].[HospitalThreeCatalogue]([id],[DirectoryCode],[DirectoryName],[MnemonicCode],[DirectoryCategoryCode],[DirectoryCategoryName],[Unit],[Specification],[formulation],
@@ -124,7 +131,13 @@ namespace BenDing.Repository.Providers.Web
                                    '{itmes.ManufacturerName}','{itmes.Remark}', '{itmes.DirectoryCreateTime}',getDate(),0,'{userInfo.UserId}','{ CommonHelp.GuidToStr(itmes.DirectoryCode)}','{userInfo.OrganizationCode}','{userInfo.OrganizationName}');";
                             insterCount += insterSql;
                         }
-                        sqlConnection.Execute(insterCount);
+
+                        if (!string.IsNullOrWhiteSpace(insterCount))
+                        {
+                            sqlConnection.Execute(insterCount);
+                        }
+
+                      
                         sqlConnection.Close();
                     }
 
@@ -135,6 +148,7 @@ namespace BenDing.Repository.Providers.Web
                     throw new Exception(e.Message);
                 }
 
+                return paramNew.Count;
             }
 
 
@@ -1484,6 +1498,99 @@ namespace BenDing.Repository.Providers.Web
                 }
 
                 return resultData;
+            }
+        }
+        /// <summary>
+        /// 查询病人信息
+        /// </summary>
+        public Dictionary<int, List<QueryPatientInfoDto>> QueryPatientInfo(QueryPatientInfoParam param)
+        {
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                List<QueryPatientInfoDto> dataList;
+                var dataListNew =new List<QueryPatientInfoDto>();
+                var resultData = new Dictionary<int, List<QueryPatientInfoDto>>();
+                string executeSql = null;
+                try
+                {
+                    sqlConnection.Open();
+                    string countSql  = $@"
+                            select count(*) from [dbo].[Inpatient] as a,[dbo].[MedicalInsurance] as b
+                             where a.BusinessId=b.BusinessId and a.IsDelete=0 and b.IsDelete=0
+                              and InsuranceType<>'999' and a.[OrganizationCode]='{param.OrganizationCode}'";
+                    string querySql = $@"select [PatientName], [IdCardNo],[HospitalizationNo] as NumCode,[MedicalInsuranceState] 
+                             ,a.[CreateTime],a.BusinessId as Id from [dbo].[Inpatient] as a,[dbo].[MedicalInsurance] as b
+                             where a.BusinessId=b.BusinessId and a.IsDelete=0 and b.IsDelete=0
+                               and InsuranceType<>'999' and a.[OrganizationCode]='{param.OrganizationCode}'";
+
+                    if (param.IsOutpatient == "1")
+                    {
+                        countSql = $@" select  count(*) from [dbo].[Outpatient] as a,[dbo].[MedicalInsurance] as b
+                                 where a.BusinessId=b.BusinessId and a.IsDelete=0 and b.IsDelete=0
+                                  and InsuranceType='999' and a.[OrganizationCode]='{param.OrganizationCode}'";
+                        querySql = $@" select [PatientName], [IdCardNo],[OutpatientNumber] as NumCode,[MedicalInsuranceState] 
+                              ,a.[CreateTime],a.BusinessId as Id from [dbo].[Outpatient] as a,[dbo].[MedicalInsurance] as b
+                             where a.BusinessId=b.BusinessId and a.IsDelete=0 and b.IsDelete=0
+                              and InsuranceType='999' and a.[OrganizationCode]='{param.OrganizationCode}'";
+                    }
+
+                    string regexstr = @"[\u4e00-\u9fa5]";
+                    string whereSql = "";
+
+                    if (!string.IsNullOrWhiteSpace(param.KeyWord))
+                    {
+                        if (Regex.IsMatch(param.KeyWord, regexstr))
+                        {
+                            whereSql += " and a.PatientName like '%" + param.KeyWord + "%'";
+                        }
+                        else
+                        {
+                            whereSql += $" and a.IdCardNo ='{param.KeyWord}'";
+                        }
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(param.StartTime))
+                        whereSql += $" and a.CreateTime between '{param.StartTime}' and '{param.EndTime}'";
+                    if (param.rows != 0 && param.Page > 0)
+                    {
+                        var skipCount = param.rows * (param.Page - 1);
+                        querySql += whereSql + " order by a.CreateTime desc OFFSET " + skipCount + " ROWS FETCH NEXT " + param.rows + " ROWS ONLY;";
+                    }
+                    executeSql = countSql + whereSql + ";" + querySql;
+                    var result = sqlConnection.QueryMultiple(executeSql);
+                    int totalPageCount = result.Read<int>().FirstOrDefault();
+                    dataList = (from t in result.Read<QueryPatientInfoDto>()
+                                select t).ToList();
+                    foreach (var item in dataList)
+                    {
+                        var mumCode = item.NumCode;
+                        if (param.IsOutpatient == "1")
+                        { //拆分门诊号
+                            string[] arr = mumCode.Split('M');
+                            mumCode = arr[1];
+                        }
+
+                        var itemData = new QueryPatientInfoDto()
+                        {
+                            CreateTime = item.CreateTime,
+                            Id = item.Id,
+                            IdCardNo = item.IdCardNo,
+                            NumCode = mumCode,
+                            PatientName = item.PatientName,
+                            MedicalInsuranceState = ((MedicalInsuranceState)Convert.ToInt32(item.MedicalInsuranceState)).ToString()
+                        };
+                        dataListNew.Add(itemData);
+                    }
+                    resultData.Add(totalPageCount, dataListNew);
+                    sqlConnection.Close();
+                    return resultData;
+
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(executeSql);
+                    throw new Exception(e.Message);
+                }
             }
         }
 

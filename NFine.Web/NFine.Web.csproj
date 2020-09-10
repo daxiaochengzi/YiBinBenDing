@@ -170,6 +170,7 @@
     <Compile Include="Areas\ReportManage\Controllers\HighchartsController.cs" />
     <Compile Include="Areas\ReportManage\ReportManageAreaRegistration.cs" />
     <Compile Include="Areas\SystemManage\Controllers\AreaController.cs" />
+    <Compile Include="Areas\SystemManage\Controllers\BaseDataMaintenanceController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\DataImportController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\DoorDiagnosisMonthlySettlementController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\DutyController.cs" />
@@ -800,6 +801,7 @@
     <Content Include="Areas\SystemManage\Views\DataImport\Index.cshtml" />
     <Content Include="Areas\SystemManage\Views\DataImport\ImportExcelIcd.cshtml" />
     <Content Include="Areas\SystemManage\Views\DataImport\DrugCatalogExcel.cshtml" />
+    <Content Include="Areas\SystemManage\Views\BaseDataMaintenance\Index.cshtml" />
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
     <Content Include="Views\Insurance\Card.cshtml" />
