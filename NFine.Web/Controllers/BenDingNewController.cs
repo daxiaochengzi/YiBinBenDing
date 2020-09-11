@@ -321,7 +321,7 @@ namespace NFine.Web.Controllers
             return new ApiJsonResultData(ModelState).RunWithTry(y =>
             {
 
-                _outpatientDepartmentNewService.CancelOutpatientDepartmentCost(param);
+               _outpatientDepartmentNewService.CancelOutpatientDepartmentCost(param);
             });
 
         }
@@ -1048,12 +1048,10 @@ namespace NFine.Web.Controllers
                     OrganizationCode = userBase.OrganizationCode
                 };
                 userBase.TransKey = param.TransKey;
-              
+
                 //获取医保病人信息
                 var residentData = _medicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(queryResidentParam);
                 if (residentData == null) throw new Exception("当前病人未办理医保入院登记!!!");
-                
-               
                 //居民
                 if (residentData.InsuranceType == "342")
                 {
@@ -1102,7 +1100,7 @@ namespace NFine.Web.Controllers
                         var settlementCancelParam = new LeaveHospitalSettlementCancelParam()
                         {
                             MedicalInsuranceHospitalizationNo = residentData.MedicalInsuranceHospitalizationNo,
-                            SettlementNo =  residentData.SettlementNo,
+                            SettlementNo = residentData.SettlementNo,
                             Operators = CommonHelp.GuidToStr(userBase.UserId),
                             CancelLimit = param.CancelLimit,
 
@@ -1130,7 +1128,8 @@ namespace NFine.Web.Controllers
         public ApiJsonResultData MedicalInsuranceHospitalizationRegisterCancel([FromBody]UiBaseDataParam param)
         {
             return new ApiJsonResultData(ModelState).RunWithTry(y =>
-            { //获取操作人员信息
+            {
+                //获取操作人员信息
                 var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
                 var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
                 {
@@ -1138,7 +1137,7 @@ namespace NFine.Web.Controllers
                     OrganizationCode = userBase.OrganizationCode
                 };
                 userBase.TransKey = param.TransKey;
-                
+
                 //获取医保病人信息
                 var residentData = _medicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(queryResidentParam);
                 if (residentData == null) throw new Exception("当前病人未办理医保入院登记,不能取消入院登记!!!");

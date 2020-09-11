@@ -3,15 +3,17 @@
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Index.cshtml";
 }
-
 <!DOCTYPE html>
 <script>
-
-    $(function() {
-        gridList();
-    });
-
-    function gridList() {
+  
+        $(function() {
+            gridList();
+            var authorizeData = $("#NF-delete").attr("authorize");
+            if (authorizeData !== "yes") {
+                $("#txt_TransKey").hide();
+            }
+        });
+        function gridList() {
         var $gridList = $("#gridList");
         $gridList.dataGrid({
             url: "/SystemManage/BaseDataMaintenance/GetGridJson",
@@ -20,7 +22,10 @@
             {
                 StartTime: $("#startTime").val(),
                 EndTime: $("#endTime").val(),
-                OrganizationCode: $("#OrganizationCode").val()
+                OrganizationCode: $("#OrganizationCode").val(),
+                KeyWord: $("#txt_keyword").val(),
+                IsOutpatient: $("#PatientState").val()
+
             },
             colModel: [
                 { label: "主键", name: "Id", hidden: true, key: true },
@@ -52,7 +57,7 @@
             sortname: 'CreateTime asc',
             viewrecords: true
         });
-        $("#btn_search").click(function() {
+        $("#btn_search").click(function () {
             $gridList.jqGrid('setGridParam',
                 {
                     postData:
@@ -62,37 +67,177 @@
                         OrganizationCode: $("#OrganizationCode").val(),
                         KeyWord: $("#txt_keyword").val(),
                         IsOutpatient: $("#PatientState").val()
-
                     }
                 }).trigger('reloadGrid');
-        });
 
+        });
+       
+    }
+        function PatientStateChange() {
+        if ($("#PatientState").val() === "1") {
+            $("#NFCancelHospitalization").hide();
+
+        } else {
+            $("#NFCancelHospitalization").show();
+        }
+        var $gridList = $("#gridList");
+        $gridList.jqGrid('setGridParam',
+            {
+                postData:
+                {
+                    StartTime: $("#startTime").val(),
+                    EndTime: $("#endTime").val(),
+                    OrganizationCode: $("#OrganizationCode").val(),
+                    KeyWord: $("#txt_keyword").val(),
+                    IsOutpatient: $("#PatientState").val()
+                }
+            }).trigger('reloadGrid');
+    }
+        //取消基层住院结算数据
+        function LeaveHospitalSettlementCancel()
+        {
+            var businessId = $("#gridList").jqGridRowValue().Id;
+            var cancelParams = {
+                "TransKey": $("#txt_TransKey").val() /*医保交易码*/,
+                "BusinessId": businessId /*当前住院记录的业务ID*/,
+                "UserId": $("#empid").val() /*授权操作人的ID*/,
+                "CancelLimit": "1"/*取消程度*/
+                
+            }
+            $.ajax({
+                type: "POST",
+                url:"/api/BenDingNew/LeaveHospitalSettlementCancel",
+                data: JSON.stringify(cancelParams) ,
+                dataType: "json",
+                contentType: 'application/json',
+                async: false,
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        $.modalAlert(errData, "error");
+                    } else
+                    {
+                        $.modalAlert('取消基层住院结算数据成功', "success");
+                       
+                    }
+                }
+                
+            });
+    }
+       //门诊取消基层结算
+        function CancelOutpatientDepartmentCost() {
+        var businessId = $("#gridList").jqGridRowValue().Id;
+           var cancelParams = {
+               "TransKey": $("#transkey").val() /*医保交易码*/,
+               "BusinessId": businessId /*当前住院记录的业务ID*/,
+               "UserId": $("#empid").val() /*授权操作人的ID*/
+           }
+           $.ajax({
+               type: 'get',
+               url: '/api/BenDingNew/CancelOutpatientDepartmentCost',
+               data: cancelParams,
+               dataType: "json",
+               async: false,
+               success: function (data) {
+                   if (data.Success === false) {
+                       var errData = data.Message;
+                       $.modalAlert(errData, "error");
+                   } else {
+
+                       $.modalAlert('门诊取消基层结算成功', "success");
+                      
+
+                      
+                   }
+               }
+
+           });
+    }
+        //取消结算
         function btnBaseCancelSettlement() {
             if ($("#txt_TransKey").val() === "") {
                 $.modalAlert("取消结算医保交易码不能为空!!!", "error");
-                return;
+              
+            } else {
+                if ($("#PatientState").val() === "0") {
+                    LeaveHospitalSettlementCancel();
+                } else {
+                    //门诊取消结算
+                    CancelOutpatientDepartmentCost();
+                }
             }
           
-        }
-        //删除基层数据
+         
+
+
+    }
+        //删除基层上传数据
         function btnBaseDeleteData() {
-            if ($("#txt_TransKey").val() === "") {
-                $.modalAlert("取消结算医保交易码不能为空!!!", "error");
-                return;
+            var businessId = $("#gridList").jqGridRowValue().Id;
+            var params = {
+                "BusinessId": businessId
+                , "UserId": $("#empid").val() /*授权操作人的ID*/
+                , "TransKey": businessId
+            }
+            $.ajax({
+                type: "POST",
+                url:"/api/BenDingNew/DeletePrescriptionUpload",
+                data: JSON.stringify(params) ,
+                dataType: "json",
+                contentType: 'application/json',
+                async: false,
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        $.modalAlert(errData, "error");
+                    } else
+                    {
+                        $.modalAlert('取消基层上传数据成功', "success");
+                       
+                    }
+                }
+                
+            });
+           
+        }
+        //取消入院登记
+        function btnCancelHospitalization() {
+            var businessId = $("#gridList").jqGridRowValue().Id;
+            var cancelParams = {
+                "TransKey": businessId,
+                "BusinessId": businessId,
+                "UserId": $("#empid").val() /*授权操作人的ID*/,
+                "CancelLimit": "2"/*取消程度*/
             }
 
-            //$.submitForm({
-            //    url: "/SystemManage/DataImport/BaseDownload",
-            //    success: function () {
+            //医保入院登记取消
+            $.ajax({
+                type: 'POST',
+                url:'/api/BenDingNew/MedicalInsuranceHospitalizationRegisterCancel',
+                async: false,
+                data: JSON.stringify(cancelParams),
+                dataType: "json",
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        $.modalAlert(errData, "error");
+                        return;
+                    } else {
+                        $.modalAlert('取消基层医保入院登记成功', "success");
+                    }
+                }
 
-            //    }
-            //});
-        }
+            });
+    }
+
+      
+       
 </script>
 <div class="topPanel">
     <div class="toolbar" style="float: left">
         <div class="btn-group" style="margin-left: 20px; width: 60px;height: 32px;">
-            <select id="PatientState" name="DirectoryType" class="form-control" style="padding: 0px;height: 32px;">
+            <select id="PatientState" onchange="PatientStateChange();" class="form-control" style="padding: 0px;height: 32px;">
                 <option value="0">住院</option>
                 <option value="1">门诊</option>
             </select>
@@ -119,20 +264,20 @@
             <div class="operate">
                 <ul class="nav nav-pills">
                     <li class="first">已选中<span>1</span>项</li>
-                    <li> <input id="txt_TransKey" class="form-control" type="text" placeholder="取消结算医保交易码" style="width: 150px; height: 20px"></li>
-                    <li><a onclick="btnBaseCancelSettlement();"><i class="fa fa-trash-o"></i>取消结算</a></li>
-                    <li><a  onclick="btnBaseDeleteData();"><i class="fa fa-trash-o"></i>取消基层上传数据</a></li>
-                    <li><a  onclick="btn_delete();"><i class="fa fa-trash-o"></i>取消基层入院登记</a></li>
+                    <li><input id="txt_TransKey" class="form-control" type="text" placeholder="取消结算医保交易码" style="width: 150px; height: 20px"></li>
+                    <li><a  id="NF-delete" authorize="yes" onclick="btnBaseCancelSettlement();"><i class="fa fa-trash-o"></i>取消结算</a></li>
+                    <li><a id="NFDeleteData" onclick="btnBaseDeleteData();"><i class="fa fa-trash-o"></i>取消基层上传数据</a></li>
+                    <li><a id="NFCancelHospitalization" onclick="btnCancelHospitalization();"><i class="fa fa-trash-o"></i>取消基层入院登记</a></li>
                 </ul>
                 <a href="javascript:;" class="close"></a>
+                <script>
+        $('.toolbar').authorizeButton();</script>
             </div>
 
         </div>
     <div class="search">
         <input type="hidden" id="empid" name="UserId" value="@ViewBag.empid" placeholder="用户ID" />
         <input type="hidden" id="OrganizationCode" name="UserId" value="@ViewBag.OrganizationCode" placeholder="组织机构" />
-      
-       
     </div>
 </div>
 <div class="gridPanel">
