@@ -813,7 +813,7 @@ namespace BenDing.Repository.Providers.Web
                                ,[CostWriteOffId],[OrganizationCode],[OrganizationName] ,[CreateTime] ,[IsDelete],[DeleteTime],CreateUserId
                                ,DataSort,UploadMark,RecipeCodeFixedEncoding,BillDoctorIdFixedEncoding,BusinessTime,MedicalInsuranceProjectCode)
                            VALUES('{Guid.NewGuid()}','{item.OutpatientNo}','{item.DetailId}','{item.DirectoryName}','{item.DirectoryCode}','{item.DirectoryCategoryName}','{item.DirectoryCategoryCode}'
-                                 ,'{item.Unit}','{item.Formulation}','{item.Specification}',{item.UnitPrice},{item.Quantity},{item.Amount},'{item.Dosage}','{item.Usage}','{item.MedicateDays}',
+                                 ,'{item.Unit}','{item.Formulation}','{item.Specification}',{item.UnitPrice},{item.Quantity},{CommonHelp.ValueToDouble(item.Amount)},'{item.Dosage}','{item.Usage}','{item.MedicateDays}',
                                  '{item.HospitalPricingUnit}','{item.IsImportedDrugs}','{item.DrugProducingArea}','{item.RecipeCode}','{item.CostDocumentType}','{item.BillDepartment}'
                                  ,'{item.BillDepartmentId}','{item.BillDoctorName}','{item.BillDoctorId}','{item.BillTime}','{item.OperateDepartmentName}','{item.OperateDepartmentId}'
                                  ,'{item.OperateDoctorName}','{item.OperateDoctorId}','{item.OperateTime}','{item.PrescriptionDoctor}','{item.Operators}','{item.PracticeDoctorNumber}'
@@ -892,7 +892,7 @@ namespace BenDing.Repository.Providers.Web
                         {
                             string strSql =
                                 $@" select [DetailId],[DataSort] from [dbo].[HospitalizationFee] where [HospitalizationId]='{param.HospitalizationId}'
-                                 and [DetailId] in({outpatientNum})";
+                                 and [DetailId] in({outpatientNum}) and IsDelete=0";
                             var data = sqlConnection.Query<InpatientInfoDetailQueryDto>(strSql).ToList();
                             int sort = 0;
                             List<InpatientInfoDetailDto> paramNew;
@@ -919,7 +919,7 @@ namespace BenDing.Repository.Providers.Web
                                            ,[HospitalAuditMark],[BillTime],[OutHospitalInspectMark] ,[OrganizationCode] ,[OrganizationName]
                                            ,[UploadMark] ,[DataSort] ,[AdjustmentDifferenceValue],[BusinessTime],[CreateTime],[CreateUserId])
                                            VALUES('{Guid.NewGuid()}','{param.HospitalizationId}','{item.DetailId}','{item.DocumentNo}','{item.BillDepartment}','{item.DirectoryName}','{item.DirectoryCode}',
-                                                  '{item.ProjectCode}','{item.Formulation}','{item.Specification}',{item.UnitPrice},'{item.Usage}',{item.Quantity},{item.Amount},'{item.DocumentType}',
+                                                  '{item.ProjectCode}','{item.Formulation}','{item.Specification}',{item.UnitPrice},'{item.Usage}',{item.Quantity},{CommonHelp.ValueToDouble(item.Amount)},'{item.DocumentType}',
                                                   '{item.BillDepartmentId}','{item.BillDoctorId}','{item.BillDoctorName}','{item.Dosage}','{item.Unit}',
                                                   '{item.OperateDepartmentName}','{item.OperateDepartmentId}','{item.OperateDoctorName}','{item.OperateDoctorId}','{item.DoorEmergencyFeeMark}',
                                                   '{item.HospitalAuditMark}','{item.BillTime}','{item.OutHospitalInspectMark}','{param.User.OrganizationCode}','{param.User.OrganizationName}',
@@ -1225,11 +1225,13 @@ namespace BenDing.Repository.Providers.Web
                     }
                     else
                     {
-                        strSql = @"
-                                select a.OrganizationCode,a.HospitalizationNo,a.BusinessId,b.InsuranceType from [dbo].[Inpatient]  as a 
-                                inner join [dbo].[MedicalInsurance] as b on b.BusinessId=a.BusinessId
-                                where a.IsDelete=0 and b.IsDelete=0 and  b.MedicalInsuranceState<5 and a.HospitalizationId 
-                                in(select HospitalizationId from [dbo].[HospitalizationFee] where IsDelete=0 and UploadMark=0 Group by HospitalizationId)";
+                        strSql = $@"
+                               select  a.BusinessId,a.[HospitalizationNo],a.[PatientName],a.AdmissionDate,a.[IdCardNo],b.[InsuranceType] 
+                             from [dbo].[Inpatient] as a inner join [dbo].[MedicalInsurance]  as b
+                             on a.BusinessId=b.BusinessId 
+                             where a.IsDelete=0 and b.IsDelete=0  and a.IsCanCelHospitalized is null
+                             and b.MedicalInsuranceState<5 and a.OrganizationCode='{param.OrganizationCode}' and 
+                             b.OrganizationCode='{param.OrganizationCode}'";
                         //if string.is
                     }
                     var data = sqlConnection.Query<QueryAllHospitalizationPatientsDto>(strSql);
@@ -1549,8 +1551,8 @@ namespace BenDing.Repository.Providers.Web
                         }
                     }
 
-                    if (!string.IsNullOrWhiteSpace(param.StartTime))
-                        whereSql += $" and a.CreateTime between '{param.StartTime}' and '{param.EndTime}'";
+                    if (!string.IsNullOrWhiteSpace(param.StartTime) && !string.IsNullOrWhiteSpace(param.EndTime))
+                        whereSql += $" and a.CreateTime between '{param.StartTime}' and '{param.EndTime.Trim()+ " 23:59:59.000"}'";
                     if (param.rows != 0 && param.Page > 0)
                     {
                         var skipCount = param.rows * (param.Page - 1);
@@ -1591,6 +1593,89 @@ namespace BenDing.Repository.Providers.Web
                     _log.Debug(executeSql);
                     throw new Exception(e.Message);
                 }
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="organizationCode"></param>
+        /// <returns></returns>
+        public DataTable MedicalInsurancePairCodeTableData( string organizationCode)
+        {
+            DataTable table = new DataTable("MyTable");
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                string strSql = null;
+                try
+                {
+                    sqlConnection.Open();
+                    strSql = $@"select a.[DirectoryCode] as 医院目录编码商品ID,
+                    a.DirectoryName as 医院目录名称,a.DirectoryCategoryName as 医院目录类别, [Unit] as
+                    医院单位 ,a.Specification as 医院规格,[ManufacturerName] as 医院生产厂家,
+                    c.ProjectCode as 医保项目编码,c.[ProjectName] as 医保项目名称,
+                    c.ProjectCodeType as 医保项目类别,
+                    c.QuasiFontSize as 药品准字号,
+                    c.Manufacturer as 医保生产厂家,
+                    c.ProjectLeve as 医保报销类别
+
+                    from [dbo].[HospitalThreeCatalogue] as a 
+                    left join 
+                    (select b.DirectoryCode,c.ProjectCode,[ProjectName],(CASE c.[ProjectCodeType]
+                    WHEN '92' THEN '其它全自费'
+                    WHEN '11' THEN '西药费'
+                    WHEN '12' THEN '中成药'
+                    WHEN '13' THEN '中草药'
+                    WHEN '21' THEN '检查费'
+                    WHEN '22' THEN '治疗费'
+                    WHEN '23' THEN '放射费'
+                    WHEN '24' THEN '手术费'
+                    WHEN '25' THEN '化验费'
+                    WHEN '26' THEN '输血费'
+                    WHEN '27' THEN '诊疗费'
+                    WHEN '28' THEN '核医学'
+                    WHEN '29' THEN '输氧费'
+                    WHEN '31' THEN '护理费'
+                    WHEN '32' THEN '床位费'
+                    WHEN '33' THEN '注射费'
+                    WHEN '34' THEN '病理费'
+                    WHEN '35' THEN '理疗费'
+                    WHEN '36' THEN '麻醉费'
+                    WHEN '37' THEN '抢救费'
+                    WHEN '38' THEN '特殊人员床位费'
+                    WHEN '40' THEN '特殊检查费'
+                    WHEN '41' THEN '特殊材料'
+                    WHEN '50' THEN '特殊治疗费'
+                    WHEN '60' THEN '血液蛋白质制品'
+                    WHEN '81' THEN '材料费'
+                    WHEN '91' THEN '其他费用'
+                     END) as ProjectCodeType,
+                    (CASE c.[ProjectLevel]
+                    WHEN '1' THEN '甲类'
+                    WHEN '2' THEN '乙类'
+                    ELSE '丙类' END) as ProjectLeve,
+                    c.[QuasiFontSize],c.[Manufacturer],
+                    c.[ResidentSelfPayProportion]
+                    ,c.[WorkersSelfPayProportion]
+                    From [dbo].[ThreeCataloguePairCode]  as b 
+                    inner join  [dbo].[MedicalInsuranceProject] as c on b.[ProjectCode]=c.[ProjectCode]
+                    where  b.IsDelete =0 and 
+                    b.OrganizationCode='{organizationCode}'
+                    and c.IsDelete=0) as c  on  a.[DirectoryCode]=c.DirectoryCode
+                    where  a.IsDelete =0 and 
+                    a.OrganizationCode='{organizationCode}'  order by a.DirectoryCategoryName desc ";
+                    var data = sqlConnection.ExecuteReader(strSql);
+                    table.Load(data);
+                    sqlConnection.Close();
+
+                   
+
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(strSql);
+                    throw new Exception(e.Message);
+                }
+                return table;
             }
         }
 

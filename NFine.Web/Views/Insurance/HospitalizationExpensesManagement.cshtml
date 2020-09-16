@@ -53,7 +53,7 @@
                 </div>
                 <div class="layui-inline">
                     <button class="layui-btn"  id="QueryInHospital" lay-submit lay-filter="LAY-bill-data-list">查询</button>
-                    @*<button class="layui-btn" data-type="cleanSearch">清除</button>*@
+                    <button class="layui-btn"  id="DeleteCenterLibraryData">清除数据</button>
                     <button class="layui-btn" id="renewalCost" lay-submit lay-filter="renewalCost">更新费用</button>
                     <button class="layui-btn" id="allUpload" lay-submit lay-filter="allUpload">全部上传</button>
                 </div>
@@ -167,10 +167,10 @@
             form.render();
         }
         //插件检查
-        var verification = DetectActiveX(null);
-        if (verification === false) {
-            return false;
-        }
+        //var verification = DetectActiveX(null);
+        //if (verification === false) {
+        //    return false;
+        //}
         //获取医院基本信息回调方法
         window.getHospitalInfoBack = function () { };
 
@@ -218,7 +218,7 @@
                     , { field: 'DirectoryName', title: '项目名称', width: 280 }
                     , { field: 'DirectoryCategoryCode', title: '项目类别', width: 100 }
                     , { field: 'Quantity', title: '数量', width: 100, edit: 'text'}
-                    , { field: 'UnitPrice', title: '单价', width: 100, edit: 'text' }
+                    , { field: 'UnitPrice', title: '单价', width: 100 }
                     , { field: 'Amount', title: '金额', width: 100, edit: 'text' }
                     , { field: 'BillTime', title: '费用日期', width: 160 }
                     , { field: 'RecipeCode', title: '处方号', width: 310, hide: true }
@@ -233,7 +233,7 @@
                     , { field: 'BlockPrice', title: '限制价格', width: 100 }
                     , { field: 'BlockRemark', title: '限制使用说明', width: 100 }
                     , { field: 'Specification', title: '规格', width: 100 }
-                    , { field: 'AdjustmentDifferenceValue', title: '调整差值', width: 100 }
+                    , { width: 65, align: 'center', title: '对码', toolbar: '#tablePairCode', fixed: 'right'}
 
                 ]]
             });
@@ -327,7 +327,7 @@
                     { field: 'UploadNum', title: '上传条数', width: 100 },
                     { field: 'NotUploadNum', title: '未上传条数', width: 100 },
                     { field: 'BusinessId', title: '业务id', width: 250, hide: true }
-                    
+                  
                 ]]
             });
          
@@ -422,11 +422,13 @@
               
               
             });
+        //全院数据查询
         $('#OrganizationSearch').on('click',
             function () {
                 uploadOrganizationContentsTable();
                
             });
+        //更新全院数据
         $('#OrganizationUpdate').on('click',
             function () {
                 var uploadParam = {
@@ -453,6 +455,7 @@
                     }
                 });
             });
+        //上传全院数据
         $('#OrganizationUploadData').on('click',
             function () {
                 var uploadParam = {
@@ -487,8 +490,40 @@
                     }
                 });
             });
-      
-       
+       //删除费用
+        $('#DeleteCenterLibraryData').on('click',
+            function () {
+
+                var deleteParam = {
+                    "BusinessId": $("#bid").val() /*业务ID*/
+                    , "UserId": $("#empid").val() /*授权操作人的ID*/
+                    , "TransKey": $("#transkey").val()
+
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: hostNew + '/DeleteCenterLibraryData',
+                    async: false,
+                    data: JSON.stringify(deleteParam),
+                    dataType: "json",
+                    contentType: 'application/json',
+                    success: function (data) {
+                        if (data.Success === false) {
+                            var errData = data.Message;
+                            msgError(errData);
+                            //样式类名:墨绿深蓝风
+                        } else {
+
+
+                            inHospitalContentsTable();
+
+                        }
+                        
+
+                    }
+                });
+            });
+
         //处方上传（费用清单上传）
         var prescriptionUpload = function (tableData) {
             getPrescriptionUploadParam(tableData);
@@ -546,11 +581,14 @@
                 }
             });
         }
+
         //头工具栏事件
         table.on('toolbar(dataTableBillId)', function (obj) {
+         
             var checkStatus = table.checkStatus(obj.config.id);
             var data;
             var dataIds = [];
+            
             switch (obj.event) {
                 case 'batchUpdateData':
 
@@ -569,13 +607,17 @@
                     data = checkStatus.data; //选中行的数据
                     //排除已经上传了的数据
                     for (var i in data) {
-                        if (data[i].UploadMark === 0) {
-                            dataIds.push(data[i].Id);
+                        if (data.hasOwnProperty(i)) {
+                            if (data[i].UploadMark === 0) {
+                                dataIds.push(data[i].Id);
+                            }
                         }
                     }
                     //layer.msg('选中了：' + dataIds.length + ' 个未上传的数据');
                     batchExamineData(dataIds);
                     break;
+          
+                    
                 case "UpdateFeeData": 
                     var dataValue = checkStatus.data; //选中行的数据
                  
@@ -624,6 +666,44 @@
                     break;
 
             };
+        });
+
+        //监听行工具事件
+        table.on('tool(dataTableBillId)', function(obj){
+            var data = obj.data;
+            debugger;
+            //console.log(obj)
+            if (obj.event === 'PairCode'){
+                var directoryName = data.DirectoryName;
+                var directoryCode = data.DirectoryCode;
+                var directoryCategoryCode = '0';
+                var params = "?UserId=" +
+                    $("#empid").val() +
+                    "&ProjectName=" +
+                    directoryName +
+                    "&ProjectCode=" +
+                    directoryCode +
+                    "&ProjectCodeType=" +
+                    directoryCategoryCode +
+                    "&Manufacturer=";
+                    
+                //iframe层-父子操作
+                layer.open({
+                    id: 'medicalDirectoryPairCode',
+                    type: 2,
+                    title: '对码信息',
+                    shadeClose: true, //点击遮罩关闭层
+                    area: ['1080px', '520px'],
+                    fixed: false, //不固定
+                    maxmin: true,
+                    content: hostPage + '/MedicalDirectoryPairCode' + params,
+                    end: function() { //无论是确认还是取消，只要层被销毁了，end都会执行，不携带任何参数。layer.open关闭事件
+                        //layer.open关闭刷新
+                        //location.reload();
+                        inHospitalContentsTable();
+                    }
+                });
+            }
         });
         ////页面初始化加载默认数据
         //$(function () {
@@ -756,20 +836,23 @@
     </div>
 
 </script>
+<script type="text/html" id="tablePairCode">
+    <a class="layui-btn layui-btn-xs" lay-event="PairCode">对码</a>
+</script>
 
 <script type="text/html" id="tableBtn">
     {{#  if(d.UploadMark == 0){ }}
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="pairCode">未上传</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" >未上传</a>
     {{#  } else { }}
-    <a class="layui-btn layui-btn-xs" lay-event="updatePairCode">已上传</a>
+    <a class="layui-btn layui-btn-xs">已上传</a>
     {{#  }}}
 </script>
 
 <script type="text/html" id="tableApprovalMarkBtn">
     {{#  if(d.ApprovalMark == 0){ }}
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="pairCode">否</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" >否</a>
     {{#  } else { }}
-    <a class="layui-btn layui-btn-xs" lay-event="updatePairCode">是</a>
+    <a class="layui-btn layui-btn-xs" >是</a>
     {{#  }}}
 </script>
 

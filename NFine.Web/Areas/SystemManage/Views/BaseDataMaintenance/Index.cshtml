@@ -13,7 +13,7 @@
                 $("#txt_TransKey").hide();
             }
         });
-        function gridList() {
+    function gridList() {
         var $gridList = $("#gridList");
         $gridList.dataGrid({
             url: "/SystemManage/BaseDataMaintenance/GetGridJson",
@@ -73,12 +73,16 @@
         });
        
     }
-        function PatientStateChange() {
+    function PatientStateChange() {
+        //门诊
         if ($("#PatientState").val() === "1") {
             $("#NFCancelHospitalization").hide();
+            $("#NFDeleteData").hide();
+            
 
         } else {
             $("#NFCancelHospitalization").show();
+            $("#NFDeleteData").show();
         }
         var $gridList = $("#gridList");
         $gridList.jqGrid('setGridParam',

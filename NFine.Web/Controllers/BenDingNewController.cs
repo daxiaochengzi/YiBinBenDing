@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -320,7 +320,6 @@ namespace NFine.Web.Controllers
         {
             return new ApiJsonResultData(ModelState).RunWithTry(y =>
             {
-
                _outpatientDepartmentNewService.CancelOutpatientDepartmentCost(param);
             });
 
@@ -862,13 +861,11 @@ namespace NFine.Web.Controllers
                     ? Convert.ToDecimal(param.InsuranceBalance): 0;
                 var resultData = new SettlementDto();
                 if (param.DiagnosisList == null) throw new Exception("诊断不能为空!!!");
-               
                 //获取医保病人信息
                 var residentData = _medicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(new QueryMedicalInsuranceResidentInfoParam()
                 {
                     BusinessId = param.BusinessId
                 });
-
                 var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
                 userBase.TransKey = param.TransKey;
                 //var infoData = new GetInpatientInfoParam()
@@ -1252,6 +1249,8 @@ namespace NFine.Web.Controllers
                 var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
                 List<string> idList = new List<string>();
                 idList.Add(param.Id);
+                param.UnitPrice = CommonHelp
+                    .ValueToFour(Convert.ToDecimal(param.Amount) / Convert.ToDecimal(param.Quantity)).ToString(CultureInfo.InvariantCulture); 
                 //费用数据
               var feeDataList=_hisSqlRepository.InpatientInfoDetailQuery(new InpatientInfoDetailQueryParam()
                 {
@@ -1293,6 +1292,38 @@ namespace NFine.Web.Controllers
             });
 
         }
+
+        /// <summary>
+        ///  删除中心库
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData DeleteCenterLibraryData([FromBody]UiBaseDataParam param )
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+               
+                //费用数据
+                var feeDataList = _hisSqlRepository.InpatientInfoDetailQuery(new InpatientInfoDetailQueryParam()
+                {
+                   BusinessId = param.BusinessId,
+                    UploadMark = 1,
+
+                });
+                if (feeDataList != null && feeDataList.Any())
+                {
+                    throw  new Exception("还有未取消上传的数据,请先取消数据上传,再清理数据");
+                }
+                else
+                {  //更新住院明细状态
+                    string sql = $@" update HospitalizationFee set DeleteUserId='{param.UserId}',DeleteTime=getDate(),IsDelete=1
+                               where HospitalizationId='{param.BusinessId}' and IsDelete=0";
+                    _hisSqlRepository.ExecuteSql(sql);
+                }
+            });
+
+        }
+
         /// <summary>
         /// 医保处方上传
         /// </summary>

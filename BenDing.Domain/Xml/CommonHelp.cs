@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
@@ -27,7 +28,7 @@ namespace BenDing.Domain.Xml
         {
             string resultData = null;
             //测试a
-            // resultData = "http://47.111.29.88:11013/WebService.asmx";
+            //resultData = "http://47.111.29.88:11013/WebService.asmx";
             //正式
             resultData = "http://11.21.1.11:8002/WebService.asmx";
             return resultData;
@@ -89,7 +90,7 @@ namespace BenDing.Domain.Xml
         ///解码
         public static string DecodeBase64(string code_type, string code)
         {
-            string decode = "";
+            string decode;
             byte[] bytes = Convert.FromBase64String(code);
             try
             {
@@ -132,6 +133,16 @@ namespace BenDing.Domain.Xml
         {
             return Math.Round(param, 2, MidpointRounding.AwayFromZero);
         }
+        /// <summary>
+        /// 四舍五入到4位等同于decimal
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static decimal ValueToFour(decimal param)
+        {
+            return Math.Round(param, 4, MidpointRounding.AwayFromZero);
+        }
+        
 
         /// <summary>
         ///  字符串转换数值型
@@ -272,13 +283,20 @@ namespace BenDing.Domain.Xml
         /// <returns></returns>
         public static DiagnosisData GetDiagnosis(List<InpatientDiagnosisDto> param)
         {
-
+            int dataSort = 1;
+            var paramNew = new List<InpatientDiagnosisDto>();
+            foreach (var item in param)
+            {
+                   item.DataSort = dataSort;
+                   paramNew.Add(item);
+                   dataSort++;
+            }
             var resultData = new DiagnosisData();
 
 
             //判断医保诊断不能为空
 
-            var emptyData = param.Where(c => c.ProjectCode == null).ToList();
+            var emptyData = paramNew.Where(c => c.ProjectCode == null).ToList();
             if (emptyData.Any())
             {
                 string msg = "";
@@ -291,15 +309,15 @@ namespace BenDing.Domain.Xml
             }
 
             //主诊断
-            var mainDiagnosisList = param.Where(c => c.IsMainDiagnosis == true)
+            var mainDiagnosisList = paramNew.Where(c => c.IsMainDiagnosis == true)
                 .Take(3).ToList();
             if (mainDiagnosisList.Any() == false) throw new Exception("主诊断不能为空!!!");
             if (mainDiagnosisList.Count > 1) throw new Exception("主诊断只能一个!!!");
             resultData.DiagnosisDescribe = GetDiagnosisDescribe(resultData.DiagnosisDescribe, mainDiagnosisList);
-            resultData.AdmissionMainDiagnosisIcd10 = CommonHelp.DiagnosisStr(mainDiagnosisList);
+            resultData.AdmissionMainDiagnosisIcd10 =DiagnosisStr(mainDiagnosisList);
             //第二诊断
-            var nextDiagnosisList = param.Where(c => c.IsMainDiagnosis == false)
-                .ToList();
+            var nextDiagnosisList = paramNew.Where(c => c.IsMainDiagnosis == false)
+                .OrderBy(d => d.DataSort).ToList();
             int num = 2;
             foreach (var item in nextDiagnosisList)
             {
@@ -313,14 +331,12 @@ namespace BenDing.Domain.Xml
                 {
                     resultData.DiagnosisIcd10Three = item.ProjectCode;
 
-
-
                 }
 
                 num++;
             }
 
-            resultData.DiagnosisDescribe = GetDiagnosisDescribeNew(param);
+            resultData.DiagnosisDescribe = GetDiagnosisDescribeNew(paramNew);
             //if (mainDiagnosisList.Any())
             //{
             //    var diagnosisIcd10Two = nextDiagnosisList.Take(3).ToList();
@@ -366,7 +382,7 @@ namespace BenDing.Domain.Xml
 
 
             //主诊断
-            var mainDiagnosisList = param.Where(c => c.IsMainDiagnosis == true)
+            var mainDiagnosisList = param.Where(c => c.IsMainDiagnosis)
                 .Take(3).ToList();
             if (mainDiagnosisList.Any() == false) throw new Exception("主诊断不能为空!!!");
             if (mainDiagnosisList.Count > 1) throw new Exception("主诊断只能一个!!!");
@@ -508,7 +524,7 @@ namespace BenDing.Domain.Xml
               
                 msg.Add(new PayMsgData()
                 {
-                    Name = itemName.ToString(),
+                    Name = itemName,
                     Value = itemData[1],
                 });
 
@@ -530,6 +546,76 @@ namespace BenDing.Domain.Xml
                 resultData.EndTime= param.Substring(param.Length - 10, 10)+ " 23:59:59.000";
             }
             return resultData;
+        }
+        /// <summary>
+        /// List转Table
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static DataTable ObjectToTable(object obj)
+        {
+            try
+            {
+                Type t;
+                if (obj.GetType().IsGenericType)
+                {
+                    t = obj.GetType().GetGenericTypeDefinition();
+                }
+                else
+                {
+                    t = obj.GetType();
+                }
+                if (t == typeof(List<>) ||
+                    t == typeof(IEnumerable<>))
+                {
+                    DataTable dt = new DataTable();
+                    IEnumerable<object> lstenum = obj as IEnumerable<object>;
+                    if (lstenum.Count() > 0)
+                    {
+                        var ob1 = lstenum.GetEnumerator();
+                        ob1.MoveNext();
+                        foreach (var item in ob1.Current.GetType().GetProperties())
+                        {
+                            dt.Columns.Add(new DataColumn() { ColumnName = item.Name });
+                        }
+                        //数据
+                        foreach (var item in lstenum)
+                        {
+                            DataRow row = dt.NewRow();
+                            foreach (var sub in item.GetType().GetProperties())
+                            {
+                                row[sub.Name] = sub.GetValue(item, null);
+                            }
+                            dt.Rows.Add(row);
+                        }
+                        return dt;
+                    }
+                }
+                else if (t == typeof(DataTable))
+                {
+                    return (DataTable)obj;
+                }
+                else   //(t==typeof(Object))
+                {
+                    DataTable dt = new DataTable();
+                    foreach (var item in obj.GetType().GetProperties())
+                    {
+                        dt.Columns.Add(new DataColumn() { ColumnName = item.Name });
+                    }
+                    DataRow row = dt.NewRow();
+                    foreach (var item in obj.GetType().GetProperties())
+                    {
+                        row[item.Name] = item.GetValue(obj, null);
+                    }
+                    dt.Rows.Add(row);
+                    return dt;
+                }
+
+            }
+            catch (Exception ex)
+            {
+            }
+            return null;
         }
 
     }

@@ -24,7 +24,14 @@ namespace BenDing.Domain.Models.Dto.Web
         /// </summary>
     
         public string ProjectCode { get; set; }
-       
-     
+
+        /// <summary>
+        /// 序号
+        /// </summary>
+
+        public int? DataSort { get; set; } = null;
+
+
+
     }
 }

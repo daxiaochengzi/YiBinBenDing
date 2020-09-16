@@ -332,7 +332,7 @@ namespace BenDing.Service.Providers
                         ProjectName = item.DirectoryName,
                         UnitPrice = item.UnitPrice,
                         Quantity = item.Quantity,
-                        TotalAmount = item.Amount,
+                        TotalAmount =CommonHelp.ValueToDouble(item.Amount),
                         Formulation = item.Formulation,
                         ManufacturerName = item.DrugProducingArea,
                         Dosage = item.Dosage,
@@ -548,7 +548,7 @@ namespace BenDing.Service.Providers
             {
                 UserId = userBase.UserId,
                 ReimbursementExpensesAmount = CommonHelp.ValueToDouble(accountPayment),
-                SelfPayFeeAmount = cashPayment,
+                SelfPayFeeAmount = resultData.CashPayment,
                 OtherInfo = JsonConvert.SerializeObject(resultData),
                 Id = residentData.Id,
                 SettlementNo = resultData.DocumentNo,

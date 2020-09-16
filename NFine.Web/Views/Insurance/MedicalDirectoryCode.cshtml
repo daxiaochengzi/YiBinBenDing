@@ -62,6 +62,7 @@
                     <div class="layui-inline">
                         <button class="layui-btn" lay-submit="" lay-filter="LAY-app-content-list">查询</button>
                         <button class="layui-btn" id="updateSearch"  data-type="updateSearch"  lay-filter="updateSearch">更新目录</button>
+                        <a id="BenDingDownloadFile" class="layui-btn" href="/api/BenDing/DownloadFile">医保插件下载</a>
                     </div>
                     
                 </div>
@@ -157,6 +158,11 @@
                         <button class="layui-btn" lay-submit="" lay-filter="LAY-pair-content-list">查询</button>
                         @*<button class="layui-btn" id="updateSearch"  data-type="updateSearch"  lay-filter="updateSearch">更新目录</button>*@
                     </div>
+                    <div class="layui-inline">
+                        <a id="BenDingDownloadFile" class="layui-btn" href="/api/BenDing/DownloadFileExcel?userId=@ViewBag.empid">对码表下载</a>
+                        @*<button class="layui-btn" id="updateSearch"  data-type="updateSearch"  lay-filter="updateSearch">更新目录</button>*@
+                    </div>
+                   
                 </div>
             </div>
             <table class="layui-hide" id="LAY-pair-content-list" lay-filter="LAY-pair-content-list"></table>
@@ -359,10 +365,10 @@
                             { field: 'DirectoryName', title: '医院目录名称', width: 300, sort: true },
                             //{ field: 'MnemonicCode', title: '助记码', width: 300 },
                             { field: 'DirectoryCategoryName', title: '医院目录类别', width: 100, sort: true },
-                            { field: 'Unit', title: '单位', width: 90 },
-                            { field: 'Specification', title: '规格', width: 100 },
+                            { field: 'Unit', title: '医院单位', width: 90 },
+                            { field: 'Specification', title: '医院规格', width: 100 },
                             //{ field: 'Formulation', title: '剂型', width: 160 },
-                            { field: 'ManufacturerName', title: '基层生产厂家', width: 300, sort: true },
+                            { field: 'ManufacturerName', title: '医院生产厂家', width: 300, sort: true },
                             { field: 'ProjectCode', title: '医保项目编码', width: 160 },
                             { field: 'ProjectName', title: '医保项目名称', width: 160 },
                             { field: 'QuasiFontSize', title: '药品准字号', width: 100 },
@@ -396,7 +402,7 @@
                             "&ProjectCodeType=" +
                             directoryCategoryCode +
                             "&Manufacturer=" +
-                            data.ManufacturerName;;
+                            data.ManufacturerName;
                         if (obj.event === 'pairCode') {
 
                             //iframe层-父子操作

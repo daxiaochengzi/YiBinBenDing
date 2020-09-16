@@ -27,6 +27,7 @@ using BenDing.Domain.Xml;
 using BenDing.Repository.Interfaces.Web;
 using BenDing.Service.Interfaces;
 using Newtonsoft.Json;
+using NFine.Code;
 using NFine.Web.Model;
 
 
@@ -475,7 +476,10 @@ namespace NFine.Web.Controllers
                 ProjectCode = "T84.502",
                 DiseaseName = "膝关节假体植入感染"
             });
-            var ddds = CommonHelp.GetDiagnosis(ddd);
+          //  
+         var tableData=  CommonHelp.ObjectToTable(ddd);
+            ExcelHelper.Export(tableData, "医保对码表", "c:\\成中荣新繁出差.xlsx");
+            //var ddds = CommonHelp.GetDiagnosis(ddd);
 
             ////添加日志
             //var logParam = new AddHospitalLogParam()
@@ -483,7 +487,7 @@ namespace NFine.Web.Controllers
             //    JoinOrOldJson = "123",
             //    User = new UserInfoDto(){UserId = "76EDB472F6E544FD8DC8D354BB088BD7" },
             //    Remark = "测试",
-             
+
             //    BusinessId = "87A8875BA6F9433AB493B8CB8A05EC43",
             //};
             //_systemManageRepository.AddHospitalLog(logParam);
@@ -801,6 +805,28 @@ namespace NFine.Web.Controllers
                 var data = webServiceBasic.HIS_Interface("39", JsonConvert.SerializeObject(xmlData));
 
             });
+
+        }
+        /// <summary>
+        /// 下载文件
+        /// </summary>
+        [HttpGet]
+        public HttpResponseMessage DownloadFileExcel()
+        {//c:\\成中荣新繁出差.xlsx
+            string fileName = "成中荣新繁出差.xlsx";
+            string filePath = HttpContext.Current.Server.MapPath("~/") + "FileExcel/成中荣新繁出差.xlsx";
+            FileStream stream = new FileStream(filePath, FileMode.Open);
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+            response.Content = new StreamContent(stream);
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = HttpUtility.UrlEncode(fileName)
+            };
+            response.Headers.Add("Access-Control-Expose-Headers", "FileName");
+            response.Headers.Add("FileName", HttpUtility.UrlEncode(fileName));
+            stream.Close();
+            return response;
 
         }
     }

@@ -489,16 +489,16 @@ namespace BenDing.Service.Providers
                 BusinessId = param.BusinessId,
             };
             _systemManageRepository.AddHospitalLog(logParam);
-            var cashPayment = CommonHelp.ValueToDouble(hisSettlement.AllAmount - reimbursementExpenses);
+            //var cashPayment = CommonHelp.ValueToDouble(hisSettlement.AllAmount - reimbursementExpenses);
             // 回参构建
             var xmlData = new HospitalSettlementXml()
             {
 
                 MedicalInsuranceHospitalizationNo = residentData.MedicalInsuranceHospitalizationNo,
-                CashPayment = cashPayment < 0 ? 0 : cashPayment ,
+                CashPayment = resultData.CashPayment,
                 SettlementNo = resultDataDocumentNo.DocumentNo,
                 PaidAmount = resultData.PaidAmount,
-                AllAmount = CommonHelp.ValueToDouble(hisSettlement.AllAmount),
+                AllAmount = resultData.TotalAmount,
                 PatientName = inpatientInfoData.PatientName,
                 AccountBalance = param.InsuranceBalance,
                 AccountAmountPay = resultData.AccountPayment,
@@ -1045,10 +1045,10 @@ namespace BenDing.Service.Providers
             var xmlData = new HospitalSettlementXml()
             {
                 MedicalInsuranceHospitalizationNo = residentData.MedicalInsuranceHospitalizationNo,
-                CashPayment = cashPayment < 0 ? 0 : cashPayment,
+                CashPayment = resultData.CashPayment,
                 SettlementNo = resultData.DocumentNo,
                 PaidAmount = resultData.PaidAmount,
-                AllAmount = CommonHelp.ValueToDouble(hisSettlement.AllAmount),
+                AllAmount = resultData.TotalAmount,
                 PatientName = inpatientInfoData.PatientName,
                 AccountBalance = param.InsuranceBalance,
                 AccountAmountPay = resultData.AccountPayment,

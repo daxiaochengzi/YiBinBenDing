@@ -205,6 +205,11 @@ namespace BenDing.Repository.Interfaces.Web
         /// <param name="param"></param>
         /// <returns></returns>
          Dictionary<int, List<QueryPatientInfoDto>> QueryPatientInfo(QueryPatientInfoParam param);
-
+        /// <summary>
+        /// 对码数据导出
+        /// </summary>
+        /// <param name="organizationCode"></param>
+        /// <returns></returns>
+         DataTable MedicalInsurancePairCodeTableData(string organizationCode);
     }
 }

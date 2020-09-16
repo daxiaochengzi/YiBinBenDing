@@ -28,6 +28,7 @@ using BenDing.Repository.Providers.Web;
 using BenDing.Service.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NFine.Code;
 
 namespace NFine.Web.Controllers
 {
@@ -357,8 +358,6 @@ namespace NFine.Web.Controllers
                //获取病人信息
                var inpatientData = _webServiceBasicService.GetInpatientInfo(infoData);
                y.Data = inpatientData ?? throw new Exception("基层获取住院病人失败!!!");
-
-
            });
         }
         /// <summary>
@@ -1036,7 +1035,7 @@ namespace NFine.Web.Controllers
         public ApiJsonResultData QueryHospitalizationFee([FromUri]QueryHospitalizationFeeUiParam param)
         {
             return new ApiJsonResultData(ModelState, new QueryHospitalizationFeeDto()).RunWithTry(y =>
-            {//ModelState, new QueryHospitalizationFeeDto()
+            {
                 if (param.IsLoad)
                {//获取病人明细
                    var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
@@ -1919,6 +1918,43 @@ namespace NFine.Web.Controllers
             };
             response.Headers.Add("Access-Control-Expose-Headers", "FileName");
             response.Headers.Add("FileName", HttpUtility.UrlEncode(fileName));
+            return response;
+
+        }
+
+        /// <summary>
+        /// 下载文件
+        /// </summary>
+        [HttpGet]
+        public HttpResponseMessage DownloadFileExcel(string userId)
+        {
+            var userBase = _webServiceBasicService.GetUserBaseInfo(userId);
+            string fileName = userBase.OrganizationName+ ".xls";
+            string filePath = HttpContext.Current.Server.MapPath("~/") + "FileExcel\\" + fileName;
+            if (System.IO.File.Exists(filePath))
+            {
+               
+                System.IO.File.Delete(filePath);//删除文件夹以及文件夹中的子目录，文件   
+            }
+            var tableData= _hisSqlRepository.MedicalInsurancePairCodeTableData(userBase.OrganizationCode);
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+            if (tableData.Rows.Count > 0)
+            {
+              
+                ExcelHelper.Export(tableData, "医保对码表单", filePath);
+                FileStream stream = new FileStream(filePath, FileMode.Open);
+
+                response.Content = new StreamContent(stream);
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+                {
+                    FileName = HttpUtility.UrlEncode(fileName)
+                };
+                response.Headers.Add("Access-Control-Expose-Headers", "FileName");
+                response.Headers.Add("FileName", HttpUtility.UrlEncode(fileName));
+            }
+
+            
             return response;
 
         }

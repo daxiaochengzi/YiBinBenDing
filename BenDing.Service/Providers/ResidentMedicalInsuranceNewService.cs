@@ -302,9 +302,7 @@ namespace BenDing.Service.Providers
             var residentData = _medicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(queryResidentParam);
 
             var dataIni = JsonConvert.DeserializeObject<HospitalizationPresettlementJsonDto>(param.SettlementJson);
-             var   data = AutoMapper.Mapper.Map<HospitalizationPresettlementDto>(dataIni);
-
-         
+            var data = AutoMapper.Mapper.Map<HospitalizationPresettlementDto>(dataIni);
             resultData = data ?? throw new Exception("居民预结算返回结果有误!!!");
             //报销金额 =统筹支付+补充险支付+生育补助+民政救助+民政重大疾病救助+精准扶贫+民政优抚+其它支付
             decimal reimbursementExpenses =
@@ -478,10 +476,10 @@ namespace BenDing.Service.Providers
             {
 
                 MedicalInsuranceHospitalizationNo = residentData.MedicalInsuranceHospitalizationNo,
-                CashPayment = cashPayment < 0 ? 0 : cashPayment ,
+                CashPayment = data.CashPayment,
                 SettlementNo = data.DocumentNo,
                 PaidAmount = data.PaidAmount,
-                AllAmount = CommonHelp.ValueToDouble(hisSettlement.AllAmount),
+                AllAmount = data.TotalAmount,
                 PatientName = inpatientInfoData.PatientName,
                 AccountBalance = insuranceBalance,
                 AccountAmountPay = 0,
@@ -727,8 +725,6 @@ namespace BenDing.Service.Providers
         public void LeaveHospitalSettlementCancel(LeaveHospitalSettlementCancelParam param,
             LeaveHospitalSettlementCancelInfoParam infoParam)
         {
-           
-
             if (param.CancelLimit == "1")
             {
               

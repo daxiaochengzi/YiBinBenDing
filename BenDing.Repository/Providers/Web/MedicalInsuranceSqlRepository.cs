@@ -262,7 +262,7 @@ namespace BenDing.Repository.Providers.Web
                     }
                     if (!string.IsNullOrWhiteSpace(param.QuasiFontSize))
                     {
-                        whereSql += $"  and QuasiFontSize ='{param.QuasiFontSize}'";
+                        whereSql += $"  and QuasiFontSize like '%{param.QuasiFontSize}%' ";
                     }
                     
                     if (param.Limit != 0 && param.Page > 0)
@@ -550,8 +550,10 @@ namespace BenDing.Repository.Providers.Web
                                 insertSql += $@"insert into [dbo].[ThreeCataloguePairCode]
                                            ([Id],[OrganizationCode],[OrganizationName],[DirectoryCategoryCode],[State],[ProjectCode],
                                             [FixedEncoding],[CreateTime],[IsDelete],[CreateUserId],[UploadState],[DirectoryCode]) values (
-                                           '{Guid.NewGuid()}','{param.OrganizationCode}','{param.OrganizationName}','{items.DirectoryCategoryCode}',0,'{items.ProjectCode}',
-                                           '{BitConverter.ToInt64(Guid.Parse(items.DirectoryCode).ToByteArray(), 0)}',GETDATE(),0,'{param.UserId}',0,'{items.DirectoryCode}') ";
+                                           '{Guid.NewGuid()}','{param.OrganizationCode}','{param.OrganizationName}',
+                                           (select top 1 [DirectoryCategoryCode] from [dbo].[HospitalThreeCatalogue]
+                                            where [DirectoryCode]='{items.DirectoryCode}' and [IsDelete]=0 and [OrganizationCode]='{param.OrganizationCode}'),0,'{items.ProjectCode}',
+                                           '{BitConverter.ToInt64(Guid.Parse(items.DirectoryCode).ToByteArray(), 0)}',GETDATE(),0,'{param.UserId}',0,'{items.DirectoryCode}')";
 
                             }
                             sqlConnection.Execute(insertSql);
@@ -592,7 +594,7 @@ namespace BenDing.Repository.Providers.Web
                             from [dbo].[ThreeCataloguePairCode] as a
                             inner join [dbo].[MedicalInsuranceProject] as b on b.ProjectCode=a.ProjectCode
                             where a.OrganizationCode='{param.OrganizationCode}' and a.[DirectoryCode] in({updateId})
-                             and a.IsDelete=0  and b.IsDelete=0 and b.EffectiveSign=1 ";
+                             and a.IsDelete=0  and b.IsDelete=0";// and b.EffectiveSign=1 
                         resultData = sqlConnection.Query<QueryMedicalInsurancePairCodeDto>(sqlStr).ToList();
                         sqlConnection.Close();
                     }
