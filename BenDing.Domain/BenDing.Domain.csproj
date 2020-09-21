@@ -91,6 +91,7 @@
     <Compile Include="Models\Dto\Resident\QueryOrganizationInpatientInfoDto.cs" />
     <Compile Include="Models\Dto\Web\HospitalThreeCatalogBatchUploadDto.cs" />
     <Compile Include="Models\Dto\Web\QueryPatientInfoDto.cs" />
+    <Compile Include="Models\Entitys\HospitalLog.cs" />
     <Compile Include="Models\Params\Base\PaginationWebParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\MonthlyHospitalizationCancelParam.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\MonthlyHospitalizationDto.cs" />

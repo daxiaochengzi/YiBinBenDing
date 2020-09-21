@@ -33,7 +33,6 @@ namespace BenDing.Domain.Xml
             resultData = "http://11.21.1.11:8002/WebService.asmx";
             return resultData;
         }
-
         //入参字符串为空则为0
         public static string getNum(string num)
         {
@@ -45,7 +44,6 @@ namespace BenDing.Domain.Xml
 
             return numValue;
         }
-
         /// <summary>
         /// sql过滤不安全字符串
         /// </summary>
@@ -68,7 +66,6 @@ namespace BenDing.Domain.Xml
 
             return str;
         }
-
         //编码
         public static string EncodeBase64(string code_type, string code)
         {
@@ -86,7 +83,6 @@ namespace BenDing.Domain.Xml
 
             return encode;
         }
-
         ///解码
         public static string DecodeBase64(string code_type, string code)
         {
@@ -103,7 +99,6 @@ namespace BenDing.Domain.Xml
 
             return decode;
         }
-
         /// <summary>
         /// 根据GUID获取19位的唯一数字序列  
         /// </summary>
@@ -113,7 +108,6 @@ namespace BenDing.Domain.Xml
         {
             return BitConverter.ToInt64(Guid.Parse(param).ToByteArray(), 0).ToString();
         }
-
         /// <summary>
         /// 日志字符串格式化
         /// </summary>
@@ -123,7 +117,6 @@ namespace BenDing.Domain.Xml
         {
             return Convert.ToDateTime(param).ToString("yyyy-MM-dd HH:mm:ss");
         }
-
         /// <summary>
         /// 四舍五入到2位等同于Double
         /// </summary>
@@ -446,9 +439,7 @@ namespace BenDing.Domain.Xml
 
             return resultData;
         }
-    
-
-    /// <summary>
+        ///<summary>
         /// 获取诊断描述
         /// </summary>
         /// <param name="describe">描述参数</param>
@@ -614,7 +605,9 @@ namespace BenDing.Domain.Xml
             }
             catch (Exception ex)
             {
+                // ignored
             }
+
             return null;
         }
 

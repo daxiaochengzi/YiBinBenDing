@@ -15,6 +15,7 @@ using BenDing.Domain.Models.Dto.JsonEntity;
 using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
+using BenDing.Domain.Models.Entitys;
 using BenDing.Domain.Models.HisXml;
 using BenDing.Domain.Models.Params.Base;
 using BenDing.Domain.Models.Params.DifferentPlaces;
@@ -25,6 +26,7 @@ using BenDing.Domain.Models.Params.UI;
 using BenDing.Domain.Models.Params.Web;
 using BenDing.Domain.Xml;
 using BenDing.Repository.Interfaces.Web;
+using BenDing.Repository.Providers.Web;
 using BenDing.Service.Interfaces;
 using Newtonsoft.Json;
 using NFine.Code;
@@ -44,7 +46,8 @@ namespace NFine.Web.Controllers
         private readonly IHisSqlRepository hisSqlRepository;
         private readonly ISystemManageRepository _systemManageRepository;
         private readonly IMedicalInsuranceSqlRepository ImedicalInsuranceSqlRepository;
-
+        private readonly ISqlSugarRepository _sqlSugarRepository;
+        private  HospitalLogMap _hospitalLogMap;
         /// <summary>
         /// 
         /// </summary>
@@ -58,7 +61,8 @@ namespace NFine.Web.Controllers
             IWebBasicRepository _WebBasicRepository,
             IHisSqlRepository _hisSqlRepository,
             IMedicalInsuranceSqlRepository _imedicalInsuranceSqlRepository,
-            ISystemManageRepository systemManageRepository
+            ISystemManageRepository systemManageRepository,
+             ISqlSugarRepository sqlSugarRepository
             )
         {
             userService = _userService;
@@ -67,6 +71,8 @@ namespace NFine.Web.Controllers
             hisSqlRepository = _hisSqlRepository;
             ImedicalInsuranceSqlRepository = _imedicalInsuranceSqlRepository;
             _systemManageRepository = systemManageRepository;
+            _sqlSugarRepository = sqlSugarRepository;
+            _hospitalLogMap = new HospitalLogMap();
         }
 
         /// <summary>
@@ -828,6 +834,19 @@ namespace NFine.Web.Controllers
             stream.Close();
             return response;
 
+        }
+
+        /// <summary>
+        /// 获取住院病人明细费用
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public void TestSqlSugar()
+        {
+            var dataList = _hospitalLogMap.GetList();
+           var ccc= _hospitalLogMap._db.Ado.GetDataTable("select * from table");
+            //_hospitalLogMap.CurrentDb.DeleteById(1);
+            //_sqlSugarRepository.QueryHospitalLog();
         }
     }
 }

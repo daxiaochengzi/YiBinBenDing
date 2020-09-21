@@ -91,7 +91,7 @@ namespace NFine.Web
             container.RegisterType<ISystemManageRepository, SystemManageRepository>();
             container.RegisterType<IOutpatientDepartmentRepository, OutpatientDepartmentRepository>();
             container.RegisterType<IWorkerMedicalInsuranceRepository, WorkerMedicalInsuranceRepository>();
-            
+            container.RegisterType<ISqlSugarRepository, SqlSugarRepository>();
             #endregion
             return container;
         }
