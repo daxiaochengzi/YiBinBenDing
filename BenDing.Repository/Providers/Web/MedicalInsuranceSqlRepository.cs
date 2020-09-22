@@ -797,7 +797,7 @@ namespace BenDing.Repository.Providers.Web
                 try
                 {
                     sqlConnection.Open();
-                    if (param.ProjectCodeList.Any())
+                    if (param.ProjectCodeList!=null && param.ProjectCodeList.Any())
                     {
                         var projectCodeList = CommonHelp.ListToStr(param.ProjectCodeList);
 

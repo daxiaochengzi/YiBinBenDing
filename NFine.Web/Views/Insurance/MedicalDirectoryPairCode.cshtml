@@ -17,16 +17,15 @@
     <div class="layui-form layui-card-header layui-card-header-auto" lay-filter="data-form">
         <div class="layui-form-item">
             <div class="layui-inline">
+               
                 <label class="layui-form-label">目录类别</label>
-                <div class="layui-input-inline">
-                    <select name="ProjectCodeType">
-                        <option value="">请选择类别</option>
-                        <option value="0">中药</option>
-                        <option value="1">西药</option>
-                        <option value="2">诊疗</option>
-                        <option value="3">耗材</option>
-                    </select>
-                </div>
+                <select name="ProjectCodeType">
+                    <option value="">请选择类别</option>
+                    <option value="0">中药</option>
+                    <option value="1">西药</option>
+                    <option value="2">诊疗</option>
+                    <option value="3">耗材</option>
+                </select>
             </div>
             <div class="layui-inline">
                 <label class="layui-form-label">医保项目编码</label>
@@ -52,16 +51,8 @@
                     <input type="text" id="QuasiFontSize" name="QuasiFontSize"  placeholder="国药准字号" autocomplete="off" class="layui-input">
                 </div>
             </div>
-            
-            @*<div class="layui-inline">
-                <label class="layui-form-label">助记码 </label>
-                <div class="layui-input-inline">
-                    <input type="text" id="MnemonicCode" name="MnemonicCode" placeholder="请输入助记码" autocomplete="off" class="layui-input">
-                </div>
-            </div>*@
             <div class="layui-inline">
                 <button class="layui-btn" lay-submit lay-filter="dataSearch" data-type="dataSearch">查询</button>
-                
             </div>
             <input type="hidden" id="empid" value="@ViewBag.empid" />
             <input type="hidden" id="DirectoryCode" value="@ViewBag.DirectoryCode" />

@@ -123,9 +123,12 @@ namespace NFine.Web.Controllers
         /// 医保目录对码
         /// </summary>
         /// <returns></returns>
-        public ActionResult MedicalDirectoryCode(string empid)
+        public ActionResult MedicalDirectoryCode(MedicalDirectoryCodeUiParam param)
         {
-            ViewBag.empid = empid;
+            ViewBag.empid = param.EmpId;
+            ViewBag.InIDirectoryCode = param.InIDirectoryCode;
+            ViewBag.InIDirectoryName = param.InIDirectoryName;
+            ViewBag.InIProjectCodeType = param.InIProjectCodeType;
             ViewBag.title = "医保目录对码";
             return View();
         }

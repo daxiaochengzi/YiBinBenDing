@@ -398,9 +398,10 @@ namespace BenDing.Service.Providers
                
                     
                 }).ToList();
+                
                 resultData = new InpatientInfoDto()
                 {
-                    DiagnosisList = diagnosisList,
+                    DiagnosisList =CommonHelp.InpatientDiagnosisSort(diagnosisList),
                     HospitalizationId = dataValue.InpatientInfoJsonData.HospitalizationId,
                     BusinessId = param.BusinessId,
                     DiagnosisJson = JsonConvert.SerializeObject(dataValue.DiagnosisJson),
@@ -763,11 +764,15 @@ namespace BenDing.Service.Providers
                         VersionNumber = ""
                     };
                     _webServiceBasic.HIS_Interface("35", JsonConvert.SerializeObject(uploadData));
+                    if (param.ProjectCodeList.Any())
+                    {
+                        param.ProjectCodeList= rowDataListAll.Select(d => d.ProjectCode).ToList();
+                    }
 
                     resultData += _medicalInsuranceSqlRepository.UpdateThreeCataloguePairCodeUpload(param);
                 }
                 //更新数据上传状态
-                idList.AddRange(sendList.Select(d => d.DirectoryCode).ToList());
+               idList.AddRange(sendList.Select(d => d.DirectoryCode).ToList());
                 a++;
 
             }

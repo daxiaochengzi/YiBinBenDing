@@ -166,11 +166,11 @@
             }
             form.render();
         }
-        //插件检查
-        //var verification = DetectActiveX(null);
-        //if (verification === false) {
-        //    return false;
-        //}
+        ////插件检查
+        var verification = DetectActiveX(null);
+        if (verification === false) {
+            return false;
+        }
         //获取医院基本信息回调方法
         window.getHospitalInfoBack = function () { };
 
@@ -223,9 +223,11 @@
                     , { field: 'BillTime', title: '费用日期', width: 160 }
                     , { field: 'RecipeCode', title: '处方号', width: 310, hide: true }
                     , { field: 'BillDepartment', title: '科室', width: 100 }
-                    , { field: 'OperateDoctorName', title: '执行医生', width: 100 }
+                    , { field: 'OperateDoctorName', title: '执行医生', width: 100, hide: true }
+                    , { field: 'ManufacturerName', title: '基层生产厂家', width:200 }
                     , { field: 'ApprovalUserName', title: '审核医生', width: 100, hide: true }
                     , { field: 'ProjectCode', title: '医保编码', width: 100 }
+                    , { field: 'Manufacturer', title: '医保生产厂家', width:200 }
                     , { field: 'ProjectCodeType', title: '医保类别', width: 100 }
                     , { field: 'UploadAmount', title: '医保上传金额', width: 100 }
                     , { field: 'ProjectLevel', title: '项目等级', width: 100 }
@@ -671,32 +673,33 @@
         //监听行工具事件
         table.on('tool(dataTableBillId)', function(obj){
             var data = obj.data;
-            debugger;
+           
             //console.log(obj)
             if (obj.event === 'PairCode'){
                 var directoryName = data.DirectoryName;
                 var directoryCode = data.DirectoryCode;
-                var directoryCategoryCode = '0';
-                var params = "?UserId=" +
+               
+                var directoryCategoryCode = data.DirectoryCategoryCode;
+               
+                var params = "?EmpId=" +
                     $("#empid").val() +
-                    "&ProjectName=" +
+                    "&InIDirectoryName=" +
                     directoryName +
-                    "&ProjectCode=" +
+                    "&InIDirectoryCode=" +
                     directoryCode +
-                    "&ProjectCodeType=" +
-                    directoryCategoryCode +
-                    "&Manufacturer=";
+                    "&InIProjectCodeType=" +
+                    directoryCategoryCode;
                     
                 //iframe层-父子操作
                 layer.open({
-                    id: 'medicalDirectoryPairCode',
+                    id: 'MedicalDirectoryCode',
                     type: 2,
                     title: '对码信息',
                     shadeClose: true, //点击遮罩关闭层
-                    area: ['1080px', '520px'],
+                    area: ['80%', '90%'],
                     fixed: false, //不固定
                     maxmin: true,
-                    content: hostPage + '/MedicalDirectoryPairCode' + params,
+                    content: hostPage + '/MedicalDirectoryCode' + params,
                     end: function() { //无论是确认还是取消，只要层被销毁了，end都会执行，不携带任何参数。layer.open关闭事件
                         //layer.open关闭刷新
                         //location.reload();

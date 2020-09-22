@@ -851,27 +851,44 @@ namespace NFine.Web.Controllers
         public ApiJsonResultData MedicalInsurancePairCode([FromBody]MedicalInsurancePairCodesUiParam param)
         {
             return new ApiJsonResultData(ModelState, new MedicalInsurancePairCodesUiParam()).RunWithTry(y =>
-           {
-               if (param.PairCodeList == null)
-               {
-                   throw new Exception("对码数据不能为空");
-               }
-               var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
-               if (userBase != null && string.IsNullOrWhiteSpace(userBase.OrganizationCode) == false)
-               {
-                   param.OrganizationCode = userBase.OrganizationCode;
-                   param.OrganizationName = userBase.OrganizationName;
-                   _medicalInsuranceSqlRepository.MedicalInsurancePairCode(param);
-                   _webServiceBasicService.ThreeCataloguePairCodeUpload(
-                        new UpdateThreeCataloguePairCodeUploadParam()
-                        {
-                            User = userBase,
-                            ProjectCodeList = param.PairCodeList.Select(c => c.ProjectCode).ToList()
-                        }
-                    );
+            {
+                if (param.PairCodeList == null)
+                {
+                    throw new Exception("对码数据不能为空");
+                }
+                var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+                if (userBase != null && string.IsNullOrWhiteSpace(userBase.OrganizationCode) == false)
+                {
+                    param.OrganizationCode = userBase.OrganizationCode;
+                    param.OrganizationName = userBase.OrganizationName;
+                    _medicalInsuranceSqlRepository.MedicalInsurancePairCode(param);
+                    _webServiceBasicService.ThreeCataloguePairCodeUpload(
+                         new UpdateThreeCataloguePairCodeUploadParam()
+                         {
+                             User = userBase,
+                             ProjectCodeList = param.PairCodeList.Select(c => c.ProjectCode).ToList()
+                         }
+                     );
 
-               }
-           });
+                }
+                //--全机构上传注释
+                //var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+                //if (userBase != null && string.IsNullOrWhiteSpace(userBase.OrganizationCode) == false)
+                //{
+                //    param.OrganizationCode = userBase.OrganizationCode;
+                //    param.OrganizationName = userBase.OrganizationName;
+
+                //    var data = _webServiceBasicService.ThreeCataloguePairCodeUpload(
+                //           new UpdateThreeCataloguePairCodeUploadParam()
+                //           {
+                //               User = userBase,
+                //               ProjectCodeList = new List<string>()
+                //           }
+                //       );
+                //    y.Data = data;
+                //}
+                //--
+            });
 
         }
         /// <summary>
@@ -1718,10 +1735,6 @@ namespace NFine.Web.Controllers
                 {
                     throw new Exception("诊断不能为空!!!");
                 }
-
-
-
-
             });
 
         }

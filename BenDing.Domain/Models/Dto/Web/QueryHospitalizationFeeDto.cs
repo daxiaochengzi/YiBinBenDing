@@ -128,6 +128,14 @@ namespace BenDing.Domain.Models.Dto.Web
         /// 限制审核人员
         /// </summary>
         public string ApprovalUserName { get; set; }
+        /// <summary>
+        /// 基层生产厂家
+        /// </summary>
+        public string ManufacturerName { get; set; }
+        /// <summary>
+        /// 医保生产厂家
+        /// </summary>
+        public string Manufacturer { get; set; }
 
     }
 }

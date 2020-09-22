@@ -23,10 +23,10 @@ namespace BenDing.Domain.Models.Params.UI
         /// his项目编号
         /// </summary>
         public string DirectoryCode { get; set; }
-        /// <summary>
-        /// 对码Id
-        /// </summary>
-        public Guid? PairCodeId { get; set; }
+        ///// <summary>
+        ///// 对码Id
+        ///// </summary>
+        //public Guid? PairCodeId { get; set; }
         ///// <summary>
         ///// 医保项目等级
         ///// </summary>

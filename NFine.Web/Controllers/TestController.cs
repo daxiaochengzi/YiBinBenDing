@@ -452,12 +452,7 @@ namespace NFine.Web.Controllers
             //if (data == null) throw new Exception("门诊费用查询出错");
             //var cc = AutoMapper.Mapper.Map<QueryOutpatientDepartmentCostjsonDto>(data);
             var ddd = new List<InpatientDiagnosisDto>();
-            ddd.Add(new InpatientDiagnosisDto()
-            {
-                IsMainDiagnosis = true,
-                ProjectCode = "T82.003",
-                DiseaseName = "主动脉机械瓣周漏"
-            });
+            
             ddd.Add(new InpatientDiagnosisDto()
             {
                 IsMainDiagnosis = false,
@@ -468,6 +463,12 @@ namespace NFine.Web.Controllers
             {
                 IsMainDiagnosis = false,
                 ProjectCode = "T82.812",
+                DiseaseName = "主动脉机械瓣周漏"
+            });
+            ddd.Add(new InpatientDiagnosisDto()
+            {
+                IsMainDiagnosis = true,
+                ProjectCode = "T82.003",
                 DiseaseName = "主动脉机械瓣周漏"
             });
             ddd.Add(new InpatientDiagnosisDto()
@@ -483,9 +484,9 @@ namespace NFine.Web.Controllers
                 DiseaseName = "膝关节假体植入感染"
             });
           //  
-         var tableData=  CommonHelp.ObjectToTable(ddd);
-            ExcelHelper.Export(tableData, "医保对码表", "c:\\成中荣新繁出差.xlsx");
-            //var ddds = CommonHelp.GetDiagnosis(ddd);
+         //var tableData=  CommonHelp.ObjectToTable(ddd);
+           // ExcelHelper.Export(tableData, "医保对码表", "c:\\成中荣新繁出差.xlsx");
+           var ddds = CommonHelp.GetDiagnosis(ddd);
 
             ////添加日志
             //var logParam = new AddHospitalLogParam()

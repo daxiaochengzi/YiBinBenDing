@@ -1028,6 +1028,7 @@ namespace BenDing.Repository.Providers.Web
         {
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
+                var threeDirectoryListNew = new List<QueryHospitalizationFeeDto>();
                 var dataListNew = new List<QueryHospitalizationFeeDto>();
                 var resultData = new Dictionary<int, List<QueryHospitalizationFeeDto>>();
 
@@ -1140,8 +1141,8 @@ namespace BenDing.Repository.Providers.Web
                                 DetailId = c.DetailId,
                                 RestrictionSign = itemPairCode?.RestrictionSign,
                                 ApprovalMark = c.ApprovalMark,
-                                ApprovalUserName = c.ApprovalUserName
-
+                                ApprovalUserName = c.ApprovalUserName,
+                                Manufacturer = itemPairCode?.Manufacturer,
                             };
                             //是否审核
                             if (param.IsExamine == 1)
@@ -1163,11 +1164,29 @@ namespace BenDing.Repository.Providers.Web
                     {
                         dataListNew = dataList;
                     }
+                    var directoryCodeListData = dataListNew.Select(d => d.DirectoryCode).ToList();
+                    string threeSqlStr = $@"select [DirectoryCode],[ManufacturerName] From [dbo].[HospitalThreeCatalogue] 
+                               where IsDelete=0 and OrganizationCode='{organizationCode}' and DirectoryCode in ({CommonHelp.ListToStr(directoryCodeListData)}) ";
+                    var threeDirectoryData = sqlConnection.Query<HospitalThreeCatalogueManufacturerNameDto>(threeSqlStr).ToList();
 
+                    if (threeDirectoryData.Any())
+                    {
+                        foreach (var itemData in dataListNew)
+                        {
+                            var itemPairCode = threeDirectoryData
+                                .FirstOrDefault(d => d.DirectoryCode == itemData.DirectoryCode);
+                            var itemDataNew = itemData;
+                            itemDataNew.ManufacturerName = itemPairCode?.ManufacturerName;
+                            threeDirectoryListNew.Add(itemDataNew);
+                        }
+                    }
+                    else
+                    {
+                        threeDirectoryListNew = dataListNew;
+                    }
                 }
-
                 sqlConnection.Close();
-                resultData.Add(totalPageCount, dataListNew);
+                resultData.Add(totalPageCount, threeDirectoryListNew);
                 return resultData;
 
             }

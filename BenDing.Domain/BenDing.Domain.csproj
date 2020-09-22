@@ -86,6 +86,7 @@
     <Compile Include="Models\Dto\OutpatientDepartment\QueryHospitalizationFeeNewDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\WorkerBirthSettlementDto.cs" />
     <Compile Include="Models\Dto\Resident\AdmissionRegistrationCancelInfoDto.cs" />
+    <Compile Include="Models\Dto\Resident\HospitalThreeCatalogueManufacturerNameDto.cs" />
     <Compile Include="Models\Dto\Resident\OrganizationInpatientDetailDto.cs" />
     <Compile Include="Models\Dto\Resident\QueryAllICD10Dto.cs" />
     <Compile Include="Models\Dto\Resident\QueryOrganizationInpatientInfoDto.cs" />
@@ -229,6 +230,7 @@
     <Compile Include="Models\Params\UI\InpatientInfosUiParam.cs" />
     <Compile Include="Models\Params\UI\LeaveHospitalSettlementCancelUiParam.cs" />
     <Compile Include="Models\Params\UI\MedicalDirectoryCodePairUiParam.cs" />
+    <Compile Include="Models\Params\UI\MedicalDirectoryCodeUiParam.cs" />
     <Compile Include="Models\Params\UI\MedicalInsuranceCardAuthenticationUiParam.cs" />
     <Compile Include="Models\Params\UI\MedicalInsurancePairCodesUiParam.cs" />
     <Compile Include="Models\Params\UI\MedicalInsurancePairCodeUiParam.cs" />

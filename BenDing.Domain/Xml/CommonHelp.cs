@@ -28,7 +28,7 @@ namespace BenDing.Domain.Xml
         {
             string resultData = null;
             //测试a
-            //resultData = "http://47.111.29.88:11013/WebService.asmx";
+           //resultData = "http://47.111.29.88:11013/WebService.asmx";
             //正式
             resultData = "http://11.21.1.11:8002/WebService.asmx";
             return resultData;
@@ -55,6 +55,7 @@ namespace BenDing.Domain.Xml
             {
                 str = str.Replace("'", "");
                 str = str.Replace(" ", "");
+                str = str.Replace("?", "");
                 str = str.Replace("\"", "");
                 str = str.Replace("&", "&amp");
                 str = str.Replace("<", "&lt");
@@ -276,19 +277,9 @@ namespace BenDing.Domain.Xml
         /// <returns></returns>
         public static DiagnosisData GetDiagnosis(List<InpatientDiagnosisDto> param)
         {
-            int dataSort = 1;
-            var paramNew = new List<InpatientDiagnosisDto>();
-            foreach (var item in param)
-            {
-                   item.DataSort = dataSort;
-                   paramNew.Add(item);
-                   dataSort++;
-            }
-            var resultData = new DiagnosisData();
-
-
+            var paramNew = InpatientDiagnosisSort(param);
+             var resultData = new DiagnosisData();
             //判断医保诊断不能为空
-
             var emptyData = paramNew.Where(c => c.ProjectCode == null).ToList();
             if (emptyData.Any())
             {
@@ -300,7 +291,6 @@ namespace BenDing.Domain.Xml
 
                 throw new Exception("当前未对码诊断:" + msg);
             }
-
             //主诊断
             var mainDiagnosisList = paramNew.Where(c => c.IsMainDiagnosis == true)
                 .Take(3).ToList();
@@ -346,6 +336,29 @@ namespace BenDing.Domain.Xml
             //}
 
             return resultData;
+        }
+        /// <summary>
+        /// 诊断排序
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static List<InpatientDiagnosisDto> InpatientDiagnosisSort(List<InpatientDiagnosisDto> param)
+        {
+            int dataSort = 2;
+            var mainDiagnosisData = param.FirstOrDefault(c => c.IsMainDiagnosis == true);
+            if (mainDiagnosisData == null) throw new Exception("主诊断不能为空!!!");
+            mainDiagnosisData.DataSort = 1;
+            var paramNew = new List<InpatientDiagnosisDto>();
+            paramNew.Add(mainDiagnosisData);
+            var unMainDiagnosis = param.Where(d => d.IsMainDiagnosis == false).ToList();
+            foreach (var item in unMainDiagnosis)
+            {
+                item.DataSort = dataSort;
+                paramNew.Add(item);
+                dataSort++;
+            }
+
+            return paramNew;
         }
 
         /// <summary>
