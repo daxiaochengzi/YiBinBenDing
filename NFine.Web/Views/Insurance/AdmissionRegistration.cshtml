@@ -111,21 +111,21 @@
                     </div>
 
                 </div>
-                @*<!--诊断部分-->
+                <!--诊断部分-->
         <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
             <legend>诊断列表</legend>
         </fieldset>
         <!--搜索部分-->
         <div class="layui-form-item">
             <div class="layui-inline">
-                <label class="layui-form-label">录入诊断</label>
+                <label class="layui-form-label" style="width: 100px;">补加医保诊断</label>
                 <div class="layui-input-inline" style="width: 280px;">
                     <input type="text" name="DiagnosisSearchData" id="DiagnosisSearchData" class="layui-input layui-disabled">
                 </div>
             </div>
 
 
-        </div>*@
+        </div>
 
                 <!--诊断列表-->
                 <table class="layui-table" id="dataTable" lay-size="sm" lay-filter="dataTable"></table>
@@ -202,19 +202,19 @@
                                 return html.join('');
                             }
                         }
-                        //,{
-                        //    title: '操作',
-                        //    fixed: 'right',
-                        //    templet: function (d) {
-                        //        return '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del" lay-id="' +
-                        //            d.ProjectCode +
-                        //            '"><i class="layui-icon layui-icon-delete"></i>移除</a>';
-                        //    }
-                        //}
+                        ,{
+                            title: '操作',
+                            fixed: 'right',
+                            templet: function (d) {
+                                return '<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del" lay-id="' +
+                                    d.ProjectCode +
+                                    '"><i class="layui-icon layui-icon-delete"></i>移除</a>';
+                            }
+                        }
                     ]
                 ]
             });
-            ////插件检查
+            //////插件检查
             var verification = DetectActiveX();
             if (verification === false) {
                 return false;
@@ -290,6 +290,7 @@
                             inpatientInfoData = data;
                             buttonStatus("queryData", true);
                             baseInfo.HospitalInfo.IdentityMark = data.Data.IdCardNo;
+                       
                         
                         }
                     },
@@ -339,7 +340,6 @@
 
             /**根据当前住院病人的业务ID查询,返回数据回显到下面表单里面*/
             $('#queryData').on('click', function () {
-
                 queryData(getInpatientInfoBack);
                 buttonStatus("queryData", false);
 
@@ -468,85 +468,84 @@
                     return false; 
                 });
 
-                        ////诊断查询
-            //var tableSelect = layui.tableSelect;
-            //tableSelect.render({
-            //    elem: '#DiagnosisSearchData',
-            //    checkedKey: 'id',
-            //    searchKey: 'Search',//搜索输入框的name值 默认keyword
-            //    searchPlaceholder: '名称/编码/助记码',	//搜索输入框的提示文字 默认关键词搜索
-            //    table: {
-            //        url: host + '/QueryICD10',
-            //        parseData: function (result) {
-            //            return {
-            //                "code": result.Code,
-            //                "msg": result.Message,
-            //                "data": result.Data.data,
-            //                "count": result.Data.count
-            //            };
-            //        },
-            //        cols: [
-            //            [
-            //                { type: 'radio' },
-            //                { field: 'DiseaseCoding', title: '基层疾病编码' },
-            //                { field: 'DiseaseName', title: '基层疾病名称' },
-            //                { field: 'ProjectCode', title: '医保疾病编码' }
+            ////诊断查询
+            var tableSelect = layui.tableSelect;
+            tableSelect.render({
+                elem: '#DiagnosisSearchData',
+                checkedKey: 'id',
+                searchKey: 'Search',//搜索输入框的name值 默认keyword
+                searchPlaceholder: '名称/编码',	//搜索输入框的提示文字 默认关键词搜索
+                table: {
+                    url: host + '/MedicalInsuranceQueryIcd10',
+                    parseData: function (result) {
+                        return {
+                            "code": result.Code,
+                            "msg": result.Message,
+                            "data": result.Data.data,
+                            "count": result.Data.count
+                        };
+                    },
+                    cols: [
+                        [
+                            { type: 'radio' },
+                            { field: 'DiseaseCoding', title: '医保疾病编码' },
+                            { field: 'DiseaseName', title: '医保疾病名称' },
+                            { field: 'ProjectCode', title: '医保疾病编码', hide: true }
 
-            //            ]
-            //        ]
-            //    },
-            //    done: function (elem, data) {
+                        ]
+                    ]
+                },
+                done: function (elem, data) {
 
-            //        //获取table缓存
-            //        var oldData = table.cache[layTableId];
-            //        var oldDataTable = new Array;
-            //        layui.each(oldData,
-            //            function (index, item) {
-            //                //排除空值
-            //                if (item.DiseaseCoding !== undefined) {
-            //                    //新增诊断编码
-            //                    var addDiseaseCoding = data.data[0].DiseaseCoding;
-            //                    //诊断去重
-            //                    if (item.DiseaseCoding !== addDiseaseCoding) {
-            //                        var itemRow = {
-            //                            DiseaseName: item.DiseaseName,
-            //                            DiseaseCoding: item.DiseaseCoding,
-            //                            IsMainDiagnosis: item.IsMainDiagnosis,
-            //                            ProjectCode: item.ProjectCode
+                    //获取table缓存
+                    var oldData = table.cache[layTableId];
+                    var oldDataTable = new Array;
+                    layui.each(oldData,
+                        function (index, item) {
+                            //排除空值
+                            if (item.DiseaseCoding !== undefined) {
+                                //新增诊断编码
+                                var addDDiseaseCoding = data.data[0].DiseaseCoding;
+                                //诊断去重
+                                if (item.DiseaseCoding !== addDDiseaseCoding) {
+                                    var itemRow = {
+                                        DiseaseName: item.DiseaseName,
+                                        DiseaseCoding: item.DiseaseCoding,
+                                        IsMainDiagnosis: item.IsMainDiagnosis,
+                                        ProjectCode: item.DiseaseCoding
 
-            //                        };
-            //                        oldDataTable.push(itemRow);
+                                    };
+                                    oldDataTable.push(itemRow);
 
-            //                    }
-            //                }
-            //            });
+                                }
+                            }
+                        });
 
-            //        var newRow = {
-            //            DiseaseName: data.data[0].DiseaseName,
-            //            DiseaseCoding: data.data[0].DiseaseCoding,
-            //            ProjectCode: data.data[0].ProjectCode,
-            //            IsMainDiagnosis: false
+                    var newRow = {
+                        DiseaseName: data.data[0].DiseaseName,
+                        DiseaseCoding: data.data[0].DiseaseCoding,
+                        ProjectCode: data.data[0].DiseaseCoding,
+                        IsMainDiagnosis: false
 
-            //        };
-            //        //添加选中后的诊断
-            //        oldDataTable.push(newRow);
+                    };
+                    //添加选中后的诊断
+                    oldDataTable.push(newRow);
 
-            //        //更新table
-            //        tableIns.reload({
-            //            data: oldDataTable
-            //        });
+                    //更新table
+                    tableIns.reload({
+                        data: oldDataTable
+                    });
 
 
 
-            //    }
-            //});
-            ////注册按钮事件
-            //$('.layui-btn[data-type]').on('click',
-            //    function () {
-            //        var type = $(this).data('type');
-            //        activeByType(type);
-            //    });
-            //------
+                }
+            });
+            //注册按钮事件
+            $('.layui-btn[data-type]').on('click',
+                function () {
+                    var type = $(this).data('type');
+                    activeByType(type);
+                });
             //定义事件集合
             var active = {
                 updateRow: function (obj) {

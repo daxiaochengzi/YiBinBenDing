@@ -210,6 +210,31 @@ namespace NFine.Web.Controllers
             });
         }
         /// <summary>
+        /// 查询医保ICD10
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiJsonResultData MedicalInsuranceQueryIcd10([FromUri]QueryICD10UiParam param)
+        {
+            return new ApiJsonResultData(ModelState, new QueryICD10InfoDto()).RunWithTry(y =>
+            {
+                if (!string.IsNullOrWhiteSpace(param.Search))
+                {
+                    param.DiseaseName = param.Search;
+                }
+
+                param.IsMedicalInsurance = 1;
+                var queryData = _hisSqlRepository.QueryICD10(param);
+
+                var data = new
+                {
+                    data = queryData.Values.FirstOrDefault(),
+                    count = queryData.Keys.FirstOrDefault()
+                };
+                y.Data = data;
+            });
+        }
+        /// <summary>
         /// icd10对码
         /// </summary>
         /// <param name="param"></param>

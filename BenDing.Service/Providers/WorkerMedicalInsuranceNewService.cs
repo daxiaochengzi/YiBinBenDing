@@ -393,7 +393,7 @@ namespace BenDing.Service.Providers
                 AdministrativeArea = gradeData.AdministrativeArea
             };
             //获取诊断
-            var diagnosisData = CommonHelp.GetDiagnosis(param.DiagnosisList);
+            var diagnosisData = CommonHelp.LeaveHospitalDiagnosis(param.DiagnosisList);
             infoParam.AdmissionMainDiagnosisIcd10 = diagnosisData.AdmissionMainDiagnosisIcd10;
             infoParam.DiagnosisIcd10Two = diagnosisData.DiagnosisIcd10Two;
             infoParam.DiagnosisIcd10Three = diagnosisData.DiagnosisIcd10Three;
@@ -950,7 +950,7 @@ namespace BenDing.Service.Providers
 
             };
             //获取诊断
-            var diagnosisData = CommonHelp.GetDiagnosis(param.DiagnosisList);
+            var diagnosisData = CommonHelp.LeaveHospitalDiagnosis(param.DiagnosisList);
             infoParam.AdmissionMainDiagnosisIcd10 = diagnosisData.AdmissionMainDiagnosisIcd10;
             infoParam.DiagnosisIcd10Two = diagnosisData.DiagnosisIcd10Two;
             infoParam.DiagnosisIcd10Three = diagnosisData.DiagnosisIcd10Three;

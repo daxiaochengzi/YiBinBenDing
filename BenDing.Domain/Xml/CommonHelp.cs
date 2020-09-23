@@ -277,7 +277,7 @@ namespace BenDing.Domain.Xml
         /// <returns></returns>
         public static DiagnosisData GetDiagnosis(List<InpatientDiagnosisDto> param)
         {
-            var paramNew = InpatientDiagnosisSort(param);
+             var paramNew = InpatientDiagnosisSort(param);
              var resultData = new DiagnosisData();
             //判断医保诊断不能为空
             var emptyData = paramNew.Where(c => c.ProjectCode == null).ToList();
@@ -292,7 +292,7 @@ namespace BenDing.Domain.Xml
                 throw new Exception("当前未对码诊断:" + msg);
             }
             //主诊断
-            var mainDiagnosisList = paramNew.Where(c => c.IsMainDiagnosis == true)
+            var mainDiagnosisList = param.Where(c => c.IsMainDiagnosis == true)
                 .Take(3).ToList();
             if (mainDiagnosisList.Any() == false) throw new Exception("主诊断不能为空!!!");
             if (mainDiagnosisList.Count > 1) throw new Exception("主诊断只能一个!!!");
@@ -320,23 +320,100 @@ namespace BenDing.Domain.Xml
             }
 
             resultData.DiagnosisDescribe = GetDiagnosisDescribeNew(paramNew);
-            //if (mainDiagnosisList.Any())
-            //{
-            //    var diagnosisIcd10Two = nextDiagnosisList.Take(3).ToList();
-            //    resultData.DiagnosisDescribe = GetDiagnosisDescribe(resultData.DiagnosisDescribe, diagnosisIcd10Two);
-            //    resultData.DiagnosisIcd10Two = CommonHelp.DiagnosisStr(diagnosisIcd10Two);
-            //    if (nextDiagnosisList.Count > 3)
-            //    {
-            //        //第三诊断
-            //        resultData.DiagnosisIcd10Three = CommonHelp.DiagnosisStr(nextDiagnosisList
-            //            .Where(d => !diagnosisIcd10Two.Contains(d)).Take(3).ToList());
-            //        resultData.DiagnosisDescribe =
-            //            GetDiagnosisDescribe(resultData.DiagnosisDescribe, diagnosisIcd10Two);
-            //    }
-            //}
-
+           
             return resultData;
         }
+
+        /// <summary>
+        /// 出院诊断
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static DiagnosisData LeaveHospitalDiagnosis(List<InpatientDiagnosisDto> param)
+        {
+            var paramNew = InpatientDiagnosisSort(param);
+            var resultData = new DiagnosisData();
+            //判断医保诊断不能为空
+            var emptyData = paramNew.Where(c => c.ProjectCode == null).ToList();
+            if (emptyData.Any())
+            {
+                string msg = "";
+                foreach (var item in emptyData)
+                {
+                    msg += "[" + item.DiseaseName + "]" + "[" + item.DiseaseCoding + "]:";
+                }
+
+                throw new Exception("当前未对码诊断:" + msg);
+            }
+
+            //主诊断
+            var mainDiagnosisList = param.Where(c => c.IsMainDiagnosis == true)
+                .Take(3).ToList();
+            if (mainDiagnosisList.Any() == false) throw new Exception("主诊断不能为空!!!");
+            if (mainDiagnosisList.Count > 1) throw new Exception("主诊断只能一个!!!");
+            int num = 1;
+
+            foreach (var item in paramNew)
+            {
+                if (resultData.AdmissionMainDiagnosisIcd10 == null)
+                {
+                    resultData.AdmissionMainDiagnosisIcd10 = item.ProjectCode;
+
+                }
+                else
+                {
+                    if ((resultData.AdmissionMainDiagnosisIcd10.Length + item.ProjectCode.Length) < 19 && num <= 3)
+                    {
+                        resultData.AdmissionMainDiagnosisIcd10 += "," + item.ProjectCode;
+                    }
+                    else
+                    {
+                        if (resultData.DiagnosisIcd10Two == null)
+                        {
+                            resultData.DiagnosisIcd10Two = item.ProjectCode;
+
+                        }
+                        else
+                        {
+                            if ((resultData.DiagnosisIcd10Two.Length + item.ProjectCode.Length) < 19 && num <= 6)
+                            {
+                                resultData.DiagnosisIcd10Two += "," + item.ProjectCode;
+
+                            }
+                            else
+                            {
+                                if (resultData.DiagnosisIcd10Three == null)
+                                {
+                                    resultData.DiagnosisIcd10Three = item.ProjectCode;
+
+                                }
+                                else
+                                {
+
+                                    if ((resultData.DiagnosisIcd10Three.Length + item.ProjectCode.Length) < 19 && num <= 9)
+                                    {
+                                        resultData.DiagnosisIcd10Three += "," + item.ProjectCode;
+
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+
+
+
+                }
+
+                num++;
+
+
+            }
+            resultData.DiagnosisDescribe =
+                GetDiagnosisDescribe("", paramNew.Take(9).ToList());
+            return resultData;
+        }
+
         /// <summary>
         /// 诊断排序
         /// </summary>
@@ -466,7 +543,7 @@ namespace BenDing.Domain.Xml
             {
                 if (!string.IsNullOrEmpty(resultData))
                 {
-                    if ((resultData.Length + item.DiseaseName.Length)< 150)//控制长度小于150
+                    if ((resultData.Length + item.DiseaseName.Length)< 190)//控制长度小于150
                     {
                       
                         resultData = resultData + "," + item.DiseaseName;

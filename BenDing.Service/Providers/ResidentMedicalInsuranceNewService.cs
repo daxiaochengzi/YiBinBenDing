@@ -377,7 +377,7 @@ namespace BenDing.Service.Providers
                 LeaveHospitalInpatientState = param.LeaveHospitalInpatientState,
             };
             //获取诊断
-            var diagnosisData = CommonHelp.GetDiagnosis(param.DiagnosisList);
+            var diagnosisData = CommonHelp.LeaveHospitalDiagnosis(param.DiagnosisList);
             settlementParam.LeaveHospitalMainDiagnosisIcd10 = diagnosisData.AdmissionMainDiagnosisIcd10;
             settlementParam.LeaveHospitalDiagnosisIcd10Two = diagnosisData.DiagnosisIcd10Two;
             settlementParam.LeaveHospitalDiagnosisIcd10Three = diagnosisData.DiagnosisIcd10Three;
