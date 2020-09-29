@@ -83,6 +83,10 @@ namespace BenDing.Domain.Models.Dto.Web
         /// </summary>
          public  int IsBirthHospital { get; set; }
         /// <summary>
+        /// 结算类型
+        /// </summary>
+        public string SettlementType { get; set; }
+        /// <summary>
         /// 结算信息
         /// </summary>
         public List<PayMsgData> PayMsg { get; set; } = null;

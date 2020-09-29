@@ -1,6 +1,7 @@
 ﻿@{
     Layout = "~/Views/Shared/_Base.cshtml";
 }
+<link href="~/Content/js/layui/css/modules/layuiAutocomplete.css" rel="stylesheet" />
 <script src="~/script/BenDingComm.js"></script>
 <style>
     .layui-card-header.layuibd-card-header-auto {
@@ -45,14 +46,14 @@
                             <input type="text" name="AdmissionDate" id="AdmissionDate" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input">
                         </div>
                     </div>
-                    <div class="layui-inline layer_update">
+                    @*<div class="layui-inline layer_update">
                         <label class="layui-form-label">住院科室</label>
                         <div class="layui-input-inline">
                             <select name="InpatientDepartmentCode" id="InpatientDepartmentCode">
-                                <option value="">请选择科室</option>
+                                <option value="" selected="selected">请选择科室</option>
                             </select>
                         </div>
-                    </div>
+                    </div>*@
 
                     <div class="layui-inline ">
                         <label class="layui-form-label">床位号</label>
@@ -173,7 +174,7 @@
         });
        
             //---------
-        //插件检查
+        ////插件检查
         var verification = DetectActiveX();
         if (verification === false) {
             return false;
@@ -313,9 +314,9 @@
                             $("#FetusNumberDiv").hide();
                             $("#HouseholdNatureDiv").hide();
                         }
-                        //默认选择的科室ID
-                        var departmentCode = data.InpatientDepartmentCode;
-                        selectDepartmentName(departmentCode);
+                        ////默认选择的科室ID
+                        //var departmentCode = data.InpatientDepartmentCode;
+                        //selectDepartmentName(departmentCode);
                         //表单初始赋值
                         form.val('LAY-form-render', data);
                        
@@ -475,36 +476,36 @@
             });
             //---
         //科室数据
-        function selectDepartmentName(defaultCode) {
-            $.ajax({
-                url: host +'/QueryInformationInfo',
-                dataType: "json",
-                async: false,
-                data: { "DirectoryType": "0", "UserId": $("#empid").val() },
-                success: function (res) {
-                    var list = res.Data; //返回的数据
-                    var deptSel = document.getElementById("InpatientDepartmentCode"); //add_role_name给select定义的id
-                    for (var i = 0; i < list.length; i++) {
-                        var option = document.createElement("option"); // 创建添加option属性
-                        var lay_value = list[i].DirectoryCode;
-                        option.setAttribute("value", lay_value); // 给option的value添加值
-                        option.innerText = list[i].DirectoryName; // 打印option对应的纯文本
-                        deptSel.appendChild(option); // 给select 添加option子标签
-                        form.render(); // 刷性select，显示出数据
-                    }
-                    //状态选中项
-                    var opts = $('.layer_update .layui-input-inline dl.layui-anim dd');
-                    for (var i = 0; i < opts.length; i++) {
+        //function selectDepartmentName(defaultCode) {
+        //    $.ajax({
+        //        url: host +'/QueryInformationInfo',
+        //        dataType: "json",
+        //        async: false,
+        //        data: { "DirectoryType": "0", "UserId": $("#empid").val() },
+        //        success: function (res) {
+        //            var list = res.Data; //返回的数据
+        //            var deptSel = document.getElementById("InpatientDepartmentCode"); //add_role_name给select定义的id
+        //            for (var i = 0; i < list.length; i++) {
+        //                var option = document.createElement("option"); // 创建添加option属性
+        //                var lay_value = list[i].DirectoryCode;
+        //                option.setAttribute("value", lay_value); // 给option的value添加值
+        //                option.innerText = list[i].DirectoryName; // 打印option对应的纯文本
+        //                deptSel.appendChild(option); // 给select 添加option子标签
+        //                form.render(); // 刷性select，显示出数据
+        //            }
+        //            //状态选中项
+        //            var opts = $('.layer_update .layui-input-inline dl.layui-anim dd');
+        //            for (var i = 0; i < opts.length; i++) {
                       
                     
-                        if (opts[i].getAttribute('lay-value') === defaultCode) {
-                            var select = 'dd[lay-value=' + opts[i].getAttribute('lay-value') + ']';
-                            $('#InpatientDepartmentCode').siblings("div.layui-form-select").find('dl').find(select).click();
-                        }
-                    }
-                }
-            });
-        }
+        //                if (opts[i].getAttribute('lay-value') === defaultCode) {
+        //                    var select = 'dd[lay-value=' + opts[i].getAttribute('lay-value') + ']';
+        //                    $('#InpatientDepartmentCode').siblings("div.layui-form-select").find('dl').find(select).click();
+        //                }
+        //            }
+        //        }
+        //    });
+        //}
 
 
     });

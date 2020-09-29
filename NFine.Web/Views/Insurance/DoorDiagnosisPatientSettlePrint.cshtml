@@ -77,11 +77,11 @@
                         </div>
                     </div>
                     @*<div class="layui-inline">
-            <label class="layui-form-label">报销金额</label>
-            <div class="layui-input-inline">
-                <input type="text" id="ReimbursementExpenses" name="ReimbursementExpenses" autocomplete="off" disabled class="layui-input layui-disabled">
-            </div>
-        </div>*@
+                   <label class="layui-form-label">报销金额</label>
+                  <div class="layui-input-inline">
+                  <input type="text" id="ReimbursementExpenses" name="ReimbursementExpenses" autocomplete="off" disabled class="layui-input layui-disabled">
+                </div>
+               </div>*@
 
 
                     <div class="layui-inline">
@@ -97,11 +97,11 @@
                         </div>
                     </div>
                     @*<div class="layui-inline">
-            <label class="layui-form-label">发票号</label>
-            <div class="layui-input-inline">
-                <input type="text" name="InvoiceNo" autocomplete="off" disabled class="layui-input layui-disabled">
-            </div>
-        </div>*@
+                    <label class="layui-form-label">发票号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="InvoiceNo" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>*@
                     <div class="layui-form-item">
                         <label class="layui-form-label">
                             取消原因
@@ -148,6 +148,8 @@
         iniMsg = layer;
         //是否生育结算
         var isBirthHospital = null;
+        //结算类别
+        var settlementType = null;
         //form数据回显:数据回显到Form表单主体部分
         var jsonToForm = function (jsonData, formFilter) {
             //给表单赋值
@@ -229,20 +231,9 @@
                         //普通门诊取消结算
                         var activeData;
                         var activeJsonData;
-                        if (isBirthHospital === 0) {
-                            activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"CancelOutpatientDepartmentCost");
-                          
-                            activeJsonData = JSON.parse(activeData);
-                            if (activeJsonData.Success === false) {
-                                msgError(activeJsonData.Message);
-                            } else {
-                                CancelOutpatientDepartmentCost();
-                            }
-                      
-                        }
-                        //计划生育门诊取消结算
-                        if (isBirthHospital === 1) {
-                            activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"OutpatientPlanBirthSettlementCancel");
+                        //刷卡
+                        if (settlementType === "2") {
+                            activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"WorkerCancelSettlementCard");
                            
                             activeJsonData = JSON.parse(activeData);
                             if (activeJsonData.Success === false) {
@@ -250,8 +241,37 @@
                             } else {
                                 CancelOutpatientDepartmentCost();
                             }
+                        }
+                        //电子凭证
+                       else if (settlementType === "3") {
+
+                        }//计划生育
+                        else if (settlementType ===null) {
+                            if (isBirthHospital === 0) {
+                                activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"CancelOutpatientDepartmentCost");
                           
-                        } 
+                                activeJsonData = JSON.parse(activeData);
+                                if (activeJsonData.Success === false) {
+                                    msgError(activeJsonData.Message);
+                                } else {
+                                    CancelOutpatientDepartmentCost();
+                                }
+                      
+                            }
+                            //计划生育门诊取消结算
+                            if (isBirthHospital === 1) {
+                                activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"OutpatientPlanBirthSettlementCancel");
+                           
+                                activeJsonData = JSON.parse(activeData);
+                                if (activeJsonData.Success === false) {
+                                    msgError(activeJsonData.Message);
+                                } else {
+                                    CancelOutpatientDepartmentCost();
+                                }
+                          
+                            } 
+                        }
+                        
                     }
                 }
 

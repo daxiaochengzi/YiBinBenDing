@@ -86,5 +86,30 @@ namespace BenDing.Service.Interfaces
         /// </summary>
         /// <param name="param"></param>
         void MonthlyHospitalization(MonthlyHospitalizationUiParam param);
+        /// <summary>
+        /// 获取门诊电子卡参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        NationEcTransParam OutpatientNationEcTransParam(OutpatientNationEcTransUiParam param);
+        /// <summary>
+        /// 电子医保支付
+        /// </summary>
+        /// <param name="param"></param>
+         void OutpatientNationEcTrans(OutpatientNationEcTransUiParam param);
+        /// <summary>
+        /// 获取划卡参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+         WorkerHospitalSettlementCardParam WorkerOutpatientSettlementCardParam(
+            WorkerHospitalSettlementCardUiParam param);
+        /// <summary>
+        /// 门诊划卡
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+         WorkerHospitalSettlementCardBackDto WorkerOutpatientSettlementCard(
+            WorkerHospitalSettlementCardUiParam param);
     }
 }

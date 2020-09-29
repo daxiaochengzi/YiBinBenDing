@@ -88,7 +88,7 @@ namespace BenDing.Service.Providers
             //回参构建
             var xmlData = new HospitalizationRegisterXml()
             {
-                MedicalInsuranceType = "1",
+                MedicalInsuranceType = "310",
                 MedicalInsuranceHospitalizationNo = registerData.MedicalInsuranceHospitalizationNo,
                 InsuranceNo = null,
             };
@@ -655,7 +655,7 @@ namespace BenDing.Service.Providers
             //回参构建
             var xmlData = new HospitalizationRegisterXml()
             {
-                MedicalInsuranceType = "1",
+                MedicalInsuranceType = "310",
                 MedicalInsuranceHospitalizationNo = data.MedicalInsuranceInpatientNo,
                 InsuranceNo = null,
             };

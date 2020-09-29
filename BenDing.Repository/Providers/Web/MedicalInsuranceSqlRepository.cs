@@ -77,7 +77,7 @@ namespace BenDing.Repository.Providers.Web
                             strSql = $@" update MedicalInsurance set SettlementUserId='{param.UserId}',SettlementTime=GETDATE(),MedicalInsuranceState={(int)param.MedicalInsuranceState},
                                     OtherInfo='{param.OtherInfo}',MedicalInsuranceAllAmount={param.MedicalInsuranceAllAmount},
                                     SelfPayFeeAmount= {param.SelfPayFeeAmount},ReimbursementExpensesAmount={param.ReimbursementExpensesAmount},
-                                    SettlementNo='{param.SettlementNo}',SettlementTransactionId='{param.SettlementTransactionId}'
+                                    SettlementNo='{param.SettlementNo}',SettlementTransactionId='{param.SettlementTransactionId}',SettlementType='{param.SettlementType}'
                                     where Id='{param.Id}' ";
                         }
                         else if (!string.IsNullOrWhiteSpace(param.WorkersStrokeCardNo))
@@ -186,6 +186,7 @@ namespace BenDing.Repository.Providers.Web
                               ,[IsBirthHospital]
                               ,[IdentityMark]
                               ,[AfferentSign]
+                              ,[SettlementType]
                             FROM [dbo].[MedicalInsurance]
                             where  IsDelete=0";
                     if (!string.IsNullOrWhiteSpace(param.DataId))

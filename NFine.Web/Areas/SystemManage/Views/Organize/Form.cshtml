@@ -95,11 +95,28 @@
                 <tr>
                     <th class="formTitle">医院行政区域</th>
                     <td class="formValue">
-                        <input id="F_AdministrativeArea" name="F_AdministrativeArea" type="text" class="form-control required"   placeholder="医院行政区域"/>
+                        <select id="F_AdministrativeArea" name="F_AdministrativeArea" class="form-control">
+                            <option value="511599" selected="selected">市本级</option>
+                            <option value="511502">翠屏区</option>
+                            <option value="511521">宜宾县</option>
+                            <option value="511522">南溪区</option>
+                            <option value="511523">江安县</option>
+                            <option value="511524">长宁县</option>
+                            <option value="511525">高县</option>
+                            <option value="511526">珙县</option>
+                            <option value="511527">筠连县</option>
+                            <option value="511528">兴文县</option>
+                            <option value="511529">屏山县</option>
+                        </select>
                     </td>
-                    <th class="formTitle">地址</th>
+
+                    @*<th class="formTitle">医院行政区域</th>
                     <td class="formValue">
-                        <input id="F_Address" name="F_Address" type="text" class="form-control" />
+                        <input id="F_AdministrativeArea" name="F_AdministrativeArea" type="text" class="form-control required"   placeholder="医院行政区域"/>
+                    </td>*@
+                    <th class="formTitle">医院医保编码</th>
+                    <td class="formValue">
+                        <input id="F_MedicalInsuranceHandleNo" name="F_MedicalInsuranceHandleNo" type="text" class="form-control required" placeholder="医院医保编码"/>
                     </td>
 
 

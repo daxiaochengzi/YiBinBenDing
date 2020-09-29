@@ -83,8 +83,10 @@
     <Compile Include="Models\Dto\JsonEntity\WorkerBirthPreSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\WorkerHospitalizationPreSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\GetOutpatientSettlementCancelDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\NationEcTransDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\QueryHospitalizationFeeNewDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\WorkerBirthSettlementDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\WorkerHospitalSettlementCardBackDto.cs" />
     <Compile Include="Models\Dto\Resident\AdmissionRegistrationCancelInfoDto.cs" />
     <Compile Include="Models\Dto\Resident\HospitalThreeCatalogueManufacturerNameDto.cs" />
     <Compile Include="Models\Dto\Resident\OrganizationInpatientDetailDto.cs" />
@@ -146,7 +148,6 @@
     <Compile Include="Models\Dto\Workers\WorkerHospitalizationPreSettlementDto.cs" />
     <Compile Include="Models\Dto\Workers\WorkerStrokeCardDto.cs" />
     <Compile Include="Models\Dto\Workers\WorkerHospitalizationRegisterDto.cs" />
-    <Compile Include="Models\Enums\LeaveHospitalInpatientState.cs" />
     <Compile Include="Models\Enums\MedicalInsuranceState.cs" />
     <Compile Include="Models\Enums\OrganizationGrade.cs" />
     <Compile Include="Models\Enums\PeopleType.cs" />
@@ -180,12 +181,15 @@
     <Compile Include="Models\Params\OutpatientDepartment\CancelOutpatientDepartmentCostUiParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\ICD10InfoRowParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\MonthlyHospitalizationParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\NationEcTransParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\OutpatientDepartmentCostInputParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\OutpatientPlanBirthSettlementCancelParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\OutpatientPlanBirthSettlementParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\OutpatientPlanBirthSettlementQueryParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\QueryOutpatientDepartmentCostParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\SaveOutpatientDetailParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\WorkerCancelSettlementCardParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\WorkerHospitalSettlementCardParam.cs" />
     <Compile Include="Models\Params\Resident\AddProjectBatchParam.cs" />
     <Compile Include="Models\Params\Resident\AdjustmentDifferenceValueParam.cs" />
     <Compile Include="Models\Params\Resident\BatchConfirmParam.cs" />
@@ -271,6 +275,7 @@
     <Compile Include="Models\Params\UI\MedicalInsuranceXmlUiParam.cs" />
     <Compile Include="Models\Params\UI\ModifyWorkerHospitalizationUiParam.cs" />
     <Compile Include="Models\Params\UI\MonthlyHospitalizationUiParam.cs" />
+    <Compile Include="Models\Params\UI\OutpatientNationEcTransUiParam.cs" />
     <Compile Include="Models\Params\UI\OutpatientPlanBirthPreSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\GetOutpatientPlanBirthSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\OutpatientPlanBirthSettlementUiParam.cs" />
@@ -295,6 +300,7 @@
     <Compile Include="Models\Params\UI\WorkerBirthSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\WorKerHospitalizationRegisterUiParam.cs" />
     <Compile Include="Models\Params\UI\WorkerHospitalizationSettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\WorkerHospitalSettlementCardUiParam.cs" />
     <Compile Include="Models\Params\UI\WorkerStrokeCardUiParam.cs" />
     <Compile Include="Models\Params\Web\DeleteDatabaseParam.cs" />
     <Compile Include="Models\Params\Web\CatalogParam.cs" />

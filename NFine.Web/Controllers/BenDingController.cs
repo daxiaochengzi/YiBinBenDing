@@ -563,7 +563,7 @@ namespace NFine.Web.Controllers
                 data.Operator = settlementData.LeaveHospitalOperator;
                 data.IsBirthHospital = queryData.IsBirthHospital;
                 data.Operator = settlementData.LeaveHospitalOperator;
-                data.DiagnosisList = settlementData.DiagnosisList;
+                data.DiagnosisList =CommonHelp.InpatientDiagnosisSort(settlementData.DiagnosisList);
                 data.InsuranceType = queryData.InsuranceType;
                 data.LeaveHospitalDate = settlementData.LeaveHospitalDate;
                 y.Data = data;
@@ -607,7 +607,7 @@ namespace NFine.Web.Controllers
                  if (settlementData.LeaveHospitalDate == null) throw new Exception("当前病人没有办理出院，不能办理医保结算!!!");
 
                  data.Operator = settlementData.LeaveHospitalOperator;
-                 data.DiagnosisList = settlementData.DiagnosisList;
+                 data.DiagnosisList =CommonHelp.InpatientDiagnosisSort(settlementData.DiagnosisList);
                  data.InsuranceType = queryData.InsuranceType;
                  data.LeaveHospitalDate = settlementData.LeaveHospitalDate;
                  data.IsBirthHospital = queryData.IsBirthHospital;

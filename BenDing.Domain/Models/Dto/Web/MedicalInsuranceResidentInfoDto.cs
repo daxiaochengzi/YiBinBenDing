@@ -85,5 +85,10 @@ namespace BenDing.Domain.Models.Dto.Web
         /// 传入标志
         /// </summary>
         public string AfferentSign { get; set; }
+        /// <summary>
+        /// 结算类别
+        /// </summary>
+        public string SettlementType { get; set; }
+        
     }
 }

@@ -366,11 +366,11 @@ namespace NFine.Web.Controllers
                 resultData.SelfPayFeeAmount = queryOutpatientData.SelfPayFeeAmount;
                 resultData.MedicalTreatmentTotalCost = queryOutpatientData.AllAmount;
                 resultData.SettlementNo = cancelSettlementData.SettlementNo;
+                resultData.SettlementType = residentData.SettlementType;
                 if (!string.IsNullOrWhiteSpace(residentData.OtherInfo))
                 {
                     resultData.PayMsg = CommonHelp.GetPayMsg(residentData.OtherInfo);
                 }
-
                 resultData.IsBirthHospital = residentData.IsBirthHospital;
                 y.Data = resultData;
 
@@ -422,6 +422,74 @@ namespace NFine.Web.Controllers
             });
 
         }
+        /// <summary>
+        /// 获取门诊电子卡参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData OutpatientNationEcTransParam([FromBody]OutpatientNationEcTransUiParam  param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+              
+              var data=  _outpatientDepartmentNewService.OutpatientNationEcTransParam(param);
+                y.Data = XmlSerializeHelper.XmlSerialize(data);
+            });
+
+        }
+
+        /// <summary>
+        /// 门诊电子支付
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData OutpatientNationEcTrans([FromBody]OutpatientNationEcTransUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+             _outpatientDepartmentNewService.OutpatientNationEcTrans(param);
+               
+            });
+
+        }
+
+        /// <summary>
+        /// 获取门诊划卡参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData WorkerOutpatientSettlementCardParam([FromBody]WorkerHospitalSettlementCardUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                var data = _outpatientDepartmentNewService.WorkerOutpatientSettlementCardParam(param);
+                y.Data = data;
+            });
+
+        }
+        /// <summary>
+        /// 门诊划卡
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData WorkerOutpatientSettlementCard([FromBody]WorkerHospitalSettlementCardUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                var data = _outpatientDepartmentNewService.WorkerOutpatientSettlementCard(param);
+                y.Data = new OutpatientCostReturnDataDto()
+                {
+                    SelfPayFeeAmount = data.CashPayment,
+                    PayMsg = CommonHelp.GetPayMsg(JsonConvert.SerializeObject(data))
+                };
+            });
+
+        }
+
         #endregion
         #region 公共信息
         /// <summary>

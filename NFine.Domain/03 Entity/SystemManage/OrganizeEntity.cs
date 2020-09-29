@@ -57,5 +57,9 @@ namespace NFine.Domain.Entity.SystemManage
         /// 医保密码
         /// </summary>
         public string F_MedicalInsurancePwd { get; set; }
+        /// <summary>
+        /// 医保密码
+        /// </summary>
+        public string F_MedicalInsuranceHandleNo { get; set; }
     }
 }

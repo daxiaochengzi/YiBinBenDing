@@ -73,6 +73,10 @@ namespace BenDing.Domain.Models.Params.Web
         /// </summary>
 
         public string CancelSettlementRemarks { get; set; }
+        /// <summary>
+        /// 结算类别 2 刷卡 3 电子凭证
+        /// </summary>
+        public string SettlementType { get; set; }
 
     }
 }

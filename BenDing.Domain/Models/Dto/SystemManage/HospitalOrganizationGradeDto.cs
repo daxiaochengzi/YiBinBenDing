@@ -24,5 +24,9 @@ namespace BenDing.Domain.Models.Dto.SystemManage
         /// 医保密码
         /// </summary>
         public  string MedicalInsurancePwd { get; set; }
+        /// <summary>
+        /// 医保固定编码
+        /// </summary>
+        public string MedicalInsuranceHandleNo { get; set; }
     }
 }

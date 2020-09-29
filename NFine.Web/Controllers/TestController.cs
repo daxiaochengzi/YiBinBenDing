@@ -531,46 +531,7 @@ namespace NFine.Web.Controllers
                 ProjectCode = "4膝关节假体植入",
                 DiseaseName = "4"
             });
-            ddd.Add(new InpatientDiagnosisDto()
-            {
-                IsMainDiagnosis = false,
-                ProjectCode = "5膝关节假体植入",
-                DiseaseName = "5"
-            });
-            ddd.Add(new InpatientDiagnosisDto()
-            {
-                IsMainDiagnosis = false,
-                ProjectCode = "6膝关节假体植入",
-                DiseaseName = "6"
-            });
-            ddd.Add(new InpatientDiagnosisDto()
-            {
-                IsMainDiagnosis = false,
-                ProjectCode = "7膝关节假体植入",
-                DiseaseName = "7"
-            });
-            ddd.Add(new InpatientDiagnosisDto()
-            {
-                IsMainDiagnosis = false,
-                ProjectCode = "8膝关节假体植入",
-                DiseaseName = "8"
-            });
-            ddd.Add(new InpatientDiagnosisDto()
-            {
-                IsMainDiagnosis = false,
-                ProjectCode = "9膝关节假体植入",
-                DiseaseName = "9"
-            });
-            ddd.Add(new InpatientDiagnosisDto()
-            {
-                IsMainDiagnosis = false,
-                ProjectCode = "10膝关节假体植入感染",
-                DiseaseName = "10"
-            });
-
             var dds = CommonHelp.LeaveHospitalDiagnosis(ddd);
-
-
         }
 
         /// <summary>
