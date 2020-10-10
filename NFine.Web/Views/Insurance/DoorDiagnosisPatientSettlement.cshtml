@@ -32,7 +32,6 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">结算方式</label>
                     <div class="layui-input-block">
-                       
                         <input type="radio" id="SettlementThree" name="Settlement" value="2" title="门诊刷卡结算" checked="">
                         <input type="radio" id="SettlementTwo" name="Settlement" value="1" title="职工计划生育结算" >
                         <input type="radio" id="SettlementOne" name="Settlement" value="3" title="医保电子凭证结算" >
@@ -190,7 +189,7 @@
         $("#DoorDiagnosisSettlementDiv").hide();
         $("#queryDataDiv").hide();
         $("#passwordDiv").hide();
-        
+        baseInfo.PageFunction.FunctionName = "Outpatient";
        // 插件检查
         //var verification = DetectActiveX();
         //if (verification === false) {

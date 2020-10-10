@@ -87,6 +87,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
         public ActionResult GetFormJson(string keyValue)
         {
             var data = organizeApp.GetForm(keyValue);
+          
             return Content(data.ToJson());
         }
         [HttpPost]

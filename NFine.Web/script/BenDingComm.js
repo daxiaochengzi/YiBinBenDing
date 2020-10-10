@@ -1,6 +1,9 @@
 ﻿
 var baseInfo = {
-    HospitalInfo: {
+    PageFunction: {
+        "FunctionName": null//页功能名称
+},
+HospitalInfo:{
         "Account": null,//账户
         "Pwd": null,  // 密码
         "OperatorId": null,   //操作人员
@@ -134,8 +137,44 @@ function getHospitalInfo(getHospitalInfoParam) {
             if (data.Success === false) {
                 var errData = data.Message;
                 msgError(errData);
+                return false;
             } else {
-               
+                if (data.Data.Msg !== null && data.Data.IsSuspend===0) {
+                    msgError(data.Data.Msg);
+                   
+                }
+                if (data.Data.IsSuspend === 1) {
+                    msgError("当前服务暂停!!!");
+                    return false;
+
+                }
+                if (baseInfo.PageFunction.FunctionName !== null)
+                {
+                    if (baseInfo.PageFunction.FunctionName === "Outpatient") {
+                        if (data.Data.Outpatient !== 1) {
+                            msgError("该院未有门诊医保使用权限!!!");
+                            return false;
+                        }
+                    }
+                    if (baseInfo.PageFunction.FunctionName === "Hospital") {
+                        if (data.Data.Hospital !== 1) {
+                            msgError("该院未有住院医保使用权限!!!");
+                            return false;
+                        }
+                    }
+                    if (baseInfo.PageFunction.FunctionName === "BirthHospital") {
+                        if (data.Data.BirthHospital !== 1) {
+                            msgError("该院未有住院生育医保使用权限!!!");
+                            return false;
+                        }
+                    }
+                    if (baseInfo.PageFunction.FunctionName === "AnotherPlace") {
+                        if (data.Data.AnotherPlace !== 1) {
+                            msgError("该院未有门诊医保使用权限!!!");
+                            return false;
+                        }
+                    }
+                }
 
                 baseInfo.HospitalInfo["Account"] = data.Data.MedicalInsuranceAccount;
                 baseInfo.HospitalInfo["Pwd"] = data.Data.MedicalInsurancePwd;

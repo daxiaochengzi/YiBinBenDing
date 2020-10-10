@@ -214,7 +214,8 @@
                     ]
                 ]
             });
-            //////插件检查
+            baseInfo.PageFunction.FunctionName = "Hospital";
+            //插件检查
             var verification = DetectActiveX();
             if (verification === false) {
                 return false;

@@ -93,7 +93,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <th class="formTitle">医院行政区域</th>
+                    <th class="formTitle">行政区域</th>
                     <td class="formValue">
                         <select id="F_AdministrativeArea" name="F_AdministrativeArea" class="form-control">
                             <option value="511599" selected="selected">市本级</option>
@@ -121,7 +121,17 @@
 
 
                 </tr>
-                <tr>
+                
+                <tr >
+                    <th class="formTitle">有效时间</th>
+                    <td class="formValue"  >
+                        <input type="text" class="Wdate" name="F_EffectiveTime" id="F_EffectiveTime"
+                               onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', minDate: '#F{$dp.$D(\'F_EffectiveTime\')||\'new Date()\'}', readOnly: true });" style="width: 220px;height: 35px"/>
+                        @*<input id="F_EffectiveTime" name="F_EffectiveTime" type="text" class="form-control"/>*@
+                    </td>
+                </tr>
+
+                @*<tr>
                     <th class="formTitle">负责人</th>
                     <td class="formValue">
                         <input id="F_ManagerId" name="F_ManagerId" type="text" class="form-control" />
@@ -130,23 +140,36 @@
                     <td class="formValue">
                         <input id="F_MobilePhone" name="F_MobilePhone" type="text" class="form-control" />
                     </td>
-                </tr>
-                <tr>
+                </tr>*@
+                <tr >
                     <th class="formTitle" style="height: 35px;">选项</th>
-                    <td class="formValue" colspan="3" style="padding-top: 1px;">
+                    <td class="formValue" colspan="3"  style="padding-top: 1px;">
                         <div class="ckbox">
                             <input id="F_EnabledMark" name="F_EnabledMark" type="checkbox" checked="checked"><label for="F_EnabledMark">有效</label>
                         </div>
+                        <div class="ckbox">
+                            <input id="F_Outpatient" name="F_Outpatient" type="checkbox" checked="checked"><label for="F_Outpatient">门诊</label>
+                        </div>
+                        <div class="ckbox">
+                            <input id="F_Hospital" name="F_Hospital" type="checkbox" checked="checked"><label for="F_Hospital">住院</label>
+                        </div>
+                        <div class="ckbox">
+                            <input id="F_BirthHospital" name="F_BirthHospital" type="checkbox" checked="checked"><label for="F_BirthHospital">生育</label>
+                        </div>
+                        <div class="ckbox">
+                            <input id="F_AnotherPlace" name="F_AnotherPlace" type="checkbox" checked="checked"><label for="F_AnotherPlace">异地</label>
+                        </div>
                     </td>
+               
                 </tr>
-                <tr>
+                @*<tr>
                     <th class="formTitle" valign="top" style="padding-top: 5px;">
                         备注
                     </th>
                     <td class="formValue" colspan="3">
                         <textarea id="F_Description" name="F_Descriptions" class="form-control" style="height: 60px;"></textarea>
                     </td>
-                </tr>
+                </tr>*@
             </table>
         </div>
     </div>

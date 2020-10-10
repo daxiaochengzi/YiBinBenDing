@@ -554,7 +554,7 @@
                         var directoryCategoryName = data.DirectoryCategoryName;
                         $("#pairCodeProjectName").val(directoryName);
                         $("#pairCodeManufacturer").val(pairCodeManufacturer);
-                        $("#pairCodeDirectoryCode").val(directoryCategoryName);
+                        $("#pairCodeDirectoryCode").val(data.DirectoryCode);
                         //更新费用类别
                         getDirectoryCategoryTypeCode(directoryCategoryName);
                         if (obj.event === 'pairCode') {

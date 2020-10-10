@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过下列特性集
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("NFine快速开发平台")]
-[assembly: AssemblyDescription("NFine快速开发平台")]
+[assembly: AssemblyTitle("")]
+[assembly: AssemblyDescription("1001添加组织机构权限")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("NFine团队")]
-[assembly: AssemblyProduct("NFine快速开发平台（www.nfine.cn）")]
+[assembly: AssemblyCompany("四川本鼎科技有限公司")]
+[assembly: AssemblyProduct("医保嵌入式平台")]
 [assembly: AssemblyCopyright("Copyright © NFine 2016")]
-[assembly: AssemblyTrademark("NFine.Framework")]
+[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // 将 ComVisible 设置为 false 会使此程序集中的类型
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 //
 // 可以指定所有这些值，也可以使用“修订号”和“内部版本号”的默认值，
 // 方法是按如下所示使用“*”:
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.0.1")]
+[assembly: AssemblyFileVersion("1.0.0.1")]

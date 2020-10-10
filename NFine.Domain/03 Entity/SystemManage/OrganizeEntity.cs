@@ -61,5 +61,25 @@ namespace NFine.Domain.Entity.SystemManage
         /// 医保密码
         /// </summary>
         public string F_MedicalInsuranceHandleNo { get; set; }
+        /// <summary>
+        /// 有效时间
+        /// </summary>
+        public DateTime? F_EffectiveTime { get; set; }
+        /// <summary>
+        /// 门诊
+        /// </summary>
+        public bool? F_Outpatient { get; set; }
+        /// <summary>
+        /// 住院
+        /// </summary>
+        public bool? F_Hospital { get; set; }
+        /// <summary>
+        /// 生育
+        /// </summary>
+        public bool? F_BirthHospital { get; set; }
+        /// <summary>
+        /// 异地
+        /// </summary>
+        public bool? F_AnotherPlace { get; set; }
     }
 }

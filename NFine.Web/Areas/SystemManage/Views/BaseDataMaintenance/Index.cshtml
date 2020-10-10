@@ -256,10 +256,10 @@
             <div class="btn-group" style="margin-left: 5px;">
                 操作开始日期：
                 <input type="text" class="Wdate" name="SettlementStartTime" id="startTime"
-                       onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', maxDate: '#F{$dp.$D(\'endTime\')||\'new Date()\'}', readOnly: true });" style="width: 120px;"/>
+                       onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', maxDate: '#F{$dp.$D(\'startTime\')||\'new Date()\'}', readOnly: true });" style="width: 120px;"/>
                 操作结束日期：
                 <input type="text" class="Wdate" name="SettlementEndTime" id="endTime"
-                       onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', minDate: '#F{$dp.$D(\'startTime\')}', maxDate: new Date(), readOnly: true });" style="width: 120px;"/>
+                       onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', minDate: '#F{$dp.$D(\'endTime\')}', maxDate: new Date(), readOnly: true });" style="width: 120px;"/>
             </div>
             <div class="btn-group" style="margin-left: 5px;">
                 <a class="btn btn-primary" id="btn_search">查询</a>
