@@ -191,10 +191,10 @@
         $("#passwordDiv").hide();
         baseInfo.PageFunction.FunctionName = "Outpatient";
        // 插件检查
-        //var verification = DetectActiveX();
-        //if (verification === false) {
-        //    return false;
-        //}
+        var verification = DetectActiveX();
+        if (verification === false) {
+            return false;
+        }
         //form数据回显:数据回显到Form表单主体部分
         var jsonToForm = function (jsonData, formFilter) {
             var diagnosisList = jsonData.DiagnosisList;
@@ -679,7 +679,7 @@
             //baseInfo.HospitalInfo.AfferentSign = "2";
             //baseInfo.HospitalInfo.IdentityMark = "1027384812";
             //iniInpatientInfo();
-          
+           
             queryData(getInpatientInfoBack);
             radioChecked();
             $("#queryDataDiv").hide();
@@ -702,7 +702,9 @@
                 } else {
                     jsonToForm(data.Data, "LAY-form-render");
                     baseInfo.HospitalInfo.IdentityMark = data.Data.IdCardNo;
-                    $("#queryDataDiv").show(); 
+                    if (baseInfo.PageFunction.IsSuspend !== 1) {
+                        $("#queryDataDiv").show(); 
+                    } 
                  
                 }
             }

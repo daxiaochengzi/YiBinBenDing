@@ -289,7 +289,10 @@
 
                         } else {
                             inpatientInfoData = data;
-                            buttonStatus("queryData", true);
+                            if (baseInfo.PageFunction.IsSuspend !== 1) {
+                                buttonStatus("queryData", true);
+                            } 
+                          
                             baseInfo.HospitalInfo.IdentityMark = data.Data.IdCardNo;
                        
                         
@@ -341,6 +344,7 @@
 
             /**根据当前住院病人的业务ID查询,返回数据回显到下面表单里面*/
             $('#queryData').on('click', function () {
+          
                 queryData(getInpatientInfoBack);
                 buttonStatus("queryData", false);
 

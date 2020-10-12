@@ -248,7 +248,10 @@
                         } else {
                             inpatientInfoData = data;
                             var idCardNo = data.Data.IdCardNo;
-                            buttonStatus("queryData", true);
+                            if (baseInfo.PageFunction.IsSuspend !==1) {
+                                buttonStatus("queryData", true);
+                            }
+                           
                             baseInfo.HospitalInfo.IdentityMark = data.Data.IdCardNo;
                           
                             //layer.msg('费用上传成功', { icon: 6, shade: 0.1, skin: 'layui-layer-molv' });
@@ -505,7 +508,7 @@
                 });
             }
             $('#queryData').on('click', function () {
-
+            
                 queryData(getInpatientInfoBack);
                 buttonStatus("queryData", false);
             });

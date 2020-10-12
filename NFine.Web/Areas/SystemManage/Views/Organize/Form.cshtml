@@ -126,7 +126,7 @@
                     <th class="formTitle">有效时间</th>
                     <td class="formValue"  >
                         <input type="text" class="Wdate" name="F_EffectiveTime" id="F_EffectiveTime"
-                               onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', minDate: '#F{$dp.$D(\'F_EffectiveTime\')||\'new Date()\'}', readOnly: true });" style="width: 220px;height: 35px"/>
+                               onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', minDate: '{%y-1}',maxDate: '{%y+2}', readOnly: true });" style="width: 220px;height: 35px"/>
                         @*<input id="F_EffectiveTime" name="F_EffectiveTime" type="text" class="form-control"/>*@
                     </td>
                 </tr>

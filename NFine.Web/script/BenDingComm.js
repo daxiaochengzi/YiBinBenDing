@@ -1,7 +1,8 @@
 ﻿
 var baseInfo = {
     PageFunction: {
-        "FunctionName": null//页功能名称
+        "FunctionName": null,//页功能名称
+        "IsSuspend":null//是否暂停服务
 },
 HospitalInfo:{
         "Account": null,//账户
@@ -144,34 +145,39 @@ function getHospitalInfo(getHospitalInfoParam) {
                    
                 }
                 if (data.Data.IsSuspend === 1) {
+                    baseInfo.PageFunction.IsSuspend = 1;
                     msgError("当前服务暂停!!!");
-                    return false;
+                  
 
                 }
-                if (baseInfo.PageFunction.FunctionName !== null)
-                {
+                if (baseInfo.PageFunction.FunctionName !== null) {
+                    baseInfo.PageFunction.IsSuspend = data.Data.IsSuspend;
                     if (baseInfo.PageFunction.FunctionName === "Outpatient") {
                         if (data.Data.Outpatient !== 1) {
+                            baseInfo.PageFunction.IsSuspend = 1;
                             msgError("该院未有门诊医保使用权限!!!");
-                            return false;
+                           
                         }
                     }
                     if (baseInfo.PageFunction.FunctionName === "Hospital") {
                         if (data.Data.Hospital !== 1) {
+                            baseInfo.PageFunction.IsSuspend = 1;
                             msgError("该院未有住院医保使用权限!!!");
-                            return false;
+                           
                         }
                     }
                     if (baseInfo.PageFunction.FunctionName === "BirthHospital") {
                         if (data.Data.BirthHospital !== 1) {
+                            baseInfo.PageFunction.IsSuspend = 1;
                             msgError("该院未有住院生育医保使用权限!!!");
-                            return false;
+                           
                         }
                     }
                     if (baseInfo.PageFunction.FunctionName === "AnotherPlace") {
                         if (data.Data.AnotherPlace !== 1) {
-                            msgError("该院未有门诊医保使用权限!!!");
-                            return false;
+                            baseInfo.PageFunction.IsSuspend = 1;
+                            msgError("该院未有异地医保使用权限!!!");
+                           
                         }
                     }
                 }

@@ -510,19 +510,19 @@ namespace NFine.Web.Controllers
                     var fistDate = Convert.ToDateTime(gradeData.EffectiveTime);
                     var ts = fistDate.Subtract(DateTime.Now);
                     int days = ts.Days;
-                    if (days >= 7)
+                    if (days <= 7)
                     {
                         gradeData.Msg = "授权时间还剩余"+ days+"天!!!";
                     }
                     if (days <0)
-                    {
+                    { //超期7天暂停服务
+                        if (days < -7)
+                        {
+                            gradeData.IsSuspend = 1;
+                        }
                         gradeData.Msg = "授权时间超期" + Math.Abs(days)  + "天,请注意超期7天会暂停服务!!!";
                     }
-                    //超期7天暂停服务
-                    if (days > -7)
-                    {
-                        gradeData.IsSuspend = 1;
-                    }
+                   
                 }
 
                 y.Data = gradeData;

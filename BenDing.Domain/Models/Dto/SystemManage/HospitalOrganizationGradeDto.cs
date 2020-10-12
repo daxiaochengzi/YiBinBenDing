@@ -42,22 +42,22 @@ namespace BenDing.Domain.Models.Dto.SystemManage
         /// <summary>
         /// 门诊
         /// </summary>
-        public bool? Outpatient { get; set; }
+        public int? Outpatient { get; set; }
 
         /// <summary>
         /// 住院
         /// </summary>
-        public bool? Hospital { get; set; }
+        public int? Hospital { get; set; }
 
         /// <summary>
         /// 生育
         /// </summary>
-        public bool? BirthHospital { get; set; }
+        public int? BirthHospital { get; set; }
 
         /// <summary>
         /// 异地
         /// </summary>
-        public bool? AnotherPlace { get; set; }
+        public int? AnotherPlace { get; set; }
 
         /// <summary>
         /// 提示信息

@@ -129,7 +129,7 @@ namespace BenDing.Repository.Providers.Web
                 string querySql =
                     $@" select top 1  F_OrganizationGrade as OrganizationGrade,F_AdministrativeArea as AdministrativeArea,
                    F_MedicalInsuranceAccount as MedicalInsuranceAccount,F_MedicalInsurancePwd as MedicalInsurancePwd,
-                   F_MedicalInsuranceHandleNo as MedicalInsuranceHandleNo,F_EffectiveTime as F_EffectiveTime,
+                   F_MedicalInsuranceHandleNo as MedicalInsuranceHandleNo,F_EffectiveTime as EffectiveTime,
 				   [F_Outpatient] as Outpatient, [F_Hospital] as Hospital,[F_AnotherPlace]  as AnotherPlace,
 				   [F_BirthHospital]  as BirthHospital from [dbo].[Sys_Organize] where F_DeleteMark=0 and F_EnCode='{param}'";
                var resultData = sqlConnection.QueryFirstOrDefault<HospitalOrganizationGradeDto>(querySql);
