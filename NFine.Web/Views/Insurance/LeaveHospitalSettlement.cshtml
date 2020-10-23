@@ -263,10 +263,10 @@
        
         //---------
         //插件检查
-        //var verification = DetectActiveX();
-        //if (verification === false) {
-        //    return false;
-        //}
+        var verification = DetectActiveX();
+        if (verification === false) {
+            return false;
+        }
         //获取医院基本信息回调方法
         window.getHospitalInfoBack = function () { };
      

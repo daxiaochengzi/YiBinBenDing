@@ -136,8 +136,6 @@ namespace BenDing.Repository.Providers.Web
                         {
                             sqlConnection.Execute(insterCount);
                         }
-
-                      
                         sqlConnection.Close();
                     }
 
@@ -229,9 +227,9 @@ namespace BenDing.Repository.Providers.Web
         public int DeleteCatalog(UserInfoDto user, int param)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))
-            {
+            {//update [dbo].[HospitalThreeCatalogue] set IsDelete=1,DeleteUserId='{user.UserId}',DeleteTime=getDate()  where DirectoryCategoryCode='{param.ToString()}' and [OrganizationCode]='{user.OrganizationCode}' and IsDelete=0 
                 sqlConnection.Open();
-                string strSql = $" update [dbo].[HospitalThreeCatalogue] set IsDelete=1 ,DeleteUserId='{user.UserId}',DeleteTime=getDate()  where DirectoryCategoryCode='{param.ToString()}' and IsDelete=0 ";
+                string strSql = $"delete [dbo].[HospitalThreeCatalogue] where DirectoryCategoryCode='{param.ToString()}' and [OrganizationCode]='{user.OrganizationCode}'";
                 var num = sqlConnection.Execute(strSql);
                 sqlConnection.Close();
                 return num;

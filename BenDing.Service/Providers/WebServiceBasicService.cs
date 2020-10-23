@@ -155,14 +155,14 @@ namespace BenDing.Service.Providers
         {
 
             var time = _hisSqlRepository.GetTime(Convert.ToInt16(param.CatalogType), user);
-            //_hisSqlRepository.DeleteCatalog(user, Convert.ToInt16(param.CatalogType));
+            _hisSqlRepository.DeleteCatalog(user, Convert.ToInt16(param.CatalogType));
             var timeNew = Convert.ToDateTime(time).ToString("yyyy-MM-dd HH:ss:mm") ??
                           DateTime.Now.AddYears(-40).ToString("yyyy-MM-dd HH:ss:mm");
             var oCatalogInfo = new CatalogInfoDto
             {
                 目录类型 = Convert.ToInt16(param.CatalogType).ToString(),
-                目录名称 = "",
-                开始时间 = timeNew,
+                目录名称 = "",//头孢呋辛酯分散片
+                开始时间 = DateTime.Now.AddYears(-40).ToString("yyyy-MM-dd HH:ss:mm"),//timeNew 
                 结束时间 = DateTime.Now.ToString("yyyy-MM-dd HH:ss:mm"),
                 验证码 = param.AuthCode,
                 机构编码 = param.OrganizationCode,
@@ -305,6 +305,7 @@ namespace BenDing.Service.Providers
                 resultData.BusinessId = param.UiParam.BusinessId;
                 resultData.DiagnosticJson = JsonConvert.SerializeObject(dataValue.DiagnosisList);
                 resultData.DiagnosisList = dataValue.DiagnosisList;
+                resultData.MedicalTreatmentTotalCost = CommonHelp.ValueToDouble(resultData.MedicalTreatmentTotalCost);
                 if (param.IsSave)
                 {
                     _hisSqlRepository.SaveOutpatient(param.User, resultData);
@@ -352,7 +353,6 @@ namespace BenDing.Service.Providers
             var jsonParam = JsonConvert.SerializeObject(xmlData);
             var data = _webServiceBasic.HIS_Interface("39", jsonParam);
             OutpatientPersonJsonDto dataValue = JsonConvert.DeserializeObject<OutpatientPersonJsonDto>(data.Msg);
-
             var detailInfo = dataValue.DetailInfo;
             foreach (var item in detailInfo)
             {

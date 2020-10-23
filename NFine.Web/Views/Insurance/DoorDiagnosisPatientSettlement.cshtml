@@ -34,7 +34,7 @@
                     <div class="layui-input-block">
                         <input type="radio" id="SettlementThree" name="Settlement" value="2" title="门诊刷卡结算" checked="">
                         <input type="radio" id="SettlementTwo" name="Settlement" value="1" title="职工计划生育结算" >
-                        <input type="radio" id="SettlementOne" name="Settlement" value="3" title="医保电子凭证结算" >
+                        <input type="radio" id="SettlementOne" name="Settlement" value="3" title="医保电子凭证结算"  disabled="">
                     </div>
 
                 </div>
@@ -135,12 +135,12 @@
                     </div>
                 </div>
        
-                <div class="layui-form-item" id="passwordDiv">
+                @*<div class="layui-form-item" id="passwordDiv">
                     <label class="layui-form-label">医保卡密码</label>
                     <div class="layui-input-inline">
                         <input type="password" Id="CardPwd" name="password" lay-verify="pass" placeholder="请输入密码" autocomplete="off" class="layui-input">
                     </div>
-                </div>
+                </div>*@
             </div>
             <div class="layui-form-item" id="queryDataDiv" style="text-align: center; margin-top: 20px;">
                 <button type="button" Id="queryData" class="layui-btn layui-btn-radius">查询</button>
@@ -188,7 +188,7 @@
         $("#DoorDiagnosisPreSettlementDiv").hide();
         $("#DoorDiagnosisSettlementDiv").hide();
         $("#queryDataDiv").hide();
-        $("#passwordDiv").hide();
+      
         baseInfo.PageFunction.FunctionName = "Outpatient";
        // 插件检查
         var verification = DetectActiveX();
@@ -264,13 +264,13 @@
                            
                 buttonStatus("DoorDiagnosisPreSettlement", true);
             }
-            if (settlementVal === "3" )//电子凭证结算
-            {
-                buttonStatus("OutpatientNationEcTrans", true);
-            }
+            //if (settlementVal === "3" )//电子凭证结算
+            //{
+            //    buttonStatus("OutpatientNationEcTrans", true);
+            //}
             if (settlementVal === "2" )//刷卡结算
             {
-                $("#passwordDiv").show();
+              
                 buttonStatus("SettlementCard", true);
             }
             //if (settlementVal === "4" )//门诊结算
@@ -412,6 +412,7 @@
                         $("#DoorDiagnosisPreSettlementDiv").hide();
                         $("#DoorDiagnosisSettlementDiv").show();
                         $("#AccountPaymentDiv").show();
+                      
                         //显示结算按钮
                         buttonStatus("DoorDiagnosisSettlement", true);
                         
@@ -552,7 +553,7 @@
         //获取门诊划卡参数
         function workerOutpatientSettlementCardParam() {
             var getCardParam = $.extend({}, params);
-            getCardParam["CardPwd"] = $("#CardPwd").val();
+       
             $.ajax({
                 type: 'POST',
                 url: hostNew + '/WorkerOutpatientSettlementCardParam',
@@ -567,7 +568,7 @@
                         var activeX = document.getElementById("CSharpActiveX");
                         //划卡支付
                       
-                        var activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"WorkerCardSettlement");
+                        var activeData = activeX.HospitalizationMethods(JSON.stringify(data.Data), JSON.stringify(baseInfo.HospitalInfo),"WorkerCardSettlement");
                         var activeJsonData = JSON.parse(activeData);
                         if (activeJsonData.Success === false) {
                             msgError(activeJsonData.Message);
@@ -684,7 +685,6 @@
             radioChecked();
             $("#queryDataDiv").hide();
         });
-
         $.ajax({
             type: 'get',
             url: host + '/GetOutpatient',
@@ -705,7 +705,6 @@
                     if (baseInfo.PageFunction.IsSuspend !== 1) {
                         $("#queryDataDiv").show(); 
                     } 
-                 
                 }
             }
             ,complete: function () {

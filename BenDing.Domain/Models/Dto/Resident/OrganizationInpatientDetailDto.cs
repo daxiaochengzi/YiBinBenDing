@@ -16,7 +16,7 @@ namespace BenDing.Domain.Models.Dto.Resident
         /// </summary>
         public  string DetailId { get; set; }
         /// <summary>
-        /// 上传biaoz
+        /// 上传标志
         /// </summary>
         public int  UploadMark { get; set; }
     }

@@ -810,7 +810,7 @@ namespace BenDing.Service.Providers
             resultData.OperatorName = outpatientPerson.Operator;
             resultData.TotalAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost).ToString(CultureInfo.InvariantCulture);
             resultData.UseCardType = "1";
-            resultData.CardPwd = param.CardPwd;
+            resultData.CardPwd = "";
             resultData.HospitalLogNo = hospitalData.MedicalInsuranceHandleNo;
               var saveData = new MedicalInsuranceDto
             {
@@ -834,14 +834,14 @@ namespace BenDing.Service.Providers
         /// <param name="param"></param>
         public WorkerHospitalSettlementCardBackDto WorkerOutpatientSettlementCard(WorkerHospitalSettlementCardUiParam param)
         {
-            // var iniData = JsonConvert.DeserializeObject<WorkerHospitalSettlementCardBackDto>(param.SettlementJson);
+            var iniData = JsonConvert.DeserializeObject<WorkerHospitalSettlementCardBackDto>(param.SettlementJson);
 
-            var iniData = new WorkerHospitalSettlementCardBackDto()
-            {
-                AccountPayment =Convert.ToDecimal(10.92),
-                AccountBalance = 500,
-                SerialNumber = "12312dqeqwe"
-            };
+            //var iniData = new WorkerHospitalSettlementCardBackDto()
+            //{
+            //    AccountPayment =Convert.ToDecimal(10.92),
+            //    AccountBalance = 500,
+            //    SerialNumber = "12312dqeqwe"
+            //};
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
             userBase.TransKey = param.TransKey;
             //门诊病人信息存储
@@ -909,8 +909,8 @@ namespace BenDing.Service.Providers
                 BusinessId = param.BusinessId,
                 BackParam = strXmlBackParam
             };
-            ////存基层
-            //  _webBasicRepository.SaveXmlData(saveXml);
+            //存基层
+             _webBasicRepository.SaveXmlData(saveXml);
             var updateParamData = new UpdateMedicalInsuranceResidentSettlementParam()
             {
                 UserId = param.UserId,

@@ -136,8 +136,6 @@ namespace BenDing.Domain.Xml
         {
             return Math.Round(param, 4, MidpointRounding.AwayFromZero);
         }
-        
-
         /// <summary>
         ///  字符串转换数值型
         /// </summary>
@@ -153,7 +151,6 @@ namespace BenDing.Domain.Xml
 
             return resultData;
         }
-
         /// <summary>
         /// sql in串联
         /// </summary>
