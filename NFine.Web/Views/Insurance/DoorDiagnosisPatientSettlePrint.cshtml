@@ -196,6 +196,7 @@
 
                 } else {
                     isBirthHospital = data.Data.IsBirthHospital;
+                    settlementType = data.Data.SettlementType;
                     jsonToForm(data.Data, "LAY-form-render");
                     if (data.Data.PayMsg !== null) {
                         settlementData(data.Data.PayMsg);

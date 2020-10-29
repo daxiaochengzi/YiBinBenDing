@@ -56,7 +56,7 @@ namespace NFine.Web.App_Start
                 cfg.CreateMap<OutpatientDetailJsonDto, BaseOutpatientDetailDto>();
                 cfg.CreateMap<OutpatientDepartmentCostInputJsonDto, OutpatientDepartmentCostInputDto>();
                 cfg.CreateMap<WorkerBirthPreSettlementJsonDto, WorkerBirthSettlementDto>();
-              
+                cfg.CreateMap<WorkerHospitalSettlementCardBackDataDto, WorkerHospitalSettlementCardBackDto>();
                 //异地
                 cfg.CreateMap<DifferentPlacesUserInfoJsonDto, DifferentPlacesUserInfoDto>();
                cfg.CreateMap<DifferentPlacesHospitalizationRegisterJsonDto, DifferentPlacesHospitalizationRegisterDto>();

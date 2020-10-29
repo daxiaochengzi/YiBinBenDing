@@ -350,24 +350,42 @@ namespace NFine.Web.Controllers
             {
                 var userBase = webServiceBasicService.GetUserBaseInfo(param.UserId);
                 userBase.TransKey = param.TransKey;
+
                 //回参构建
-                var xmlData = new HospitalSettlementCancelXml()
+                var xmlData = new OutpatientDepartmentCostCancelXml()
                 {
-                    SettlementNo = param.SettlementNo,
+                    SettlementNo = ""
                 };
                 var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
                 var saveXml = new SaveXmlDataParam()
                 {
                     User = userBase,
-                    MedicalInsuranceBackNum = "CXJB011",
-                    MedicalInsuranceCode = "42",
+                    MedicalInsuranceBackNum = "Qxjs",
+                    MedicalInsuranceCode = "42MZ",
                     BusinessId = param.BusinessId,
                     BackParam = strXmlBackParam
                 };
                 //存基层
                 webServiceBasic.SaveXmlData(saveXml);
 
-                var ddd = "123";
+                ////回参构建
+                //var xmlData = new HospitalSettlementCancelXml()
+                //{
+                //    SettlementNo = param.SettlementNo,
+                //};
+                //var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
+                //var saveXml = new SaveXmlDataParam()
+                //{
+                //    User = userBase,
+                //    MedicalInsuranceBackNum = "CXJB011",
+                //    MedicalInsuranceCode = "42",
+                //    BusinessId = param.BusinessId,
+                //    BackParam = strXmlBackParam
+                //};
+                ////存基层
+                //webServiceBasic.SaveXmlData(saveXml);
+
+                //var ddd = "123";
                 ////更新医保信息
                 //var strXmlIntoParam = XmlSerializeHelper.XmlParticipationParam();
                 ////回参构建
@@ -448,11 +466,13 @@ namespace NFine.Web.Controllers
         [HttpGet]
         public void TestXml()
         {
+            var settlementJson = "{\"SerialNumber\": \"101080551392\", 	\"AccountPayment\": 0.03, 	\"CashPayment\": 0.0, 	\"AccountBalance\": 386.7 }";
+            var iniData = JsonConvert.DeserializeObject<WorkerHospitalSettlementCardBackDataDto>(settlementJson);
             //var data = XmlHelp.DeSerializerModel(new BenDing.Domain.Models.Dto.OutpatientDepartment.QueryOutpatientDepartmentCostDto(), true);
             //if (data == null) throw new Exception("门诊费用查询出错");
             //var cc = AutoMapper.Mapper.Map<QueryOutpatientDepartmentCostjsonDto>(data);
             //var ddd = new List<InpatientDiagnosisDto>();
-            
+
             //ddd.Add(new InpatientDiagnosisDto()
             //{
             //    IsMainDiagnosis = false,
@@ -501,7 +521,7 @@ namespace NFine.Web.Controllers
             // ExcelHelper.Export(tableData, "医保对码表", "c:\\成中荣新繁出差.xlsx");
             //var dds = CommonHelp.GetDiagnosis(ddd);
 
-            
+
 
 
 

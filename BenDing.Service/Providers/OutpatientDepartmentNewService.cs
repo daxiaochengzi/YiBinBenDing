@@ -834,8 +834,8 @@ namespace BenDing.Service.Providers
         /// <param name="param"></param>
         public WorkerHospitalSettlementCardBackDto WorkerOutpatientSettlementCard(WorkerHospitalSettlementCardUiParam param)
         {
-            var iniData = JsonConvert.DeserializeObject<WorkerHospitalSettlementCardBackDto>(param.SettlementJson);
-
+            var iniData = JsonConvert.DeserializeObject<WorkerHospitalSettlementCardBackDataDto>(param.SettlementJson);
+            var resultData= AutoMapper.Mapper.Map<WorkerHospitalSettlementCardBackDto>(iniData);
             //var iniData = new WorkerHospitalSettlementCardBackDto()
             //{
             //    AccountPayment =Convert.ToDecimal(10.92),
@@ -877,7 +877,7 @@ namespace BenDing.Service.Providers
             {
                 UserId = userBase.UserId,
                 SelfPayFeeAmount = iniData.CashPayment,
-                OtherInfo = JsonConvert.SerializeObject(iniData),
+                OtherInfo = JsonConvert.SerializeObject(resultData),
                 Id = residentData.Id,
                 SettlementNo = iniData.SerialNumber,
                 MedicalInsuranceAllAmount = outpatientPerson.MedicalTreatmentTotalCost,
@@ -920,7 +920,7 @@ namespace BenDing.Service.Providers
             };
             //  更新中间层
             _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateParamData);
-            return iniData;
+            return resultData;
         }
         /// <summary>
         /// 获取门诊月结入参

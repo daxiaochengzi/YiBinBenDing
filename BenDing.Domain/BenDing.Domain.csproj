@@ -86,6 +86,7 @@
     <Compile Include="Models\Dto\OutpatientDepartment\NationEcTransDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\QueryHospitalizationFeeNewDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\WorkerBirthSettlementDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\WorkerHospitalSettlementCardBackDataDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\WorkerHospitalSettlementCardBackDto.cs" />
     <Compile Include="Models\Dto\Resident\AdmissionRegistrationCancelInfoDto.cs" />
     <Compile Include="Models\Dto\Resident\HospitalThreeCatalogueManufacturerNameDto.cs" />
