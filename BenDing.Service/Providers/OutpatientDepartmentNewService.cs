@@ -810,7 +810,7 @@ namespace BenDing.Service.Providers
             resultData.OperatorName = outpatientPerson.Operator;
             resultData.TotalAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost).ToString(CultureInfo.InvariantCulture);
             resultData.UseCardType = "1";
-            resultData.CardPwd = "";
+            resultData.CardPwd = param.CardPwd;
             resultData.HospitalLogNo = hospitalData.MedicalInsuranceHandleNo;
               var saveData = new MedicalInsuranceDto
             {

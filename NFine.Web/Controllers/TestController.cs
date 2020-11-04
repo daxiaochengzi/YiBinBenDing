@@ -165,6 +165,8 @@ namespace NFine.Web.Controllers
 
                 //y.DataDescribe = CommonHelp.GetPropertyAliasDict(new UserInfoDto());
                 //y.Data = userService.GetUserInfo();
+                y.Data = "123";
+                
 
             });
 
@@ -464,9 +466,12 @@ namespace NFine.Web.Controllers
         /// 测试xml生成
         /// </summary>
         [HttpGet]
-        public void TestXml()
+        public ApiJsonResultData TestXml([FromUri] MedicalInsuranceXmlUiParam param)
         {
-            var settlementJson = "{\"SerialNumber\": \"101080551392\", 	\"AccountPayment\": 0.03, 	\"CashPayment\": 0.0, 	\"AccountBalance\": 386.7 }";
+            return new ApiJsonResultData(ModelState, new UiInIParam()).RunWithTry(y =>
+                {
+
+                var settlementJson = "{\"SerialNumber\": \"101080551392\", 	\"AccountPayment\": 0.03, 	\"CashPayment\": 0.0, 	\"AccountBalance\": 386.7 }";
             var iniData = JsonConvert.DeserializeObject<WorkerHospitalSettlementCardBackDataDto>(settlementJson);
             //var data = XmlHelp.DeSerializerModel(new BenDing.Domain.Models.Dto.OutpatientDepartment.QueryOutpatientDepartmentCostDto(), true);
             //if (data == null) throw new Exception("门诊费用查询出错");
@@ -552,6 +557,9 @@ namespace NFine.Web.Controllers
                 DiseaseName = "4"
             });
             var dds = CommonHelp.LeaveHospitalDiagnosis(ddd);
+                    y.Data = dds;
+             });
+
         }
 
         /// <summary>
