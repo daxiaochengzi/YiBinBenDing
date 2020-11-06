@@ -131,9 +131,9 @@ namespace NFine.Web.Areas.SystemManage.Controllers
         [HttpPost]
         public ActionResult ImportDrugCatalogExcel()
         {
-            var loginInfo = OperatorProvider.Provider.GetCurrent();
-            var user = userApp.GetForm(loginInfo.UserId);
-            if (user.F_IsHisAccount == false) throw new Exception("非基层认证人员不能下载icd10");
+            //var loginInfo = OperatorProvider.Provider.GetCurrent();
+            //var user = userApp.GetForm(loginInfo.UserId);
+            //if (user.F_IsHisAccount == false) throw new Exception("非基层认证人员不能导入医保项目");
             string name = Request.Form["sheetName"];
             HttpPostedFileBase file = Request.Files["file"];
             string content = "";
@@ -167,7 +167,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
                         }
                         else
                         {
-                            var count = _webServiceBasicService.DrugCatalogImportExcel(dataExcel, user.F_HisUserId);
+                            var count = _webServiceBasicService.DrugCatalogImportExcel(dataExcel, "76EDB472F6E544FD8DC8D354BB088BD7");
                             content = "<script>alert('+" + count + "数据上传成功!!!')</script>";
                         }
                     }

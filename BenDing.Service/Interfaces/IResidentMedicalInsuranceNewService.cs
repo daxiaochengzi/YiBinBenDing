@@ -100,6 +100,10 @@ namespace BenDing.Service.Interfaces
         /// </summary>
         /// <param name="param"></param>
         void  DeletePrescriptionUpload(BaseUiBusinessIdDataParam param);
-
+        /// <summary>
+        /// 不传医保
+        /// </summary>
+        /// <param name="param"></param>
+        void NotUploadMark(NotUploadMarkUiParam param);
     }
 }

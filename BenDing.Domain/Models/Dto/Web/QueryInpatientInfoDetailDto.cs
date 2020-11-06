@@ -61,6 +61,10 @@ namespace BenDing.Domain.Models.Dto.Web
         /// 审核时间
         /// </summary>
         public string ApprovalTime { get; set; }
+        /// <summary>
+        /// 不传标志
+        /// </summary>
+        public int? NotUploadMark { get; set; }
 
     }
 }

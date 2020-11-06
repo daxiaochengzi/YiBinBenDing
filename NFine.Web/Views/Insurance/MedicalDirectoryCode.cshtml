@@ -387,8 +387,7 @@
                     table.render({
                         elem: '#LAY-pair-content-list',
                         height: ($(window).height() - 128) / 2 - 100,
-                        url: host + '/DirectoryComparisonManagement' //数据接口
-                        ,
+                        url: host + '/DirectoryComparisonManagement', //数据接口
                         where: tableWhere,
                         limits: [3, 6, 9],
                         limit: 3, //每页默认显示的数量
@@ -455,7 +454,7 @@
                         , limit: 3 //每页默认显示的数量
                         , cols: [[
                             { type: 'numbers', fixed: 'left' }
-                            , { title: '对码', toolbar: '#tableCodeBtn', width: 100, align: 'center', fixed: true }
+                            , { title: '对码', toolbar: '#tableCodeBtn', width: 150, align: 'center', fixed: true }
                             , { field: 'PairCodeId', title: '对码ID', width: 160, hide: true }
                             , { field: 'ProjectCode', title: '医保项目编码', width: 160 }
                             , { field: 'ProjectName', title: '医保项目名称', width: 160, sort: true }
@@ -545,6 +544,26 @@
                     function () {
                         pairCodeDataListTable();
                     });
+                //取消对码
+                function cancelPairCode(cancelParam) {
+                    $.ajax({
+                        url: host + '/CancelPairCode',
+                        type: 'POST',
+                        data: JSON.stringify(cancelParam),
+                        dataType: "json",
+                        contentType: 'application/json',
+                        success: function (data) {
+                            if (data.Success === false) {
+                                var errData = data.Message;
+                                layer.msg('取消对码失败' + errData, { time: 2000, icon: 5 });
+                            } else {
+
+                                pairCodeDataTable();
+
+                            }
+                        }
+                    });
+                }
                 //监听工具条
                 table.on('tool(LAY-pair-content-list)',
                     function (obj) {
@@ -560,7 +579,9 @@
                         if (obj.event === 'pairCode') {
                             pairCodeDataListTable();
                             
-                        } else if (obj.event === 'updatePairCode') {
+                        }
+                        else if (obj.event === 'updatePairCode')
+                        {
 
                             layer.confirm('是否重新对码?',
                                 {
@@ -577,6 +598,16 @@
                                     layer.close(inds);
 
                                 });
+                        }
+                        if (obj.event === 'CancelPairCode') {
+                          
+                            var projectName = data.ProjectName;
+                            var cancelParam = {
+                                "ProjectName": projectName,
+                                "DirectoryCode": data.DirectoryCode,
+                                "UserId": $("#empid").val()
+                            }
+                            cancelPairCode(cancelParam);
                         }
                     });
 
@@ -661,6 +692,7 @@
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="pairCode">对码</a>
     {{#  } else { }}
     <a class="layui-btn layui-btn-xs" lay-event="updatePairCode">重新对码</a>
+    <a class="layui-btn layui-btn-xs" lay-event="CancelPairCode">取消对码</a>
     {{#  }}}
 </script>
 

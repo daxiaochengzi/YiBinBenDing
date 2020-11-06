@@ -24,6 +24,7 @@
                 </div>
                 <div class="layui-inline">
                     <button class="layui-btn" lay-submit lay-filter="LAY-bill-data-list">查询</button>
+                 
                     <button class="layui-btn" id="allUploadReceive" lay-submit lay-filter="allUploadReceive">全部撤销</button>
                 </div>
             </div>
@@ -62,7 +63,7 @@
             UploadMark: 1,
             TransKey: $("#empid").val()
         };
-        //插件检查
+        ////插件检查
         var verification = DetectActiveX();
         if (verification === false) {
             return false;
@@ -80,6 +81,7 @@
                     { type: 'checkbox', fixed: 'left' },
                     { title: '序号', type: 'numbers', align: 'center' },
                     { field: 'UploadMark', title: '上传状态', width: 100, toolbar: '#tableBtn', align: 'center' },
+                    { field: 'NotUploadMark', title: '不传标志', width: 90, toolbar: '#tableBtnNotUpload', align: 'center'},
                     { field: 'BatchNumber', title: '医保批次号', width: 150 },
                     { field: 'DirectoryCode', title: '药品编码', width: 320, hide: true },
                     { field: 'DirectoryName', title: '药品名称', width: 200 },
@@ -99,6 +101,7 @@
                     { field: 'BlockPrice', title: '限制价格', width: 100 },
                     { field: 'BlockRemark', title: '限制使用说明', width: 100},
                     { field: 'Specification', title: '规格', width: 100 }
+                    , { width: 100, align: 'center', title: '操作', toolbar: '#tableHandle', fixed: 'right'}
                 ]
             ]
         });
@@ -235,7 +238,38 @@
             });
 
         }
-     
+        //不传医保操作
+        function notUploadMark(uploadId) {
+            var uploadParam = {
+                "BusinessId": $("#bid").val() /*当前住院记录的业务ID*/
+                , "UserId": $("#empid").val() /*授权操作人的ID*/
+                , "IdList": uploadId
+                , "TransKey": $("#transkey").val()
+                ,"IsCancel":true
+            }
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/NotUploadMark',
+                async: false,
+                data: JSON.stringify(uploadParam),
+                dataType: "json",
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        msgError(errData);
+                        //样式类名:墨绿深蓝风
+                    } else {
+                        queryParam["BillTime"] = $("#date1").val();/*费用日期*/
+                        queryParam["DirectoryName"] = data.field.DirectoryName;/*药品名称*/
+                        //执行查询
+                        tableDataLoad(layTableId);
+                       
+                       
+                    }
+                }
+            });
+        }
         //取消医保费用上传
         form.on('submit(allUploadReceive)', function (data) {
             
@@ -264,6 +298,27 @@
                     break;
             };
         });
+
+        //监听行工具事件
+        table.on('tool(dataTableBillId)', function(obj){
+            var data = obj.data;
+            var dataIds = [];
+
+        
+            if (obj.event === 'CancelUnUploadData') {
+              
+                dataIds.push(data.Id);
+              
+                if (data.NotUploadMark !== 1) {
+                    msgError("当前项目非不传医保项目不能取消!!!");
+                    return false;
+                } else {
+                    notUploadMark(dataIds);
+                    tableDataLoad(layTableId);
+                }
+              
+            }
+        });
         //页面初始化加载默认数据
         $(function () {
             tableDataLoad(layTableId);
@@ -283,9 +338,21 @@
 
 <script type="text/html" id="tableBtn">
     {{#  if(d.UploadMark == 0){ }}
-    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="pairCode">未上传</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" >未上传</a>
     {{#  } else { }}
-    <a class="layui-btn layui-btn-xs" lay-event="updatePairCode">已上传</a>
+    <a class="layui-btn layui-btn-xs" >已上传</a>
     {{#  }}}
+</script>
+<script type="text/html" id="tableBtnNotUpload">
+    {{#  if(d.NotUploadMark == 1){ }}
+    <a class="layui-btn layui-btn-xs">是</a>
+    {{#  } else { }}
+    <a class="layui-btn layui-btn-warm layui-btn-xs">否</a>
+
+    {{#  }}}
+</script>
+<script type="text/html" id="tableHandle">
+   
+    <a class="layui-btn layui-btn-xs" lay-event="CancelUnUploadData">取消不传医保</a>
 </script>
 

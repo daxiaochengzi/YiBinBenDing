@@ -195,6 +195,7 @@
     <Compile Include="Models\Params\Resident\AdjustmentDifferenceValueParam.cs" />
     <Compile Include="Models\Params\Resident\BatchConfirmParam.cs" />
     <Compile Include="Models\Params\Resident\BatchExamineDataParam.cs" />
+    <Compile Include="Models\Params\Resident\CancelPairCodeParam.cs" />
     <Compile Include="Models\Params\Resident\DeletePrescriptionUploadParam.cs" />
     <Compile Include="Models\Params\Resident\GetInpatientInfoUiParam.cs" />
     <Compile Include="Models\Params\Resident\GetPrescriptionUploadParam.cs" />
@@ -208,6 +209,7 @@
     <Compile Include="Models\Params\Resident\LeaveHospitalSettlementInfoParam.cs" />
     <Compile Include="Models\Params\Resident\LeaveHospitalSettlementParam.cs" />
     <Compile Include="Models\Params\Resident\LeaveHospitalSettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\NotUploadMarkUiParam.cs" />
     <Compile Include="Models\Params\Resident\PatientLeaveHospitalInfoDto.cs" />
     <Compile Include="Models\Params\Resident\PrescriptionUploadAutomaticParam.cs" />
     <Compile Include="Models\Params\Resident\PrescriptionUploadParam.cs" />

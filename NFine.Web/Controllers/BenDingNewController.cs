@@ -174,7 +174,6 @@ namespace NFine.Web.Controllers
 
             });
         }
-        
         /// <summary>
         /// 门诊费用结算
         /// </summary>
@@ -406,6 +405,7 @@ namespace NFine.Web.Controllers
         //    });
 
         //}
+        
         /// <summary>
         /// 门诊生育结算
         /// </summary>
@@ -1308,7 +1308,7 @@ namespace NFine.Web.Controllers
             });
         }
         /// <summary>
-        /// 医保处方上传
+        /// 获取医保处方上传参数
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -1317,8 +1317,6 @@ namespace NFine.Web.Controllers
             return new ApiJsonResultData(ModelState).RunWithTry(y =>
             {
                 var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
-              
-
                 //处方上传
                 var data = _residentMedicalInsuranceNewService.GetPrescriptionUploadParam(param,userBase);
                 y.Data = data;
@@ -1530,6 +1528,20 @@ namespace NFine.Web.Controllers
             { 
               var deleteParam=  _residentMedicalInsuranceNewService.GetDeletePrescriptionUploadParam(param);
                 y.Data = XmlSerializeHelper.XmlSerialize(deleteParam);
+            });
+
+        }
+        /// <summary>
+        /// 不传医保操作
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData NotUploadMark([FromBody]NotUploadMarkUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                _residentMedicalInsuranceNewService.NotUploadMark(param);
+              
             });
 
         }

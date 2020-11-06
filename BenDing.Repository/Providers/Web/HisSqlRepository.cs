@@ -955,7 +955,7 @@ namespace BenDing.Repository.Providers.Web
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
                 string strSql = null;
-                try
+                try  
                 {
                     sqlConnection.Open();
                     strSql = @"select   HospitalizationId as BusinessId, * from [dbo].[HospitalizationFee]  where  IsDelete=0 ";
@@ -970,6 +970,11 @@ namespace BenDing.Repository.Providers.Web
                         {
                             strSql += $@" and HospitalizationId ='{param.BusinessId}' ";
                         }
+                    }
+
+                    if (param.NotUploadMark)
+                    {
+                        strSql += "  and NotUploadMark is null";
                     }
 
                     if (param.UploadMark != null)
@@ -1052,6 +1057,11 @@ namespace BenDing.Repository.Providers.Web
                 if (!string.IsNullOrWhiteSpace(param.BillTime))
                     whereSql += $" and BillTime between '{billTime.StartTime}' and '{billTime.EndTime}'";
 
+                //if (param.UploadMark == "1")
+                //{
+                //    whereSql +=" and NotUploadMark is null";
+                //}
+
                 if (param.Limit != 0 && param.Page > 0)
                 {
                     var skipCount = param.Limit * (param.Page - 1);
@@ -1084,6 +1094,7 @@ namespace BenDing.Repository.Providers.Web
                                     DetailId = t.DetailId,
                                     ApprovalMark=t.ApprovalMark,
                                     ApprovalUserName=t.ApprovalUserName,
+                                    NotUploadMark=t.NotUploadMark
                                 }
                     ).ToList();
                 if (dataList.Any())
@@ -1141,6 +1152,7 @@ namespace BenDing.Repository.Providers.Web
                                 ApprovalMark = c.ApprovalMark,
                                 ApprovalUserName = c.ApprovalUserName,
                                 Manufacturer = itemPairCode?.Manufacturer,
+                                NotUploadMark = c.NotUploadMark
                             };
                             //是否审核
                             if (param.IsExamine == 1)

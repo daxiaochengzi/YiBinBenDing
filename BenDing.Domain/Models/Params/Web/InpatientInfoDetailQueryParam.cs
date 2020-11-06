@@ -17,5 +17,9 @@ namespace BenDing.Domain.Models.Params.Web
         /// 是否上传
         /// </summary>
         public int? UploadMark { get; set; }
+        /// <summary>
+        /// 是否排除不传医保
+        /// </summary>
+        public bool NotUploadMark { get; set; }
     }
 }

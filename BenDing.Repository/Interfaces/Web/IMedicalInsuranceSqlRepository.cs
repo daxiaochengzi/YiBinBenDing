@@ -119,6 +119,16 @@ namespace BenDing.Repository.Interfaces.Web
         /// <param name="userId"></param>
         /// <returns></returns>
         Int64 DrugCatalogImportExcel(DataTable dt, string userId);
-    }
 
+        /// <summary>
+        /// 不传医保
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="cancel"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        int NotUploadMark(List<string> param, bool cancel, UserInfoDto user);
+    }
+   
+     
 }

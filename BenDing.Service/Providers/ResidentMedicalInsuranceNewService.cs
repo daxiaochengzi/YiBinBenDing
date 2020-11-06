@@ -570,6 +570,8 @@ namespace BenDing.Service.Providers
                 queryParam.UploadMark = 0;
             }
 
+            queryParam.NotUploadMark = true;
+
             //获取病人明细
             queryData = _hisSqlRepository.InpatientInfoDetailQuery(queryParam);
             if (queryData.Any())
@@ -667,12 +669,90 @@ namespace BenDing.Service.Providers
             return resultData;
 
         }
+        /// <summary>
+        /// 不传医保
+        /// </summary>
+        public void NotUploadMark(NotUploadMarkUiParam param)
+        {// 获取操作人员信息
+            var userBase = _webserviceBasicService.GetUserBaseInfo(param.UserId);
+            userBase.TransKey = param.TransKey;
+            var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
+            {
+                BusinessId = param.BusinessId,
+                OrganizationCode = userBase.OrganizationCode
+            };
+            //获取医保病人信息
+            var residentData = _medicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(queryResidentParam);
+         
+            var inpatientDetial= _hisSqlRepository.InpatientInfoDetailQuery(new InpatientInfoDetailQueryParam()
+            {
+                IdList = param.IdList,
+            });
+            var detailId = inpatientDetial.FirstOrDefault()?.DetailId;
+            var idListNew=new List<string>(){ detailId };
+            //InpatientInfoDetailQuery
+            if (param.IsCancel == false)
+            {
+                var rowXml = idListNew.Select(c => new HospitalizationFeeUploadRowXml() { SerialNumber = c }).ToList();
+                //回参
+                var xmlData = new HospitalizationFeeUploadXml()
+                {
+                    MedicalInsuranceHospitalizationNo = residentData.MedicalInsuranceHospitalizationNo,
+                    RowDataList = rowXml,
+                };
+                var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
+                param.TransKey = param.BusinessId;
+                var saveXml = new SaveXmlDataParam()
+                {
+                    User = userBase,
+                    MedicalInsuranceBackNum = "CXJB004",
+                    MedicalInsuranceCode = "31",
+                    BusinessId = param.BusinessId,
+                    BackParam = strXmlBackParam
+                };
+                //存基层
+                _webBasicRepository.SaveXmlData(saveXml);
+               
+            }
+            else
+            {
+                // 回参构建
+                var xmlData = new HospitalizationFeeUploadCancelXml()
+                {
+                    MedicalInsuranceHospitalizationNo = residentData.MedicalInsuranceHospitalizationNo,
+                    RowDataList = idListNew.Select(c => new HospitalizationFeeUploadRowXml() { SerialNumber =c }).ToList()
+                };
+                var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
+                var saveXml = new SaveXmlDataParam()
+                {
+                    User = userBase,
+                    MedicalInsuranceBackNum = "CXJB005",
+                    MedicalInsuranceCode = "32",
+                    BusinessId = param.BusinessId,
+                    BackParam = strXmlBackParam
+                };
+                //存基层
+                _webBasicRepository.SaveXmlData(saveXml);
+               
+            }
+            var logParam = new AddHospitalLogParam
+            {
+                User = userBase,
+                RelationId = Guid.Parse(param.BusinessId),
+                JoinOrOldJson = JsonConvert.SerializeObject(param.IdList),
+                ReturnOrNewJson = "",
+                BusinessId = param.BusinessId,
+                Remark = param.IsCancel == true ? "取消不传医保" : "不传医保"
+            };
+            _systemManageRepository.AddHospitalLog(logParam);
+            _medicalInsuranceSqlRepository.NotUploadMark(param.IdList, param.IsCancel, userBase);
+        }
 
-       /// <summary>
-       /// 更新数据
-       /// </summary>
-       /// <param name="param"></param>
-       /// <returns></returns>
+        /// <summary>
+        /// 更新数据
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public int PrescriptionUploadUpdateData(PrescriptionUploadUpdateDataParam param )
         {
             var rowXml = param.UploadData.RowDataList.Select(c => new HospitalizationFeeUploadRowXml() { SerialNumber = c.DetailId }).ToList();
@@ -916,6 +996,7 @@ namespace BenDing.Service.Providers
                         UnitPrice = item.UnitPrice,
                         Quantity = item.Quantity,
                         Amount = item.Amount,
+                        
                         ResidentSelfPayProportion = residentSelfPayProportion, //自付金额计算
                         Formulation = pairCodeData.Formulation,
                         Dosage = (!string.IsNullOrWhiteSpace(item.Dosage))
@@ -1000,7 +1081,7 @@ namespace BenDing.Service.Providers
             List<QueryInpatientInfoDetailDto> queryData;
             //获取病人明细
             var queryDataDetail = _hisSqlRepository.InpatientInfoDetailQuery
-                (new InpatientInfoDetailQueryParam() { BusinessId = param.BusinessId });
+                (new InpatientInfoDetailQueryParam() { BusinessId = param.BusinessId ,NotUploadMark = true});
             //获取选择
             queryData = param.DataIdList != null ? queryDataDetail.Where(c => param.DataIdList.Contains(c.Id.ToString())).ToList() : queryDataDetail;
             //获取病人医保信息

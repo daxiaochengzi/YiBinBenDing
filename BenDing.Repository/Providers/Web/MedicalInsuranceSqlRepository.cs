@@ -405,7 +405,7 @@ namespace BenDing.Repository.Providers.Web
 
                     var item = new ResidentProjectDownloadRowDataRowDto
                     {
-                        EffectiveSign = dr["有效标志"].ToString(),
+                        EffectiveSign ="1",
                         RestrictionSign= dr["限制药标志"].ToString()=="1"?"1":"0",
                         ProjectCode = CommonHelp.FilterSqlStr(dr["本位码"].ToString()),
                         ProjectName = CommonHelp.FilterSqlStr(dr["项目名称"].ToString()),
@@ -428,7 +428,7 @@ namespace BenDing.Repository.Providers.Web
                          QuasiFontSize = CommonHelp.FilterSqlStr(dr["批准文号"].ToString()),
                          ProjectCodeType = CommonHelp.FilterSqlStr(dr["医保分类"].ToString()),
                          Unit = CommonHelp.FilterSqlStr(dr["单位"].ToString()),
-                         ProjectBigType= CommonHelp.FilterSqlStr(dr["目录大类"].ToString()),// 1 药品 2 诊疗 3 材料 4 其他
+                         ProjectBigType=CommonHelp.FilterSqlStr(dr["目录大类"].ToString()),// 1 药品 2 诊疗 3 材料 4 其他
                          NewUpdateTime= dr["更新日期"].ToString(),
                          Remark = dr["备注"].ToString(),
                         
@@ -896,6 +896,54 @@ namespace BenDing.Repository.Providers.Web
                         {
                             var updateId = CommonHelp.ListToStr(param.Select(c => c.Id.ToString()).ToList());
                             querySql = $"update [dbo].[HospitalizationFee] set [UploadMark]=0 where id in ({updateId});";
+
+                        }
+                        resultData = sqlConnection.Execute(querySql);
+                        sqlConnection.Close();
+                    }
+                    return resultData;
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(querySql);
+                    throw new Exception(e.Message);
+                }
+
+
+            }
+
+
+        }
+        /// <summary>
+        /// 不传医保
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="cancel"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public int NotUploadMark(List<string> param, bool cancel, UserInfoDto user)
+        {
+            int resultData = 0;
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                string querySql = null;
+                try
+                {
+                    sqlConnection.Open();
+                    if (param.Any())
+                    {
+                        var updateId = CommonHelp.ListToStr(param);
+                        if (cancel == false)
+                        {
+                            querySql +=
+                                $@"update [dbo].[HospitalizationFee] set [UploadMark]=1,[NotUploadMark]=1,
+                                UploadUserId='{user.UserId}',UploadUserName='{user.UserName}',UploadTime=GETDATE()
+                               where id in ({updateId}) and IsDelete=0;";
+                        }
+                        else 
+                        {
+                            //var updateId = CommonHelp.ListToStr(param.Select(c => c.Id.ToString()).ToList());
+                            querySql = $"update [dbo].[HospitalizationFee] set [UploadMark]=0,[NotUploadMark]=NULL where id in ({updateId});";
 
                         }
                         resultData = sqlConnection.Execute(querySql);

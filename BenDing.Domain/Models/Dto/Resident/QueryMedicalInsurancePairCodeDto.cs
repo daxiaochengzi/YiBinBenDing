@@ -103,6 +103,6 @@ namespace BenDing.Domain.Models.Dto.Resident
         /// </summary>
 
         public string Manufacturer { get; set; }
-        
+     
     }
 }

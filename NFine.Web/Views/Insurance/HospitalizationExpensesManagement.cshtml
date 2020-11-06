@@ -15,17 +15,19 @@
 
             <div class="layui-form" lay-filter="LAY-bill-data-list">
                 <div class="layui-inline">
-                    
+
                     @*<label class="layui-form-label">限制项目</label>*@
 
-                    <input type="checkbox"  title="限制项目" value="1" name="Examine" lay-skin="primary" >
+                    <input type="checkbox" title="限制项目" value="1" name="Examine" lay-skin="primary">
+                  
+                  
                     @*<div class="layui-input-inline">
-                        <div class="layui-input-block" style="margin-left: 0px">
-                            <input type="radio" name="Examine" value="1" title="是">
-                            <input type="radio" name="Examine" value="0" title="否" checked="checked">
-                        </div>
-                      
-                    </div>*@
+            <div class="layui-input-block" style="margin-left: 0px">
+                <input type="radio" name="Examine" value="1" title="是">
+                <input type="radio" name="Examine" value="0" title="否" checked="checked">
+            </div>
+
+        </div>*@
 
 
                 </div>
@@ -54,8 +56,8 @@
                 <div class="layui-inline">
                     <button class="layui-btn"  id="QueryInHospital" lay-submit lay-filter="LAY-bill-data-list">查询</button>
                     <button class="layui-btn"  id="DeleteCenterLibraryData">清除数据</button>
-                    <button class="layui-btn" id="renewalCost" lay-submit lay-filter="renewalCost">更新费用</button>
-                    <button class="layui-btn" id="allUpload" lay-submit lay-filter="allUpload">全部上传</button>
+                    <button class="layui-btn"  id="renewalCost" lay-submit lay-filter="renewalCost">更新费用</button>
+                    <button class="layui-btn"  id="allUpload" lay-submit lay-filter="allUpload">全部上传</button>
                 </div>
             </div>
             <!--院内费用明细列表-->
@@ -166,7 +168,7 @@
             }
             form.render();
         }
-        ////插件检查
+        //////插件检查
         var verification = DetectActiveX();
         if (verification === false) {
             return false;
@@ -235,7 +237,8 @@
                     , { field: 'BlockPrice', title: '限制价格', width: 100 }
                     , { field: 'BlockRemark', title: '限制使用说明', width: 100 }
                     , { field: 'Specification', title: '规格', width: 100 }
-                    , { width: 65, align: 'center', title: '对码', toolbar: '#tablePairCode', fixed: 'right'}
+                
+                    , { width: 150, align: 'center', title: '操作', toolbar: '#tablePairCode', fixed: 'right'}
 
                 ]]
             });
@@ -583,6 +586,33 @@
                 }
             });
         }
+        //不传医保操作
+        function notUploadMark(uploadId) {
+            var uploadParam = {
+                "BusinessId": $("#bid").val() /*当前住院记录的业务ID*/
+                , "UserId": $("#empid").val() /*授权操作人的ID*/
+                , "IdList": uploadId
+                , "TransKey": $("#transkey").val()
+            }
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/NotUploadMark',
+                async: false,
+                data: JSON.stringify(uploadParam),
+                dataType: "json",
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        msgError(errData);
+                        //样式类名:墨绿深蓝风
+                    } else {
+                        inHospitalContentsTable();
+                       
+                    }
+                }
+            });
+        }
         //头工具栏事件
         table.on('toolbar(dataTableBillId)', function (obj) {
          
@@ -669,8 +699,10 @@
             };
         });
         //监听行工具事件
-        table.on('tool(dataTableBillId)', function(obj){
+        table.on('tool(dataTableBillId)', function (obj) {
+         
             var data = obj.data;
+            var dataIds = [];
             //console.log(obj)
             if (obj.event === 'PairCode'){
                 var directoryName = data.DirectoryName;
@@ -703,6 +735,11 @@
                         inHospitalContentsTable();
                     }
                 });
+            }
+            if (obj.event === 'UnUploadData') {
+                //var directoryName = data.Id;
+                dataIds.push(data.Id);
+                notUploadMark(dataIds);
             }
         });
         ////页面初始化加载默认数据
@@ -840,6 +877,7 @@
 </script>
 <script type="text/html" id="tablePairCode">
     <a class="layui-btn layui-btn-xs" lay-event="PairCode">对码</a>
+    <a class="layui-btn layui-btn-xs" lay-event="UnUploadData">不传医保</a>
 </script>
 
 <script type="text/html" id="tableBtn">

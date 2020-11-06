@@ -15,6 +15,7 @@ using BenDing.Domain.Models.Dto.Web;
 using BenDing.Domain.Models.Dto.Workers;
 using BenDing.Domain.Models.Enums;
 using BenDing.Domain.Models.HisXml;
+using BenDing.Domain.Models.Params;
 using BenDing.Domain.Models.Params.Base;
 using BenDing.Domain.Models.Params.OutpatientDepartment;
 using BenDing.Domain.Models.Params.Resident;
@@ -912,6 +913,52 @@ namespace NFine.Web.Controllers
                 //    y.Data = data;
                 //}
                 //--
+            });
+
+        }
+
+        /// <summary>
+        /// 取消对码
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData CancelPairCode([FromBody]CancelPairCodeParam param)
+        {
+            return new ApiJsonResultData(ModelState, new MedicalInsurancePairCodesUiParam()).RunWithTry(y =>
+            {
+                var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+              var pairCodeDataList= _medicalInsuranceSqlRepository.QueryMedicalInsurancePairCode(new QueryMedicalInsurancePairCodeParam()
+              {
+                  DirectoryCodeList = new List<string>() { param.DirectoryCode },
+                  OrganizationCode = userBase.OrganizationCode
+
+              });
+                var pairCodeData = pairCodeDataList.FirstOrDefault();
+                if(pairCodeData==null)  throw new Exception("获取对码信息失败!!!");
+                var uploadDataRow = new List<ThreeCataloguePairCodeUploadRowDto>();
+                uploadDataRow.Add(new ThreeCataloguePairCodeUploadRowDto
+                {
+                    HisDirectoryCode = pairCodeData.DirectoryCode,
+                    ProjectName = param.ProjectName,
+                    ProjectCode = pairCodeData.ProjectCode,
+                    ProjectCodeType = pairCodeData.DirectoryCategoryCode,
+                });
+                var uploadData = new ThreeCataloguePairCodeUploadDto()
+                {
+                    AuthCode = userBase.AuthCode,
+                    CanCelState = "1",
+                    UserName = userBase.UserName,
+                    OrganizationCode = userBase.OrganizationCode,
+                    PairCodeRow = uploadDataRow,
+                    VersionNumber = ""
+                };
+                _webServiceBasicRepository.HIS_Interface("35", JsonConvert.SerializeObject(uploadData));
+                //删除以前记录
+                string sql =
+                    $" update [dbo].[ThreeCataloguePairCode] set IsDelete=1,DeleteUserId='{userBase.UserId}',DeleteTime=GETDATE() where OrganizationCode='{userBase.OrganizationCode}' and DirectoryCode='{pairCodeData.DirectoryCode}' and IsDelete=0";
+                _hisSqlRepository.ExecuteSql(sql);
+ 
             });
 
         }

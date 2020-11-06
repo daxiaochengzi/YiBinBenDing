@@ -16,6 +16,7 @@ using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
 using BenDing.Domain.Models.Entitys;
+using BenDing.Domain.Models.Enums;
 using BenDing.Domain.Models.HisXml;
 using BenDing.Domain.Models.Params.Base;
 using BenDing.Domain.Models.Params.DifferentPlaces;
@@ -890,6 +891,53 @@ namespace NFine.Web.Controllers
            var ccc= _hospitalLogMap._db.Ado.GetDataTable("select * from table");
             //_hospitalLogMap.CurrentDb.DeleteById(1);
             //_sqlSugarRepository.QueryHospitalLog();
+        }
+        /// <summary>
+        /// 取消对码
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public void CancelPairCode()
+        {
+            //
+            //_hospitalLogMap.CurrentDb.DeleteById(1);
+            //_sqlSugarRepository.QueryHospitalLog();
+
+            var userBase = webServiceBasicService.GetUserBaseInfo("76EDB472F6E544FD8DC8D354BB088BD7");
+            //var uploadDataRow = sendList.Select(c => new ThreeCataloguePairCodeUploadRowDto()
+            //{
+            //    //ProjectId = c.Id.ToString("N"),
+            //    HisDirectoryCode = c.DirectoryCode,
+            //    //Manufacturer = "",
+            //    //ProjectName = c.ProjectName,
+            //    //ProjectCode = c.ProjectCode,
+            //    //ProjectCodeType = c.DirectoryCategoryCode,
+            //    //ProjectCodeTypeDetail = ((ProjectCodeType)Convert.ToInt32(c.ProjectCodeType)).ToString(),
+            //    //Remark = c.Remark,
+            //    //ProjectLevel = ((ProjectLevel)Convert.ToInt32(c.ProjectLevel)).ToString(),
+            //    //RestrictionSign = GetStrData(c.ProjectCodeType, c.RestrictionSign)
+
+            //}).ToList();
+
+            var uploadDataRow = new List<ThreeCataloguePairCodeUploadRowDto>();
+            uploadDataRow.Add(new ThreeCataloguePairCodeUploadRowDto
+            {
+                 HisDirectoryCode = "72F98D9AA80A4933BA269F1A7C970864",
+                ProjectName = "厚朴",
+                ProjectCode = "8690000-Y-H022",
+                ProjectCodeType = "0",
+            });
+
+            var  uploadData = new ThreeCataloguePairCodeUploadDto()
+            {
+                AuthCode = userBase.AuthCode,
+                CanCelState = "1",
+                UserName = userBase.UserName,
+                OrganizationCode = userBase.OrganizationCode,
+                PairCodeRow = uploadDataRow,
+                VersionNumber = ""
+            };
+            webServiceBasic.HIS_Interface("35", JsonConvert.SerializeObject(uploadData));
         }
     }
 }

@@ -136,6 +136,10 @@ namespace BenDing.Domain.Models.Dto.Web
         /// 医保生产厂家
         /// </summary>
         public string Manufacturer { get; set; }
+        /// <summary>
+        ///   不传医保
+        /// </summary>
+        public  int? NotUploadMark  { get; set; }
 
-    }
+}
 }
