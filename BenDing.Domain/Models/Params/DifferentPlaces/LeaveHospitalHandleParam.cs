@@ -11,28 +11,25 @@ namespace BenDing.Domain.Models.Params.DifferentPlaces
 /// 出院办理
 /// </summary>
    public class LeaveHospitalHandleParam
-    {
+    { ///<summary>
+        /// 个人编号
+        /// </summary>
+        [XmlElement("AAC001", IsNullable = false)]
+     
+        public string PersonalNumber { get; set; }
         /// <summary>
         /// 医保住院号
         /// </summary>
         [XmlElement("AAZ217", IsNullable = false)]
-        [Display(Name = "医保住院号")]
-        [Required(ErrorMessage = "{0}不能为空!!!")]
+     
         public string MedicalInsuranceHospitalizationNo { get; set; }
         /// <summary>
         /// 参保地统筹编码(即病人所属行政区划代码)
         /// </summary>
         [XmlElement("BAA008", IsNullable = false)]
-        [Display(Name = "参保地统筹编码")]
-        [Required(ErrorMessage = "{0}不能为空!!!")]
+      
         public string OverallCoding { get; set; }
-        ///<summary>
-        /// 个人编号
-        /// </summary>
-        [XmlElement("AAC001", IsNullable = false)]
-        [Display(Name = "个人编号")]
-        [Required(ErrorMessage = "{0}不能为空!!!")]
-        public string PersonalNumber { get; set; }
+       
 
         ///<summary>
         /// 出院病历号 len(20)
@@ -46,8 +43,7 @@ namespace BenDing.Domain.Models.Params.DifferentPlaces
         /// 出院住院号
         /// </summary>
         [XmlElement("AKC190", IsNullable = false)]
-        [Display(Name = "出院住院号")]
-        [Required(ErrorMessage = "{0}不能为空!!!")]
+       
         public string LeaveHospitalNo{ get; set; }
         ///<summary>
         /// 出院原因

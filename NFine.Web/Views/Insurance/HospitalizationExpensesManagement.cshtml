@@ -791,18 +791,15 @@
                         msgError(errData);
                         //样式类名:墨绿深蓝风
                     } else {
-                            
                         var uploadData = data.Data.UploadList;
                         if (uploadData !== undefined && uploadData !== null && uploadData.length > 0) {
                             var activeX = document.getElementById("CSharpActiveX");
                             for (var i = 0; i < uploadData.length; i++) {
-
                                 var uploadDataParam = uploadData[i];
                                 var activeData = activeX.HospitalizationMethods(JSON.stringify(uploadDataParam), JSON.stringify(baseInfo.HospitalInfo), "PrescriptionUploadData");
                                 var activeJsonData = JSON.parse(activeData);
                                 if (activeJsonData.Success === false) {
                                     msgError(activeJsonData.Message);
-                                   
                                 }
                                 else {
                                     uploadParam["ProjectBatch"] = activeJsonData.Data;
