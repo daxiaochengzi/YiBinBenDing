@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace BenDing.Domain.Models.Params.Resident
-{
+{ 
     [XmlRootAttribute("ROW", IsNullable = false)]
     public class PrescriptionUploadParam
     {
