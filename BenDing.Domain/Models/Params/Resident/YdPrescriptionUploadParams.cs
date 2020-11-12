@@ -1,57 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace BenDing.Domain.Models.Params.Resident
 {
-    [XmlRootAttribute("ROW", IsNullable = false)]
-    public class PrescriptionUploadParam
-    {
-        /// <summary>
-        /// 医保住院号
-        /// </summary>
-        [XmlElementAttribute("PI_ZYH", IsNullable = false)]
-        public string MedicalInsuranceHospitalizationNo { get; set; }
+    [XmlRoot("ROW", IsNullable = false)]
+    public class YdPrescriptionUploadParams
+    {/// <summary>
+     /// 参保地统筹区代码
+     /// </summary>
+        [XmlElement("baa008", IsNullable = false)]
+        public string AreaCode { get; set; }
         /// <summary>
         /// 经办人
         /// </summary>
-        [XmlElementAttribute("PI_JBR", IsNullable = false)]
+        [XmlElement("bkc131", IsNullable = false)]
         public string Operators { get; set; }
         /// <summary>
-        /// 处方明细
+        ///个人编码
         /// </summary>
-        [XmlElementAttribute("CFMX", IsNullable = false)]
-        public PrescriptionUploadRowListParam DetailData { get; set; }
-
-    }
-
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public class PrescriptionUploadRowListParam
-    {/// <summary>
+        [XmlElement("aac001", IsNullable = false)]
+        public string PersonalCode { get; set; }
+        /// <summary>
+        ///就诊记录号
+        /// </summary>
+        [XmlElement("aaz217", IsNullable = false)]
+        public string RecordNumber { get; set; }
+        
+        /// <summary>
+        /// 数量
+        /// </summary>
+        [XmlElement("nums", IsNullable = false)]
+        public int nums { get; set; }
+        /// <summary>
         ///  
         /// </summary>
-        [XmlArrayAttribute("CFMX")]
+        [XmlArray("CFMX")]
         [XmlArrayItem("ROW")]
         public List<PrescriptionUploadRowParam> RowDataList { get; set; }
     }
-
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public class PrescriptionUploadRowParam
-    {
+    public class YdPrescriptionUploadRowParams
+    {/// <summary>
+     /// 行号
+     /// </summary>
+        [XmlElementAttribute("CO", IsNullable = false)]
+        public int ColNum { get; set; }
         /// <summary>
         /// 处方号 len(20)
         /// </summary>
-        [XmlElementAttribute("aae072", IsNullable = false)]
+        [XmlElementAttribute("AKC220", IsNullable = false)]
         public string PrescriptionNum { get; set; }
         /// <summary>
-        /// 
+        ///  处方序号
         /// </summary>
-        [XmlElementAttribute("bkc127", IsNullable = false)]
-        public int OrderNumber { get; set; }
-        /// <summary>
-        /// 序号（在医疗机构系统中产生的费用序号，一次就诊的序号不能重复）
-        /// </summary>
-        [XmlElementAttribute("bke019", IsNullable = false)]
+        [XmlElementAttribute("AKC584", IsNullable = false)]
         public int PrescriptionSort { get; set; }
         /// <summary>
         /// 项目编号
@@ -87,7 +93,7 @@ namespace BenDing.Domain.Models.Params.Resident
         /// 项目级别
         /// </summary>
         [XmlElementAttribute("AKA065", IsNullable = false)]
-        
+
         public string ProjectLevel { get; set; }
         /// <summary>
         /// 单价   (12,4)
@@ -109,7 +115,7 @@ namespace BenDing.Domain.Models.Params.Resident
         /// 居民自付金额 (12,2)
         /// </summary>
         [XmlElementAttribute("AKC228", IsNullable = false)]
-        
+
         public decimal ResidentSelfPayProportion { get; set; }
         /// <summary>
         /// 剂型
@@ -156,12 +162,12 @@ namespace BenDing.Domain.Models.Params.Resident
         /// 医生工号
         /// </summary>
         [XmlElementAttribute("CKC691", IsNullable = false)]
-        public  string DoctorJobNumber  { get; set; }
+        public string DoctorJobNumber { get; set; }
         /// <summary>
         /// 限制审批标志
         /// </summary>
         [XmlElementAttribute("CKE841", IsNullable = false)]
-        public  string LimitApprovalMark { get; set; }
+        public string LimitApprovalMark { get; set; }
         /// <summary>
         /// 限制审批人
         /// </summary>
@@ -181,7 +187,7 @@ namespace BenDing.Domain.Models.Params.Resident
         /// id
         /// </summary>
         [XmlIgnore]
-        public  Guid  Id { get; set; }
+        public Guid Id { get; set; }
         /// <summary>
         /// 明细id
         /// </summary>
