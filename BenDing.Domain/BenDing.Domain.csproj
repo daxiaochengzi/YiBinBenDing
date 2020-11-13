@@ -218,6 +218,7 @@
     <Compile Include="Models\Params\Resident\QueryOrganizationInpatientInfoUiParam.cs" />
     <Compile Include="Models\Params\Resident\QueryPrescriptionDetailDto.cs" />
     <Compile Include="Models\Params\Resident\QueryPrescriptionDetailParam.cs" />
+    <Compile Include="Models\Params\Resident\YdPrescriptionUploadCancelParam.cs" />
     <Compile Include="Models\Params\Resident\YdPrescriptionUploadParam.cs" />
     <Compile Include="Models\Params\Resident\YdPrescriptionUploadsParam.cs" />
     <Compile Include="Models\Params\SystemManage\AddHospitalLogParam.cs" />

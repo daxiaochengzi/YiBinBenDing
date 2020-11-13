@@ -24,34 +24,22 @@ namespace BenDing.Domain.Models.Params.Resident
         [XmlArrayItem("ROW")]
         public List<PrescriptionUploadRowParam> RowDataList { get; set; }
     }
-
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public class PrescriptionUploadRowListParam
-    {/// <summary>
-        ///  
-        /// </summary>
-        [XmlArrayAttribute("datarow")]
-        [XmlArrayItem("row")]
-        public List<PrescriptionUploadRowParam> RowDataList { get; set; }
-    }
-
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public class PrescriptionUploadRowParam
-    {
+    {/// <summary>
+     /// 行号
+     /// </summary>
+        [XmlElementAttribute("CO", IsNullable = false)]
+        public int ColNum { get; set; }
         /// <summary>
         /// 处方号 len(20)
         /// </summary>
-        [XmlElementAttribute("aae072", IsNullable = false)]
+        [XmlElementAttribute("AKC220", IsNullable = false)]
         public string PrescriptionNum { get; set; }
         /// <summary>
-        /// 
+        ///  处方序号
         /// </summary>
-        [XmlElementAttribute("bkc127", IsNullable = false)]
-        public int OrderNumber { get; set; }
-        /// <summary>
-        /// 序号（在医疗机构系统中产生的费用序号，一次就诊的序号不能重复）
-        /// </summary>
-        [XmlElementAttribute("bke019", IsNullable = false)]
+        [XmlElementAttribute("AKC584", IsNullable = false)]
         public int PrescriptionSort { get; set; }
         /// <summary>
         /// 项目编号
@@ -87,7 +75,7 @@ namespace BenDing.Domain.Models.Params.Resident
         /// 项目级别
         /// </summary>
         [XmlElementAttribute("AKA065", IsNullable = false)]
-        
+
         public string ProjectLevel { get; set; }
         /// <summary>
         /// 单价   (12,4)
@@ -109,7 +97,7 @@ namespace BenDing.Domain.Models.Params.Resident
         /// 居民自付金额 (12,2)
         /// </summary>
         [XmlElementAttribute("AKC228", IsNullable = false)]
-        
+
         public decimal ResidentSelfPayProportion { get; set; }
         /// <summary>
         /// 剂型
@@ -156,12 +144,12 @@ namespace BenDing.Domain.Models.Params.Resident
         /// 医生工号
         /// </summary>
         [XmlElementAttribute("CKC691", IsNullable = false)]
-        public  string DoctorJobNumber  { get; set; }
+        public string DoctorJobNumber { get; set; }
         /// <summary>
         /// 限制审批标志
         /// </summary>
         [XmlElementAttribute("CKE841", IsNullable = false)]
-        public  string LimitApprovalMark { get; set; }
+        public string LimitApprovalMark { get; set; }
         /// <summary>
         /// 限制审批人
         /// </summary>
@@ -181,7 +169,7 @@ namespace BenDing.Domain.Models.Params.Resident
         /// id
         /// </summary>
         [XmlIgnore]
-        public  Guid  Id { get; set; }
+        public Guid Id { get; set; }
         /// <summary>
         /// 明细id
         /// </summary>
