@@ -113,6 +113,15 @@ namespace NFine.Web.Controllers
                    y.Data = userBase;
                }
 
+               //var inputParam = new UserInfoParam()
+               //{
+               //    UserName = data.HisUserAccount,
+               //    Pwd = data.HisUserPwd,
+               //    ManufacturerNumber = data.ManufacturerNumber,
+               //};
+               //string inputParamJson = JsonConvert.SerializeObject(inputParam, Formatting.Indented);
+               //var userBase = _webServiceBasicService.GetVerificationCode("01", inputParamJson);
+
            });
 
 
@@ -896,7 +905,8 @@ namespace NFine.Web.Controllers
                      );
 
                 }
-                //--全机构上传注释
+
+                // --全机构上传注释
                 //var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
                 //if (userBase != null && string.IsNullOrWhiteSpace(userBase.OrganizationCode) == false)
                 //{

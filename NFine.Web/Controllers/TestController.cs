@@ -887,8 +887,9 @@ namespace NFine.Web.Controllers
         [HttpGet]
         public void TestSqlSugar()
         {
-            var dataList = _hospitalLogMap.GetList();
-           var ccc= _hospitalLogMap._db.Ado.GetDataTable("select * from table");
+           var ddd= CommonHelp.GetValue("WebServiceUrl");
+            //var dataList = _hospitalLogMap.GetList();
+            //var ccc= _hospitalLogMap._db.Ado.GetDataTable("select * from table");
             //_hospitalLogMap.CurrentDb.DeleteById(1);
             //_sqlSugarRepository.QueryHospitalLog();
         }

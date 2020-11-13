@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -28,10 +29,21 @@ namespace BenDing.Domain.Xml
         {
             string resultData = null;
             //测试a
-           //resultData = "http://47.111.29.88:11013/WebService.asmx";
-            //正式
-            resultData = "http://11.21.1.11:8002/WebService.asmx";
+            //resultData = "http://47.111.29.88:11013/WebService.asmx";
+            //叙州
+            // resultData = "http://11.21.1.11:8002/WebService.asmx";
+            //江安
+            //resultData = "http://11.21.1.11:8001/WebService.asmx";
+            resultData = GetValue("WebServiceUrl");
             return resultData;
+        }
+        /// <summary>
+        /// 根据Key取Value值
+        /// </summary>
+        /// <param name="key"></param>
+        public static string GetValue(string key)
+        {
+            return ConfigurationManager.AppSettings[key].ToString().Trim();
         }
         //入参字符串为空则为0
         public static string getNum(string num)
