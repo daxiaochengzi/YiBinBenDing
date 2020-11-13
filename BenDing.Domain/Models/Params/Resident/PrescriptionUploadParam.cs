@@ -18,11 +18,11 @@ namespace BenDing.Domain.Models.Params.Resident
         [XmlElementAttribute("PI_JBR", IsNullable = false)]
         public string Operators { get; set; }
         /// <summary>
-        /// 处方明细
+        ///  
         /// </summary>
-        [XmlElementAttribute("CFMX", IsNullable = false)]
-        public PrescriptionUploadRowListParam DetailData { get; set; }
-
+        [XmlArrayAttribute("CFMX")]
+        [XmlArrayItem("ROW")]
+        public List<PrescriptionUploadRowParam> RowDataList { get; set; }
     }
 
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
@@ -30,8 +30,8 @@ namespace BenDing.Domain.Models.Params.Resident
     {/// <summary>
         ///  
         /// </summary>
-        [XmlArrayAttribute("CFMX")]
-        [XmlArrayItem("ROW")]
+        [XmlArrayAttribute("datarow")]
+        [XmlArrayItem("row")]
         public List<PrescriptionUploadRowParam> RowDataList { get; set; }
     }
 
