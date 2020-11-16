@@ -44,5 +44,14 @@ namespace BenDing.Repository.Providers.Web
         {
             var list = _db.Queryable<HospitalLog>().ToList();//查询所有
         }
+        /// <summary>
+        /// icd10已对码查询
+        /// </summary>
+        /// <returns></returns>
+        public List<ICD10PairCode> QueryICD10PairCode()
+        {
+            var list = _db.Queryable<ICD10PairCode>().ToList();//查询所有
+            return list;
+        }
     }
 }

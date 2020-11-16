@@ -651,40 +651,40 @@ namespace NFine.Web.Controllers
             });
         }
 
-        /// <summary>
-        /// 医院三大目录批量上传
-        /// </summary>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public ApiJsonResultData HospitalThreeCatalogBatchUpload([FromBody] UiInIParam param)
-        {
-            return new ApiJsonResultData(ModelState, new UiInIParam()).RunWithTry(y =>
-            {
-                var userBase = webServiceBasicService.GetUserBaseInfo(param.UserId);
+        ///// <summary>
+        ///// 医院三大目录批量上传
+        ///// </summary>
+        ///// <param name="param"></param>
+        ///// <returns></returns>
+        //[HttpPost]
+        //public ApiJsonResultData HospitalThreeCatalogBatchUpload([FromBody] UiInIParam param)
+        //{
+        //    return new ApiJsonResultData(ModelState, new UiInIParam()).RunWithTry(y =>
+        //    {
+        //        var userBase = webServiceBasicService.GetUserBaseInfo(param.UserId);
 
-                var paramIni = new MedicalInsurancePairCodesUiParam();
+        //        var paramIni = new MedicalInsurancePairCodesUiParam();
 
-                if (userBase != null && string.IsNullOrWhiteSpace(userBase.OrganizationCode) == false)
-                {
-                    paramIni.OrganizationCode = userBase.OrganizationCode;
-                    paramIni.OrganizationName = userBase.OrganizationName;
+        //        if (userBase != null && string.IsNullOrWhiteSpace(userBase.OrganizationCode) == false)
+        //        {
+        //            paramIni.OrganizationCode = userBase.OrganizationCode;
+        //            paramIni.OrganizationName = userBase.OrganizationName;
 
-                    webServiceBasicService.ThreeCataloguePairCodeUpload(
-                        new UpdateThreeCataloguePairCodeUploadParam()
-                        {
-                            User = userBase,
-                            ProjectCodeList = new List<string>()
-                        }
-                    );
+        //            webServiceBasicService.ThreeCataloguePairCodeUpload(
+        //                new UpdateThreeCataloguePairCodeUploadParam()
+        //                {
+        //                    User = userBase,
+        //                    ProjectCodeList = new List<string>()
+        //                }
+        //            );
 
-                }
+        //        }
 
-                ImedicalInsuranceSqlRepository.HospitalThreeCatalogBatchUpload(userBase);
+        //        ImedicalInsuranceSqlRepository.HospitalThreeCatalogBatchUpload(userBase);
 
-            });
+        //    });
 
-        }
+        //}
 
         /// <summary>
         /// icd10批量上传
@@ -698,18 +698,18 @@ namespace NFine.Web.Controllers
             {
                 var userBase = webServiceBasicService.GetUserBaseInfo(param.UserId);
                 userBase.TransKey = param.TransKey;
-                var dataList = new List<Icd10PairCodeDataParam>();
+                var dataList = new List<Icd10PairCodeDateXml>();
 
                 //基层
-                var queryData = hisSqlRepository.QueryAllICD10();
+                var queryData = _sqlSugarRepository.QueryICD10PairCode();
 
                 if (queryData.Any())
                 {
-                    dataList = queryData.Select(d => new Icd10PairCodeDataParam
+                    dataList = queryData.Select(d => new Icd10PairCodeDateXml
                     {
                         DiseaseId = d.DiseaseId,
-                        ProjectCode = d.DiseaseCoding,
-                        ProjectName = d.DiseaseName
+                        DiseaseName = d.ProjectName,
+                        DiseaseCoding = d.ProjectCode
                     }).ToList();
                 }
 
@@ -728,16 +728,23 @@ namespace NFine.Web.Controllers
                             .ToList();
                         var sendList = rowDataListAll.Take(limit).ToList();
 
-                        webServiceBasicService.Icd10PairCode(new Icd10PairCodeParam()
-                        {
-                            DataList = sendList,
-                            User = userBase,
-                            BusinessId = "00000000000000000000000000000000"
-                        });
-                        //更新数据上传状态
-                        idList.AddRange(sendList.Select(d => d.DiseaseId).ToList());
-                        a++;
 
+                        var xmlData = new Icd10PairCodeXml()
+                        {
+                            row = sendList
+                        };
+                        var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
+                        var saveXml = new SaveXmlDataParam()
+                        {
+                            User = userBase,
+                            MedicalInsuranceBackNum = "CXJB002",
+                            MedicalInsuranceCode = "91",
+                            BusinessId = param.BusinessId,
+                            BackParam = strXmlBackParam
+                        };
+                        //存基层
+                        webServiceBasic.SaveXmlData(saveXml);
+                        a++;
                     }
                 }
 
@@ -746,7 +753,33 @@ namespace NFine.Web.Controllers
             });
 
         }
+        /// <summary>
+        /// 医保三大目录批量对码
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData MedicalInsurancePairCode([FromBody]UiInIParam param)
+        {
+            return new ApiJsonResultData(ModelState, new MedicalInsurancePairCodesUiParam()).RunWithTry(y =>
+            {
 
+                var userBase = webServiceBasicService.GetUserBaseInfo(param.UserId);
+                if (userBase != null && string.IsNullOrWhiteSpace(userBase.OrganizationCode) == false)
+                {
+                    var data = webServiceBasicService.ThreeCataloguePairCodeUpload(
+                           new UpdateThreeCataloguePairCodeUploadParam()
+                           {
+                               User = userBase,
+                               ProjectCodeList = new List<string>()
+                           }
+                       );
+                    y.Data = data;
+                }
+
+            });
+
+        }
         [HttpPost]
         public ApiJsonResultData OutpatientDepartmentCostInput([FromBody] OutpatientPlanBirthSettlementUiParam param)
         {
