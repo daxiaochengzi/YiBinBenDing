@@ -11,7 +11,7 @@ namespace BenDing.Domain.Models.Params.DifferentPlaces
     /// 取消入院登记参数
     /// </summary>
     [XmlRoot("ROW", IsNullable = false)]
-    public  class CanCelDifferentPlacesHospitalizationRegisterParam
+    public  class YdHospitalizationRegisterCanCelParam
     { /// <summary>
         /// 参保地统筹编码(即病人所属行政区划代码)
         /// </summary>

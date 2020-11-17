@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace BenDing.Domain.Models.Dto.JsonEntity.DifferentPlaces
 {
-   public class CanCelDifferentPlacesHospitalizationRegisterJsonDto
+   public class YdHospitalizationRegisterCancelJsonDto
     {/// <summary>
     /// 经办时间
     /// </summary>

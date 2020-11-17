@@ -128,7 +128,7 @@ namespace NFine.Web.Controllers
             return new ApiJsonResultData(ModelState, new UiInIParam()).RunWithTry(y =>
             {
                 var paramList = new List<DifferentPlacesOtherDiagnosis>();
-                var param = new DifferentPlacesHospitalizationRegisterParam()
+                var param = new YdHospitalizationRegisterParam()
                 {
                     AdmissionDate = "123123",
                     DiagnosisList = paramList,

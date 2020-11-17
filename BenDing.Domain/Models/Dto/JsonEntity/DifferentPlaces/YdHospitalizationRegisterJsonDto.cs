@@ -9,7 +9,7 @@ namespace BenDing.Domain.Models.Dto.JsonEntity.DifferentPlaces
 {/// <summary>
 /// 异地入院登记回参
 /// </summary>
-   public class DifferentPlacesHospitalizationRegisterJsonDto
+   public class YdHospitalizationRegisterJsonDto
     {  /// <summary>
         /// 个人账户余额
         /// </summary>

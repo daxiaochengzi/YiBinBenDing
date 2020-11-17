@@ -58,8 +58,8 @@ namespace NFine.Web.App_Start
                 cfg.CreateMap<WorkerBirthPreSettlementJsonDto, WorkerBirthSettlementDto>();
                 cfg.CreateMap<WorkerHospitalSettlementCardBackDataDto, WorkerHospitalSettlementCardBackDto>();
                 //异地
-                cfg.CreateMap<DifferentPlacesUserInfoJsonDto, DifferentPlacesUserInfoDto>();
-               cfg.CreateMap<DifferentPlacesHospitalizationRegisterJsonDto, DifferentPlacesHospitalizationRegisterDto>();
+                cfg.CreateMap<YdUserInfoJsonDto, DifferentPlacesUserInfoDto>();
+               cfg.CreateMap<YdHospitalizationRegisterJsonDto, DifferentPlacesHospitalizationRegisterDto>();
                 
             });
         }

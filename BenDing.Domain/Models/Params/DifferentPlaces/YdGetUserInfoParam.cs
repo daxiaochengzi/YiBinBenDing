@@ -9,7 +9,7 @@ namespace BenDing.Domain.Models.Params.DifferentPlaces
 {/// <summary>
 /// 获取病人异地参数
 /// </summary>
-   public class DifferentPlacesGetUserInfoParam: ResidentUserInfoParam
+   public class YdGetUserInfoParam: ResidentUserInfoParam
     {
     }
 }

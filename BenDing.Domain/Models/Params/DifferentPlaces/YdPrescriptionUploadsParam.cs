@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace BenDing.Domain.Models.Params.Resident
+namespace BenDing.Domain.Models.Params.DifferentPlaces
 {
     [XmlRootAttribute("ROW", IsNullable = false)]
     public  class YdPrescriptionUploadsParam

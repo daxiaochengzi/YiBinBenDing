@@ -17,13 +17,13 @@ namespace BenDing.Repository.Providers.Web
         /// 获取异地个人基础资料
         /// </summary>
         /// <param name="param"></param>
-        public DifferentPlacesUserInfoDto DifferentPlacesGetUserInfo(DifferentPlacesGetUserInfoParam param)
+        public DifferentPlacesUserInfoDto DifferentPlacesGetUserInfo(YdGetUserInfoParam param)
         {
             DifferentPlacesUserInfoDto resultData = null;
             var xmlStr = XmlHelp.SaveXml(param);
             if (!xmlStr) throw new Exception("异地获取个人基础资料保存参数出错");
             MedicalInsuranceDll.CallService_cxjb("YYJK001");
-            var data = XmlHelp.DeSerializerModel(new DifferentPlacesUserInfoJsonDto(), true);
+            var data = XmlHelp.DeSerializerModel(new YdUserInfoJsonDto(), true);
             resultData = AutoMapper.Mapper.Map<DifferentPlacesUserInfoDto>(data);
             return resultData;
         }
@@ -31,14 +31,14 @@ namespace BenDing.Repository.Providers.Web
         /// 异地入院登记
         /// </summary>
         /// <returns></returns>
-        public DifferentPlacesHospitalizationRegisterDto DifferentPlacesHospitalizationRegister(CanCelDifferentPlacesHospitalizationRegisterParam param)
+        public DifferentPlacesHospitalizationRegisterDto DifferentPlacesHospitalizationRegister(YdHospitalizationRegisterCanCelParam param)
         {
             DifferentPlacesHospitalizationRegisterDto resultData = null;
             var xmlStr = XmlHelp.SaveXml(param);
             if (!xmlStr) throw new Exception("异地入院登记保存参数出错");
             int result = MedicalInsuranceDll.CallService_cxjb("YYJK003");
             if (result != 1) throw new Exception("异地医保执行出错!!!");
-            var data = XmlHelp.DeSerializerModel(new DifferentPlacesHospitalizationRegisterJsonDto(), true);
+            var data = XmlHelp.DeSerializerModel(new YdHospitalizationRegisterJsonDto(), true);
             resultData = AutoMapper.Mapper.Map<DifferentPlacesHospitalizationRegisterDto>(data);
             return resultData;
         }
@@ -46,14 +46,14 @@ namespace BenDing.Repository.Providers.Web
         /// 取消异地入院登记
         /// </summary>
         /// <returns></returns>
-        public  CanCelDifferentPlacesHospitalizationRegisterDto CanCelDifferentPlacesHospitalizationRegister(DifferentPlacesHospitalizationRegisterParam param)
+        public  CanCelDifferentPlacesHospitalizationRegisterDto CanCelDifferentPlacesHospitalizationRegister(YdHospitalizationRegisterParam param)
         {
            var resultData=new CanCelDifferentPlacesHospitalizationRegisterDto(); 
             var xmlStr = XmlHelp.SaveXml(param);
             if (!xmlStr) throw new Exception("取消异地入院登记保存参数出错");
             int result = MedicalInsuranceDll.CallService_cxjb("YYJK003");
             if (result != 1) throw new Exception("取消异地医保执行出错!!!");
-            var data = XmlHelp.DeSerializerModel(new CanCelDifferentPlacesHospitalizationRegisterJsonDto(), true);
+            var data = XmlHelp.DeSerializerModel(new YdHospitalizationRegisterCancelJsonDto(), true);
             if (data != null) resultData.OperationTime = data.OperationTime; 
             return resultData;
         }

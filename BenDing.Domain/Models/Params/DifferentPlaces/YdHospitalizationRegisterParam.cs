@@ -11,7 +11,7 @@ namespace BenDing.Domain.Models.Params.DifferentPlaces
  /// 入院登记参数
  /// </summary>
     [XmlRoot("ROW", IsNullable = false)]
-    public class DifferentPlacesHospitalizationRegisterParam
+    public class YdHospitalizationRegisterParam
     {
 
         ///<summary>
