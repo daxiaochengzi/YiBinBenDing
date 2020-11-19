@@ -1,1 +1,266 @@
 ﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<!DOCTYPE html>
+<script>
+
+        $(function() {
+            gridList();
+            //var authorizeData = $("#NF-delete").attr("authorize");
+            //if (authorizeData !== "yes") {
+            //    $("#txt_TransKey").hide();
+            //}
+        });
+    function gridList() {
+        var $gridList = $("#gridList");
+        $gridList.dataGrid({
+            url: "/SystemManage/HospitalInfo/GetGridJson",
+            height: $(window).height() - 96,
+            postData:
+            {
+             
+                OrganizationCode: $("#OrganizationCode").val(),
+                KeyWord: $("#TypeState").val(),
+                UploadMark: $("#UploadMark").val()
+
+            },
+            colModel: [
+                { label: "主键", name: "Id", hidden: true, key: true },
+                { label: '类别', name: 'DirectoryCategoryName', width: 150, align: 'left' },
+                { label: '项目名称', name: 'DirectoryName', width: 150, align: 'left' },
+              
+                {
+                    label: "是否上传", name: "UploadMark", width: 60, align: "center",
+                    formatter: function (cellvalue, options, rowObject) {
+                        if (cellvalue === 2) {
+                            return '<span class=\"label label-success\">是</span>';
+                        } else {
+                            return '<span class=\"label label-default\">否</span>';
+                        }
+                    }
+                },
+                
+            {
+            label: '上传时间',
+             name: 'UpdateTime',
+            width: 120,
+            align: 'left',
+            formatter: "date",
+            formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }
+        }
+                
+            ],
+            pager: "#gridPager",
+            sortname: 'CreateTime asc',
+            viewrecords: true
+        });
+        $("#btn_search").click(function () {
+            $gridList.jqGrid('setGridParam',
+                {
+                    postData:
+                    {
+                       
+                        OrganizationCode: $("#OrganizationCode").val(),
+                        KeyWord: $("#TypeState").val(),
+                        UploadMark: $("#UploadMark").val()
+                    }
+                }).trigger('reloadGrid');
+
+        });
+
+    }
+    function TypeStateChange() {
+        ////门诊
+        //if ($("#PatientState").val() === "1") {
+        //    $("#NFCancelHospitalization").hide();
+        //    $("#NFDeleteData").hide();
+
+
+        //} else {
+        //    $("#NFCancelHospitalization").show();
+        //    $("#NFDeleteData").show();
+        //}
+      
+    }
+        //取消基层住院结算数据
+        function LeaveHospitalSettlementCancel()
+        {
+            var businessId = $("#gridList").jqGridRowValue().Id;
+            var cancelParams = {
+                "TransKey": $("#txt_TransKey").val() /*医保交易码*/,
+                "BusinessId": businessId /*当前住院记录的业务ID*/,
+                "UserId": $("#empid").val() /*授权操作人的ID*/,
+                "CancelLimit": "1"/*取消程度*/
+
+            }
+            $.ajax({
+                type: "POST",
+                url:"/api/BenDingNew/LeaveHospitalSettlementCancel",
+                data: JSON.stringify(cancelParams) ,
+                dataType: "json",
+                contentType: 'application/json',
+                async: false,
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        $.modalAlert(errData, "error");
+                    } else
+                    {
+                        $.modalAlert('取消基层住院结算数据成功', "success");
+
+                    }
+                }
+
+            });
+    }
+       //门诊取消基层结算
+        function CancelOutpatientDepartmentCost() {
+        var businessId = $("#gridList").jqGridRowValue().Id;
+           var cancelParams = {
+               "TransKey": $("#transkey").val() /*医保交易码*/,
+               "BusinessId": businessId /*当前住院记录的业务ID*/,
+               "UserId": $("#empid").val() /*授权操作人的ID*/
+           }
+           $.ajax({
+               type: 'get',
+               url: '/api/BenDingNew/CancelOutpatientDepartmentCost',
+               data: cancelParams,
+               dataType: "json",
+               async: false,
+               success: function (data) {
+                   if (data.Success === false) {
+                       var errData = data.Message;
+                       $.modalAlert(errData, "error");
+                   } else {
+
+                       $.modalAlert('门诊取消基层结算成功', "success");
+
+
+
+                   }
+               }
+
+           });
+    }
+        //取消结算
+        function btnBaseCancelSettlement() {
+            if ($("#txt_TransKey").val() === "") {
+                $.modalAlert("取消结算医保交易码不能为空!!!", "error");
+
+            } else {
+                if ($("#PatientState").val() === "0") {
+                    LeaveHospitalSettlementCancel();
+                } else {
+                    //门诊取消结算
+                    CancelOutpatientDepartmentCost();
+                }
+            }
+
+
+
+
+    }
+        //删除基层上传数据
+        function btnBaseDeleteData() {
+            var businessId = $("#gridList").jqGridRowValue().Id;
+            var params = {
+                "BusinessId": businessId
+                , "UserId": $("#empid").val() /*授权操作人的ID*/
+                , "TransKey": businessId
+            }
+            $.ajax({
+                type: "POST",
+                url:"/api/BenDingNew/DeletePrescriptionUpload",
+                data: JSON.stringify(params) ,
+                dataType: "json",
+                contentType: 'application/json',
+                async: false,
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        $.modalAlert(errData, "error");
+                    } else
+                    {
+                        $.modalAlert('取消基层上传数据成功', "success");
+
+                    }
+                }
+
+            });
+
+        }
+        //取消入院登记
+        function btnCancelHospitalization() {
+            var businessId = $("#gridList").jqGridRowValue().Id;
+            var cancelParams = {
+                "TransKey": businessId,
+                "BusinessId": businessId,
+                "UserId": $("#empid").val() /*授权操作人的ID*/,
+                "CancelLimit": "2"/*取消程度*/
+            }
+
+            //医保入院登记取消
+            $.ajax({
+                type: 'POST',
+                url:'/api/BenDingNew/MedicalInsuranceHospitalizationRegisterCancel',
+                async: false,
+                data: JSON.stringify(cancelParams),
+                dataType: "json",
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        $.modalAlert(errData, "error");
+                        return;
+                    } else {
+                        $.modalAlert('取消基层医保入院登记成功', "success");
+                    }
+                }
+
+            });
+    }
+
+
+
+</script>
+<div class="topPanel">
+    <div class="toolbar" style="float: left">
+        <div class="btn-group"  style="margin-left: 15px;" >
+            <span >上传类型:</span>
+        </div>
+        <div class="btn-group" style="width: 60px;height: 32px;">
+            <select id="TypeState" class="form-control" style="padding: 0px;height: 32px;">
+                <option value="0">科室</option>
+                <option value="1">医生</option>
+            </select>
+        </div>
+        <div class="btn-group"  style="margin-left: 30px;" >
+            <span >上传状态:</span>
+        </div>
+        <div class="btn-group" >
+
+            <div class="btn-group" style="width: 100px;height: 32px;">
+                <select id="UploadMark" class="form-control" style="padding: 0px;height: 32px;">
+                    <option value="">未上传</option>
+                    <option value="2">已上传</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="btn-group" style="margin-left: 5px;">
+            <a class="btn btn-primary" id="btn_search">查询</a>
+        </div>
+
+        
+    </div>
+    <div class="search">
+        <input type="hidden" id="empid" name="UserId" value="@ViewBag.empid" placeholder="用户ID" />
+        <input type="hidden" id="OrganizationCode" name="UserId" value="@ViewBag.OrganizationCode" placeholder="组织机构" />
+    </div>
+</div>
+<div class="gridPanel">
+    <table id="gridList"></table>
+</div>
+

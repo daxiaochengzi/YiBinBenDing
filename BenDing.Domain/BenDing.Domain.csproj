@@ -241,6 +241,7 @@
     <Compile Include="Models\Params\UI\GetInformationUiParam.cs" />
     <Compile Include="Models\Params\UI\GetMonthlyHospitalizationCancelUiParam.cs" />
     <Compile Include="Models\Params\UI\GetOutpatientUiParam.cs" />
+    <Compile Include="Models\Params\UI\HospitalGeneralCatalogUiParam.cs" />
     <Compile Include="Models\Params\UI\HospitalizationModifyUiParam.cs" />
     <Compile Include="Models\Params\UI\HospitalizationPresettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\HospitalizationRegisterCancelUi.cs" />
