@@ -72,6 +72,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\Web\DbContextBase.cs" />
     <Compile Include="Providers\Web\DifferentPlacesMedicalInsuranceRepository.cs" />
+    <Compile Include="EntityMap\HospitalGeneralCatalogMap.cs" />
     <Compile Include="Providers\Web\HospitalLogMap.cs" />
     <Compile Include="Providers\Web\MedicalInsuranceSqlRepository.cs" />
     <Compile Include="Providers\Web\HisSqlRepository.cs" />

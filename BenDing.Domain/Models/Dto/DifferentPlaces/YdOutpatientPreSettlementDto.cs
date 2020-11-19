@@ -8,7 +8,8 @@ using Newtonsoft.Json;
 
 namespace BenDing.Domain.Models.Dto.DifferentPlaces
 {
-  public class YdOutpatientPreSettlementDto
+    [XmlRoot("ROW", IsNullable = false)]
+    public class YdOutpatientPreSettlementDto
     {
         /// <summary>
         /// 接口返回值
@@ -24,6 +25,12 @@ namespace BenDing.Domain.Models.Dto.DifferentPlaces
         [XmlElement("po_msg", IsNullable = false)]
 
         public string InterfaceMsg { get; set; }
+        /// <summary>
+        /// 交易流水号
+        /// </summary>
+        [XmlElement("po_jylsh", IsNullable = false)]
+        public string TransactionSerialNumber { get; set; }
+    
         /// <summary>
         /// 就诊登记号
         /// </summary>
@@ -184,8 +191,6 @@ namespace BenDing.Domain.Models.Dto.DifferentPlaces
 
         [XmlElement("ke039_qt", IsNullable = false)]
         public decimal OtherPaymentAmount { get; set; }
-
-
         /// <summary>
         ///报销说明
         /// </summary>
@@ -197,5 +202,68 @@ namespace BenDing.Domain.Models.Dto.DifferentPlaces
         /// </summary>
         [XmlElement("aae036", IsNullable = false)]
         public string MedicalInsuranceSettlementTime { get; set; }
+
+        /// <summary>
+        ///  结算反馈信息
+        /// </summary>
+        [XmlArrayAttribute("datarow")]
+        [XmlArrayItem("ROW")]
+        public List<YdOutpatientPreSettlementRowDto> RowDataList { get; set; }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
+    public class YdOutpatientPreSettlementRowDto
+    {   /// <summary>
+        ///  处方序号（在医疗机构系统中产生的费用序号，一次就诊的序号不能重复）
+        /// </summary>
+        [XmlElementAttribute("bke019", IsNullable = false)]
+        public int PrescriptionSort { get; set; }
+        /// <summary>
+        /// 金额  (12,4)每条费用明细的数据校验为传入的金额（四舍五入到两位小数）和传入的单价*传入的数量（四舍五入到两位小数）必须相等，检查不等的会提示报错
+        /// </summary>
+        [XmlElementAttribute("akc264", IsNullable = false)]
+        public decimal Amount { get; set; }
+        /// <summary>
+        /// 定价上限金额
+        /// </summary>
+        [XmlElementAttribute("aka068", IsNullable = false)]
+        public decimal PricingCapAmount { get; set; }
+        /// <summary>
+        /// 自付比例
+        /// </summary>
+        [XmlElementAttribute("aka057", IsNullable = false)]
+        public decimal SelfProportion { get; set; }
+        /// <summary>
+        /// 全自费
+        /// </summary>
+        [XmlElementAttribute("akc253", IsNullable = false)]
+        public decimal TotalSelfAmount { get; set; }
+
+        /// <summary>
+        /// 先自费
+        /// </summary>
+        [XmlElementAttribute("akc253", IsNullable = false)]
+        public decimal BeforeSelfAmount { get; set; }
+        /// <summary>
+        /// 超限自费
+        /// </summary>
+        [XmlElementAttribute("akc268", IsNullable = false)]
+        public decimal LimitSelfAmount { get; set; }
+
+        /// <summary>
+        ///报销范围金额
+        /// </summary>
+       
+        [XmlElementAttribute("kc042", IsNullable = false)]
+        public decimal ReimbursementRangeAmount { get; set; }
+        /// <summary>
+        ///项目等级
+        /// </summary>
+
+        [XmlElementAttribute("aka065", IsNullable = false)]
+        public decimal ProjectLevel { get; set; }
+        
     }
 }

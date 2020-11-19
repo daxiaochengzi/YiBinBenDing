@@ -11,6 +11,7 @@ using System.Web;
 using System.Web.Http;
 using BenDing.Domain.Models.Dto;
 using BenDing.Domain.Models.Dto.Base;
+using BenDing.Domain.Models.Dto.DifferentPlaces;
 using BenDing.Domain.Models.Dto.JsonEntity;
 using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Dto.Resident;
@@ -469,96 +470,54 @@ namespace NFine.Web.Controllers
         public ApiJsonResultData TestXml([FromUri] MedicalInsuranceXmlUiParam param)
         {
             return new ApiJsonResultData(ModelState, new UiInIParam()).RunWithTry(y =>
-                {
-
+            {
+                string xmlStr = @"<?xml version='1.0' encoding='utf-8'?>
+                                <ROW>
+                                  <po_fhz>1</po_fhz>
+                                  <po_msg>123</po_msg>
+                                </ROW>";
+                var xmlData = XmlSerializeHelper.DESerializer<TestXml>(xmlStr);
                 var settlementJson = "{\"SerialNumber\": \"101080551392\", 	\"AccountPayment\": 0.03, 	\"CashPayment\": 0.0, 	\"AccountBalance\": 386.7 }";
-            var iniData = JsonConvert.DeserializeObject<WorkerHospitalSettlementCardBackDataDto>(settlementJson);
-            //var data = XmlHelp.DeSerializerModel(new BenDing.Domain.Models.Dto.OutpatientDepartment.QueryOutpatientDepartmentCostDto(), true);
-            //if (data == null) throw new Exception("门诊费用查询出错");
-            //var cc = AutoMapper.Mapper.Map<QueryOutpatientDepartmentCostjsonDto>(data);
-            //var ddd = new List<InpatientDiagnosisDto>();
-
-            //ddd.Add(new InpatientDiagnosisDto()
-            //{
-            //    IsMainDiagnosis = false,
-            //    ProjectCode = "T82.201",
-            //    DiseaseName = "冠状动脉搭桥术机械性并发症"
-            //});
-            //ddd.Add(new InpatientDiagnosisDto()
-            //{
-            //    IsMainDiagnosis = false,
-            //    ProjectCode = "T82.812",
-            //    DiseaseName = "主动脉机械瓣周漏"
-            //});
-            //ddd.Add(new InpatientDiagnosisDto()
-            //{
-            //    IsMainDiagnosis = true,
-            //    ProjectCode = "T82.003",
-            //    DiseaseName = "主漏"
-            //});
-            //ddd.Add(new InpatientDiagnosisDto()
-            //{
-            //    IsMainDiagnosis = false,
-            //    ProjectCode = "T83.304",
-            //    DiseaseName = "子宫内节育器脱落"
-            //});
-            //ddd.Add(new InpatientDiagnosisDto()
-            //{
-            //    IsMainDiagnosis = false,
-            //    ProjectCode = "T84.502",
-            //    DiseaseName = "膝关节假体植入感染"
-            //});
-            //ddd.Add(new InpatientDiagnosisDto()
-            //{
-            //    IsMainDiagnosis = false,
-            //    ProjectCode = "T83.304",
-            //    DiseaseName = "子宫内节育器脱落"
-            //});
-            //ddd.Add(new InpatientDiagnosisDto()
-            //{
-            //    IsMainDiagnosis = false,
-            //    ProjectCode = "T84.502",
-            //    DiseaseName = "膝关节假体植入感染"
-            //});
-
-            //  
-            //var tableData=  CommonHelp.ObjectToTable(ddd);
-            // ExcelHelper.Export(tableData, "医保对码表", "c:\\成中荣新繁出差.xlsx");
-            //var dds = CommonHelp.GetDiagnosis(ddd);
+                var iniData = JsonConvert.DeserializeObject<WorkerHospitalSettlementCardBackDataDto>(settlementJson);
+                //var data = XmlHelp.DeSerializerModel(new BenDing.Domain.Models.Dto.OutpatientDepartment.QueryOutpatientDepartmentCostDto(), true);
+                //if (data == null) throw new Exception("门诊费用查询出错");
+                //var cc = AutoMapper.Mapper.Map<QueryOutpatientDepartmentCostjsonDto>(data);
+                //var ddd = new List<InpatientDiagnosisDto>();
 
 
 
 
 
-            var ddd = new List<InpatientDiagnosisDto>();
 
-            ddd.Add(new InpatientDiagnosisDto()
-            {
-                IsMainDiagnosis = false,
-                ProjectCode = "1假体植入",
-                DiseaseName = "1"
+                //var ddd = new List<InpatientDiagnosisDto>();
+
+                //ddd.Add(new InpatientDiagnosisDto()
+                //{
+                //    IsMainDiagnosis = false,
+                //    ProjectCode = "1假体植入",
+                //    DiseaseName = "1"
+                //});
+                //ddd.Add(new InpatientDiagnosisDto()
+                //{
+                //    IsMainDiagnosis = false,
+                //    ProjectCode = "2膝关节假体植入",
+                //    DiseaseName = "2"
+                //});
+                //ddd.Add(new InpatientDiagnosisDto()
+                //{
+                //    IsMainDiagnosis = true,
+                //    ProjectCode = "3膝关节假体植入",
+                //    DiseaseName = "3"
+                //});
+                //ddd.Add(new InpatientDiagnosisDto()
+                //{
+                //    IsMainDiagnosis = false,
+                //    ProjectCode = "4膝关节假体植入",
+                //    DiseaseName = "4"
+                //});
+                //var dds = CommonHelp.LeaveHospitalDiagnosis(ddd);
+                //        y.Data = dds;
             });
-            ddd.Add(new InpatientDiagnosisDto()
-            {
-                IsMainDiagnosis = false,
-                ProjectCode = "2膝关节假体植入",
-                DiseaseName = "2"
-            });
-            ddd.Add(new InpatientDiagnosisDto()
-            {
-                IsMainDiagnosis = true,
-                ProjectCode = "3膝关节假体植入",
-                DiseaseName = "3"
-            });
-            ddd.Add(new InpatientDiagnosisDto()
-            {
-                IsMainDiagnosis = false,
-                ProjectCode = "4膝关节假体植入",
-                DiseaseName = "4"
-            });
-            var dds = CommonHelp.LeaveHospitalDiagnosis(ddd);
-                    y.Data = dds;
-             });
 
         }
 

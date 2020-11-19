@@ -57,12 +57,14 @@
     <Compile Include="Models\Dto\DifferentPlaces\DifferentPlacesHospitalizationRegisterDto.cs" />
     <Compile Include="Models\Dto\DifferentPlaces\DifferentPlacesUserInfoDto.cs" />
     <Compile Include="Models\Dto\DifferentPlaces\LeaveHospitalHandleDto.cs" />
+    <Compile Include="Models\Dto\DifferentPlaces\TestXml.cs" />
     <Compile Include="Models\Dto\DifferentPlaces\YdOutpatientPreSettlementDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\BaseOutpatientDetailJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdHospitalizationRegisterCancelJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdHospitalizationPreSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdHospitalizationSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdOutpatientPreSettlementJsonDto.cs" />
+    <Compile Include="Models\Entitys\HospitalGeneralCatalog.cs" />
     <Compile Include="Models\Params\Base\BaseTradeParams.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdHospitalizationPreSettlementParam.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdHospitalizationRegisterJsonDto.cs" />
