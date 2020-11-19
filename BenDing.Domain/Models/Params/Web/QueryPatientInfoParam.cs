@@ -8,14 +8,8 @@ using BenDing.Domain.Models.Params.Base;
 namespace BenDing.Domain.Models.Params.Web
 {
    public class QueryPatientInfoParam: PaginationWebParam
-    {/// <summary>
-    /// 关键字
-    /// </summary>
-        public string KeyWord { get; set; }
-        /// <summary>
-        /// 组织机构编码
-        /// </summary>
-        public  string OrganizationCode { get; set; }
+    {
+       
         /// <summary>
         /// 开始时间
         /// </summary>

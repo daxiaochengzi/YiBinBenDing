@@ -13,8 +13,8 @@ namespace BenDing.Repository.Providers.Web
    public class DbContextBase<T> where T: class,new()
     {
         private readonly Log _log;
-        public SqlSugarClient _db;//用来处理事务多表查询和复杂的操作
-       
+        public SqlSugarClient _db; //用来处理事务多表查询和复杂的操作
+
         public DbContextBase()
         {
            

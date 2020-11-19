@@ -28,6 +28,14 @@ namespace BenDing.Domain.Models.Params.Base
         /// </summary>
         public int records { get; set; }
         /// <summary>
+        /// 关键字
+        /// </summary>
+        public string KeyWord { get; set; }
+        /// <summary>
+        /// 组织机构编码
+        /// </summary>
+        public string OrganizationCode { get; set; }
+        /// <summary>
         /// 总页数
         /// </summary>
         public int total
