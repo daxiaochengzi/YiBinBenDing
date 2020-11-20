@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using BenDing.Domain.Models.Entitys;
@@ -51,6 +53,16 @@ namespace BenDing.Repository.Providers.Web
             return _db.SqlQueryable<T>($"select * from {new T().GetType().Name} where IsDelete=0").ToList();
         }
 
+        ///// <summary>
+        ///// 这样封装就完成了一个通用假删除
+        ///// </summary>
+        ///// <returns></returns>
+        //public bool FalseDelete(Expression<Func<T, bool>> expression)
+        //{
+        //    return CurrentDb.Update<T>()
+        //               .Where(expression)
+        //               .SetColumns(it => it.IsDeleted == true).ExecuteCommand() > 0;
+        //}
         /// <summary>
         /// 根据主键删除
         /// </summary>
@@ -60,7 +72,7 @@ namespace BenDing.Repository.Providers.Web
         {
             return CurrentDb.Delete(id);
         }
-
+        
 
         /// <summary>
         /// 更新

@@ -7,6 +7,7 @@ using BenDing.Domain.Models.Entitys;
 using BenDing.Domain.Models.Params.Base;
 using BenDing.Domain.Models.Params.UI;
 using BenDing.Repository.Providers.Web;
+using SqlSugar;
 
 namespace BenDing.Repository.EntityMap
 {
@@ -22,10 +23,12 @@ namespace BenDing.Repository.EntityMap
             int total = 0;
             var resultData = new Dictionary<int, List<HospitalGeneralCatalog>>();
             var list = _db.SqlQueryable<HospitalGeneralCatalog>("select * from HospitalGeneralCatalog").
-                Where(it => it.DirectoryType == param.KeyWord && it.OrganizationCode== param.OrganizationCode
-               ).ToPageList(param.Page, param.rows, ref total);
+                Where(it => it.DirectoryType == param.KeyWord &&
+                            it.OrganizationCode== param.OrganizationCode                      
+               ).OrderBy(d=>d.UpdateTime, OrderByType.Desc).ToPageList(param.Page, param.rows, ref total);
             resultData.Add(total, list);
             return resultData;
         }
+       
     }
 }

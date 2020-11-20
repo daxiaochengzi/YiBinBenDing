@@ -62,6 +62,7 @@
     <Compile Include="Providers\WebServiceBasicService.cs" />
     <Compile Include="Providers\WorkerMedicalInsuranceNewService.cs" />
     <Compile Include="Providers\WorkerMedicalInsuranceService.cs" />
+    <Compile Include="Providers\YdMedicalInsuranceService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BenDing.Domain\BenDing.Domain.csproj">

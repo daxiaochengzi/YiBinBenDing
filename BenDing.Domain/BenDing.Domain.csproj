@@ -48,6 +48,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Infrastructure\IBaseCreationAudited.cs" />
+    <Compile Include="Infrastructure\IBaseDeleteAudited.cs" />
+    <Compile Include="Infrastructure\IBaseEntity.cs" />
+    <Compile Include="Infrastructure\IBaseModificationAudited.cs" />
+    <Compile Include="Models\DifferentPlacesXml\HospitalizationRegister\YdOutputHospitalizationRegisterXml.cs" />
     <Compile Include="Models\Dto\Base\DiagnosisData.cs" />
     <Compile Include="Models\Dto\Base\GetPostUrlDto.cs" />
     <Compile Include="Models\Dto\Base\PaginationDto.cs" />
@@ -65,7 +70,9 @@
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdHospitalizationSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdOutpatientPreSettlementJsonDto.cs" />
     <Compile Include="Models\Entitys\HospitalGeneralCatalog.cs" />
+    <Compile Include="Models\Entitys\MedicalInsurance.cs" />
     <Compile Include="Models\Params\Base\BaseTradeParams.cs" />
+    <Compile Include="Models\Params\Base\YdBaseParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdHospitalizationPreSettlementParam.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdHospitalizationRegisterJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdUserInfoJsonDto.cs" />
@@ -105,6 +112,7 @@
     <Compile Include="Models\Dto\Web\QueryPatientInfoDto.cs" />
     <Compile Include="Models\Entitys\HospitalLog.cs" />
     <Compile Include="Models\Params\Base\PaginationWebParam.cs" />
+    <Compile Include="Models\Params\UI\DifferentPlaces\YdHospitalizationRegisterUiParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdHospitalizationSettlementParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdOutpatientPreSettlementParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\MonthlyHospitalizationCancelParam.cs" />
@@ -184,7 +192,7 @@
     <Compile Include="Models\Params\Base\UserBaseParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdHospitalizationRegisterCanCelParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdGetUserInfoParam.cs" />
-    <Compile Include="Models\Params\DifferentPlaces\YdHospitalizationRegisterParam.cs" />
+    <Compile Include="Models\DifferentPlacesXml\HospitalizationRegister\YdInputHospitalizationRegisterXml.cs" />
     <Compile Include="Models\Params\DifferentPlaces\LeaveHospitalHandleParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\ModifyDifferentPlacesHospitalizationParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\CancelMonthlyHospitalizationParam.cs" />

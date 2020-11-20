@@ -12,7 +12,56 @@ using Newtonsoft.Json;
 namespace BenDing.Domain.Xml
 {
   public static class XmlSerializeHelper
-    { /// <summary>
+    {/// <summary>
+    /// 异地xml转实体
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="strXml"></param>
+    /// <returns></returns>
+        public static T YdDeSerializer<T>(string strXml) where T : class
+        {
+            try
+            {
+                using (StringReader sr = new StringReader(strXml))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(T));
+                    return serializer.Deserialize(sr) as T;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+                // return null;
+            }
+        }
+        /// <summary>
+        /// 异地xml
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="encoding"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <returns></returns>
+        public static string YdXmlSerialize<T>(T o)
+        {
+            var encoding = Encoding.UTF8;
+            if (o == null)
+                throw new ArgumentNullException("实体不能为空!!!");
+
+            var ser = new XmlSerializer(o.GetType());
+            using (var ms = new MemoryStream())
+            {
+                using (var writer = new XmlTextWriter(ms, encoding))
+                {
+                    writer.Formatting = System.Xml.Formatting.Indented;
+                    XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+                    ns.Add("", "");//把命名空间设置为空，这样就没有命名空间了
+                    ser.Serialize(writer, o, ns);
+                }
+                var encodingData = encoding.GetString(ms.ToArray());
+                return System.Text.RegularExpressions.Regex.Replace(encodingData, "^[^<]", "");
+            }
+        }
+        /// <summary>
         /// 将实体对象转换成XML
         /// </summary>
         /// <typeparam name="T">实体类型</typeparam>
@@ -110,6 +159,8 @@ namespace BenDing.Domain.Xml
                 throw new Exception("将XML转换成实体对象异常", ex);
             }
         }
+        
+       
         /// <summary>
         /// 回参
         /// </summary>
