@@ -20,7 +20,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
     {
         private readonly IWebServiceBasicService _webServiceBasicService;
         private UserApp userApp = new UserApp();
-        private HospitalGeneralCatalogMap hospitalGeneralCatalogMap = new HospitalGeneralCatalogMap();
+        //private HospitalGeneralCatalogMap hospitalGeneralCatalogMap = new HospitalGeneralCatalogMap();
         /// <summary>
         /// 
         /// </summary>
@@ -48,16 +48,16 @@ namespace NFine.Web.Areas.SystemManage.Controllers
         public ActionResult GetGridJson(HospitalGeneralCatalogUiParam pagination)
         {
           
-            var patientInfo = hospitalGeneralCatalogMap.PageList(pagination);
-            pagination.records = patientInfo.Keys.FirstOrDefault();
-            var data = new
-            {
-                rows = patientInfo.Values.FirstOrDefault(),
-                total = pagination.total,
-                page = pagination.Page,
-                records = pagination.records
-            };
-            return Content(data.ToJson());
+            //var patientInfo = hospitalGeneralCatalogMap.PageList(pagination);
+            //pagination.records = patientInfo.Keys.FirstOrDefault();
+            //var data = new
+            //{
+            //    rows = patientInfo.Values.FirstOrDefault(),
+            //    total = pagination.total,
+            //    page = pagination.Page,
+            //    records = pagination.records
+            //};
+            return Content("");
         }
     }
 }

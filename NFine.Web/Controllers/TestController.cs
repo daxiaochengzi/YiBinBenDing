@@ -471,6 +471,20 @@ namespace NFine.Web.Controllers
         {
             return new ApiJsonResultData(ModelState, new UiInIParam()).RunWithTry(y =>
             {
+                var liquSubCenter = "123";
+                var applicationSerialNumber = "123";
+                //基卫操作员登录验证
+                StringBuilder ctrXml = new StringBuilder();
+                ctrXml.Append("<?xml version=\"1.0\" encoding=\"GBK\" standalone=\"yes\" ?>");
+                ctrXml.Append("<control>");
+                ctrXml.Append($"<yab003>{liquSubCenter}</yab003>");//医保经办机构（清算分中心）
+                ctrXml.Append($"<ykb053>{applicationSerialNumber}</ykb053>");//医院清算申请流水号
+                ctrXml.Append("</control>");
+
+
+
+
+
                 string xmlStr = @"<?xml version='1.0' encoding='utf-8'?>
                                 <ROW>
                                   <po_fhz>1</po_fhz>

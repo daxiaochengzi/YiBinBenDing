@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BenDing.Domain.Infrastructure;
+
+using BenDing.Domain.Infrastructures;
 
 namespace BenDing.Domain.Models.Entitys
 {
     /// <summary>
     /// 住院医保信息
     /// </summary>
-    public class MedicalInsurance: IBaseEntity<MedicalInsurance>, IBaseCreationAudited, IBaseDeleteAudited, IBaseModificationAudited
+    public class MedicalInsurance : IBaseEntity<MedicalInsurance>, IBaseDeleteAudited, IBaseCreationAudited, IBaseModificationAudited
     {
         /// <summary>
         /// 住院医保信息

@@ -89,13 +89,13 @@ namespace BenDing.Domain.Models.DifferentPlacesXml.HospitalizationRegister
         /// <summary>
         /// 单位编号
         /// </summary>
-        [JsonProperty(PropertyName = "po_dwbh")]
+       
         [XmlElement("po_dwbh", IsNullable = false)]
         public string CompanyCode { get; set; }
         /// <summary>
         /// 享受待遇标识
         /// </summary>
-        [JsonProperty(PropertyName = "po_xsdybs")]
+     
         [XmlElement("po_xsdybs", IsNullable = false)]
         public string EnjoySign { get; set; }
 

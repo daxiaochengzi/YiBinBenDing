@@ -48,10 +48,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Infrastructure\IBaseCreationAudited.cs" />
-    <Compile Include="Infrastructure\IBaseDeleteAudited.cs" />
-    <Compile Include="Infrastructure\IBaseEntity.cs" />
-    <Compile Include="Infrastructure\IBaseModificationAudited.cs" />
+    <Compile Include="Infrastructures\IBaseCreationAudited.cs" />
+    <Compile Include="Infrastructures\IBaseDeleteAudited.cs" />
+    <Compile Include="Infrastructures\IBaseEntity.cs" />
+    <Compile Include="Infrastructures\IBaseModificationAudited.cs" />
     <Compile Include="Models\DifferentPlacesXml\HospitalizationRegister\YdOutputHospitalizationRegisterXml.cs" />
     <Compile Include="Models\Dto\Base\DiagnosisData.cs" />
     <Compile Include="Models\Dto\Base\GetPostUrlDto.cs" />
@@ -69,7 +69,7 @@
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdHospitalizationPreSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdHospitalizationSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdOutpatientPreSettlementJsonDto.cs" />
-    <Compile Include="Models\Entitys\HospitalGeneralCatalog.cs" />
+    <Compile Include="Models\Entitys\Inpatient.cs" />
     <Compile Include="Models\Entitys\MedicalInsurance.cs" />
     <Compile Include="Models\Params\Base\BaseTradeParams.cs" />
     <Compile Include="Models\Params\Base\YdBaseParam.cs" />
@@ -193,7 +193,7 @@
     <Compile Include="Models\Params\DifferentPlaces\YdHospitalizationRegisterCanCelParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdGetUserInfoParam.cs" />
     <Compile Include="Models\DifferentPlacesXml\HospitalizationRegister\YdInputHospitalizationRegisterXml.cs" />
-    <Compile Include="Models\Params\DifferentPlaces\LeaveHospitalHandleParam.cs" />
+    <Compile Include="Models\DifferentPlacesXml\LeaveHospital\LeaveHospitalHandleParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\ModifyDifferentPlacesHospitalizationParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\CancelMonthlyHospitalizationParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\CancelOutpatientDepartmentCostParam.cs" />

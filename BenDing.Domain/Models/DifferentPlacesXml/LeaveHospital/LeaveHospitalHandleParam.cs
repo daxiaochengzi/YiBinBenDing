@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace BenDing.Domain.Models.Params.DifferentPlaces
+namespace BenDing.Domain.Models.DifferentPlacesXml.LeaveHospital
 {/// <summary>
-/// 出院办理
-/// </summary>
-   public class LeaveHospitalHandleParam
+ /// 出院办理
+ /// </summary>
+    public class LeaveHospitalHandleParam
     { ///<summary>
         /// 个人编号
         /// </summary>
@@ -28,7 +28,7 @@ namespace BenDing.Domain.Models.Params.DifferentPlaces
         /// </summary>
         [XmlElement("BAA008", IsNullable = false)]
       
-        public string OverallCoding { get; set; }
+        public string AreaCode { get; set; }
        
 
         ///<summary>
@@ -111,12 +111,12 @@ namespace BenDing.Domain.Models.Params.DifferentPlaces
     
         public string LeaveHospitalBedNumber { get; set; }
         /// <summary>
-        /// 入院诊断医生编码
+        /// 出院诊断医生编码
         /// </summary>
         [XmlElement("AKE021_BM", IsNullable = false)]
         public string LeaveHospitalDiagnosisDoctorCode { get; set; }
         /// <summary>
-        /// 入院诊断医生名称
+        /// 出院诊断医生名称
         /// </summary>
         [XmlElement("AKE021", IsNullable = false)]
         public string LeaveHospitalDiagnosisDoctorName { get; set; }

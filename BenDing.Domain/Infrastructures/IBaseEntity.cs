@@ -5,11 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using BenDing.Domain.Models.Dto.Web;
 
-namespace BenDing.Domain.Infrastructure
+namespace BenDing.Domain.Infrastructures
 {
     public class IBaseEntity<TEntity>
-    {
-        public void Create(UserInfoDto user)
+    {/// <summary>
+    /// 
+    /// </summary>
+    /// <param name="user"></param>
+        public void IniCreate(UserInfoDto user)
         {
             var entity = this as IBaseCreationAudited;
             if (entity != null)
@@ -25,8 +28,12 @@ namespace BenDing.Domain.Infrastructure
             }
 
 
-        }
-        public void Modify(Guid id, string userId)
+        }/// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        public void IniModify(Guid id, string userId)
         {
             var entity = this as IBaseModificationAudited;
             entity.Id = id;

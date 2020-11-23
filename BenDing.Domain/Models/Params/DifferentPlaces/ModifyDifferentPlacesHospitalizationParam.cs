@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using BenDing.Domain.Models.DifferentPlacesXml.HospitalizationRegister;
 
 namespace BenDing.Domain.Models.Params.DifferentPlaces
 {    /// <summary>

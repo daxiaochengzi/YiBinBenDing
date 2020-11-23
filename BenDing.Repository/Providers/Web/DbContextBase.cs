@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
+
 using BenDing.Domain.Models.Entitys;
 using NFine.Code;
 using SqlSugar;
@@ -41,7 +42,11 @@ namespace BenDing.Repository.Providers.Web
        
         public SimpleClient<T> CurrentDb { get { return new SimpleClient<T>(_db); } }//用来处理T表的常用操作
 
-
+        public virtual T QueryFirstEntity(string businessId)
+        {
+            var resultData = _db.SqlQueryable<T>($"select top 1 * from {new T().GetType().Name} where IsDelete=0 and BusinessId='{businessId}'").First();
+            return resultData;
+        }
         /// <summary>
         /// 获取所有
         /// </summary>
@@ -49,29 +54,29 @@ namespace BenDing.Repository.Providers.Web
         public virtual List<T> GetList()
         {// entity.GetType().Name
 
-
+          
             return _db.SqlQueryable<T>($"select * from {new T().GetType().Name} where IsDelete=0").ToList();
         }
-
-        ///// <summary>
-        ///// 这样封装就完成了一个通用假删除
-        ///// </summary>
-        ///// <returns></returns>
-        //public bool FalseDelete(Expression<Func<T, bool>> expression)
-        //{
-        //    return CurrentDb.Update<T>()
-        //               .Where(expression)
-        //               .SetColumns(it => it.IsDeleted == true).ExecuteCommand() > 0;
-        //}
         /// <summary>
-        /// 根据主键删除
+        /// 删除 (Id)
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
-        public virtual bool Delete(dynamic id)
+        /// <param name="userId"></param>
+        public virtual void Delete(Guid id, string userId)
         {
-            return CurrentDb.Delete(id);
+            string sqlCom =
+                $"update {new T().GetType().Name} set IsDelete=1 ,DeleteUserId='{userId}',DeleteTime=getDate() where Id='{id}'";
+            _db.Ado.ExecuteCommand(sqlCom);
         }
+        ///// <summary>
+        ///// 根据主键删除
+        ///// </summary>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
+        //public virtual bool Delete(dynamic id)
+        //{
+        //    return CurrentDb.Delete(id);
+        //}
         
 
         /// <summary>
@@ -81,8 +86,10 @@ namespace BenDing.Repository.Providers.Web
         /// <returns></returns>
         public virtual bool Update(T obj)
         {
+          
             return CurrentDb.Update(obj);
         }
+     
 
     }
   

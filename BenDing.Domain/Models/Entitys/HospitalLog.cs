@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BenDing.Domain.Infrastructures;
+
 
 namespace BenDing.Domain.Models.Entitys
 {
     /// <summary>
     /// Hospital医保日志表
     /// </summary>
-    public class HospitalLog
+    public class HospitalLog:IBaseEntity<HospitalLog>, IBaseDeleteAudited, IBaseCreationAudited, IBaseModificationAudited
+   
     {
         /// <summary>
         /// Hospital医保日志表
@@ -52,6 +55,10 @@ namespace BenDing.Domain.Models.Entitys
         /// 组织机构名称
         /// </summary>
         public System.String OrganizationName { get; set; }
+        /// <summary>
+        /// 删除实体时间
+        /// </summary>
+        public DateTime? DeleteTime { get; set; }
 
         /// <summary>
         /// 创建时间

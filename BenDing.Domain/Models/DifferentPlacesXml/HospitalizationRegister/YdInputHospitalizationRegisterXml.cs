@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace BenDing.Domain.Models.Params.DifferentPlaces
+namespace BenDing.Domain.Models.DifferentPlacesXml.HospitalizationRegister
 {/// <summary>
  /// 入院登记参数
  /// </summary>

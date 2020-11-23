@@ -1,4 +1,6 @@
 ﻿using System;
+using BenDing.Domain.Models.DifferentPlacesXml.HospitalizationRegister;
+using BenDing.Domain.Models.DifferentPlacesXml.LeaveHospital;
 using BenDing.Domain.Models.Dto.DifferentPlaces;
 using BenDing.Domain.Models.Dto.JsonEntity.DifferentPlaces;
 using BenDing.Domain.Models.Dto.Resident;

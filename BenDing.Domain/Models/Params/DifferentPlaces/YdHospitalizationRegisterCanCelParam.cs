@@ -18,7 +18,7 @@ namespace BenDing.Domain.Models.Params.DifferentPlaces
         [XmlElement("BAA008", IsNullable = false)]
         [Display(Name = "参保地统筹编码")]
         [Required(ErrorMessage = "{0}不能为空!!!")]
-        public string OverallCoding { get; set; }
+        public string AreaCode { get; set; }
         ///<summary>
         /// 个人编号
         /// </summary>

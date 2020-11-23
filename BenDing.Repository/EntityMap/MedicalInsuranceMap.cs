@@ -12,20 +12,27 @@ namespace BenDing.Repository.EntityMap
     public class MedicalInsuranceMap : DbContextBase<MedicalInsurance>
     {
 
-        public MedicalInsurance QueryFirstEntity(string businessId)
+    
+        public void InsertData(MedicalInsurance medicalInsurance, UserInfoDto user)
         {
-            var resultData = _db.SqlQueryable<MedicalInsurance>("select * from MedicalInsurance").Where(it =>
-                it.BusinessId == businessId &&
-                it.IsDelete == false
-            ).First();
-            return resultData;
-        }
-        public void Insert(MedicalInsurance medicalInsurance, UserInfoDto user)
-        {
-            medicalInsurance.Create(user);
+            medicalInsurance.IniCreate(user);
             _db.Insertable(medicalInsurance);
         }
+        /// <summary>
+        /// 更新社保状态
+        /// </summary>
+        /// <param name="medicalInsurance"></param>
        
+        public void UpdateState(MedicalInsurance medicalInsurance)
+        {
+            _db.Updateable(medicalInsurance).UpdateColumns(it => new { it.MedicalInsuranceState }).WhereColumns(it => new { it.Id });
+           
+        }
+        //public void Insert(MedicalInsurance medicalInsurance, UserInfoDto user)
+        //{
+        //    medicalInsurance.Create(user);
+        //    _db.Insertable(medicalInsurance);
+        //}
 
     }
 }
