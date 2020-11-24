@@ -10,7 +10,8 @@ namespace BenDing.Domain.Models.DifferentPlacesXml.LeaveHospital
 {/// <summary>
  /// 出院办理
  /// </summary>
-    public class LeaveHospitalHandleParam
+    [XmlRoot("ROW", IsNullable = false)]
+    public class YdInputLeaveHospitalHandleXml
     { ///<summary>
         /// 个人编号
         /// </summary>

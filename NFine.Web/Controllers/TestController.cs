@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using BenDing.Domain.Models.DifferentPlacesXml.HospitalizationRegister;
 using BenDing.Domain.Models.Dto;
 using BenDing.Domain.Models.Dto.Base;
 using BenDing.Domain.Models.Dto.DifferentPlaces;

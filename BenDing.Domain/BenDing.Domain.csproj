@@ -53,6 +53,8 @@
     <Compile Include="Infrastructures\IBaseEntity.cs" />
     <Compile Include="Infrastructures\IBaseModificationAudited.cs" />
     <Compile Include="Models\DifferentPlacesXml\HospitalizationRegister\YdOutputHospitalizationRegisterXml.cs" />
+    <Compile Include="Models\DifferentPlacesXml\LeaveHospital\YdOutputLeaveHospitalHandleXml.cs" />
+    <Compile Include="Models\DifferentPlacesXml\YdPrescriptionUpload\YdOutputPrescriptionUploadXml.cs" />
     <Compile Include="Models\Dto\Base\DiagnosisData.cs" />
     <Compile Include="Models\Dto\Base\GetPostUrlDto.cs" />
     <Compile Include="Models\Dto\Base\PaginationDto.cs" />
@@ -112,6 +114,9 @@
     <Compile Include="Models\Dto\Web\QueryPatientInfoDto.cs" />
     <Compile Include="Models\Entitys\HospitalLog.cs" />
     <Compile Include="Models\Params\Base\PaginationWebParam.cs" />
+    <Compile Include="Models\Params\DifferentPlaces\GetYdPrescriptionUploadParam.cs" />
+    <Compile Include="Models\Params\UI\DifferentPlaces\GetYdLeaveHospitalUiParam.cs" />
+    <Compile Include="Models\Params\UI\DifferentPlaces\GetYdPrescriptionUploadUiParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\YdHospitalizationRegisterUiParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdHospitalizationSettlementParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdOutpatientPreSettlementParam.cs" />
@@ -193,7 +198,7 @@
     <Compile Include="Models\Params\DifferentPlaces\YdHospitalizationRegisterCanCelParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdGetUserInfoParam.cs" />
     <Compile Include="Models\DifferentPlacesXml\HospitalizationRegister\YdInputHospitalizationRegisterXml.cs" />
-    <Compile Include="Models\DifferentPlacesXml\LeaveHospital\LeaveHospitalHandleParam.cs" />
+    <Compile Include="Models\DifferentPlacesXml\LeaveHospital\YdInputLeaveHospitalHandleXml.cs" />
     <Compile Include="Models\Params\DifferentPlaces\ModifyDifferentPlacesHospitalizationParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\CancelMonthlyHospitalizationParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\CancelOutpatientDepartmentCostParam.cs" />
@@ -238,7 +243,7 @@
     <Compile Include="Models\Params\Resident\QueryPrescriptionDetailParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdPrescriptionUploadCancelParam.cs" />
     <Compile Include="Models\Params\Resident\YdPrescriptionUploadParam.cs" />
-    <Compile Include="Models\Params\DifferentPlaces\YdPrescriptionUploadsParam.cs" />
+    <Compile Include="Models\DifferentPlacesXml\YdPrescriptionUpload\YdInputPrescriptionUploadXml.cs" />
     <Compile Include="Models\Params\SystemManage\AddHospitalLogParam.cs" />
     <Compile Include="Models\Params\SystemManage\Icd10PairCodeParam.cs" />
     <Compile Include="Models\Params\SystemManage\PairCodeIcd10UiParam.cs" />

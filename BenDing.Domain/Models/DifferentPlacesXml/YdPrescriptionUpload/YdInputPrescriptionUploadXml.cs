@@ -5,10 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace BenDing.Domain.Models.Params.DifferentPlaces
+namespace BenDing.Domain.Models.DifferentPlacesXml.YdPrescriptionUpload
 {
+    /// <summary>
+    /// 异地处方上传
+    /// </summary>
     [XmlRootAttribute("ROW", IsNullable = false)]
-    public  class YdPrescriptionUploadsParam
+    public  class YdInputPrescriptionUploadXml
     {   /// <summary>
         /// 个人编码
         /// </summary>
@@ -34,7 +37,7 @@ namespace BenDing.Domain.Models.Params.DifferentPlaces
         ///数量
         /// </summary>
         [XmlElement("nums", IsNullable = false)]
-        public string nums { get; set; }
+        public int nums { get; set; }
 
         /// <summary>
         ///  
@@ -70,7 +73,7 @@ public class YdPrescriptionUploadRowParam
     ///  处方序号（在医疗机构系统中产生的费用序号，一次就诊的序号不能重复）
     /// </summary>
     [XmlElementAttribute("bke019", IsNullable = false)]
-    public int PrescriptionSort { get; set; }
+    public string PrescriptionSort { get; set; }
     /// <summary>
     /// 项目编号 全省统一收费目录编码
     /// </summary>

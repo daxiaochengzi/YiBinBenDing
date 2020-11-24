@@ -16,5 +16,9 @@ namespace BenDing.Domain.Models.Params.Resident
         /// 组织机构
         /// </summary>
         public  string OrganizationCode { get; set; }
+        /// <summary>
+        /// 是否异地
+        /// </summary>
+        public  bool IsDifferentPlaces { get; set; }
     }
 }

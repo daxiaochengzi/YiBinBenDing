@@ -28,6 +28,21 @@ namespace BenDing.Repository.EntityMap
             _db.Updateable(medicalInsurance).UpdateColumns(it => new { it.MedicalInsuranceState }).WhereColumns(it => new { it.Id });
            
         }
+        /// <summary>
+        /// 更新出院
+        /// </summary>
+        /// <param name="medicalInsurance"></param>
+
+        public void LeaveHospital(MedicalInsurance medicalInsurance)
+        {
+            _db.Updateable(medicalInsurance).UpdateColumns(it => new
+            {
+                it.LeaveHospitalTime,
+                it.LeaveHospitalSerialNumber
+
+            }).WhereColumns(it => new { it.Id });
+
+        }
         //public void Insert(MedicalInsurance medicalInsurance, UserInfoDto user)
         //{
         //    medicalInsurance.Create(user);

@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using BenDing.Domain.Models.DifferentPlacesXml.HospitalizationRegister;
 using BenDing.Domain.Models.DifferentPlacesXml.LeaveHospital;
+using BenDing.Domain.Models.DifferentPlacesXml.YdPrescriptionUpload;
 using BenDing.Domain.Models.Dto.JsonEntity.DifferentPlaces;
+using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
 using BenDing.Domain.Models.Dto.Workers;
 using BenDing.Domain.Models.Entitys;
@@ -13,6 +15,7 @@ using BenDing.Domain.Models.Enums;
 using BenDing.Domain.Models.HisXml;
 using BenDing.Domain.Models.Params.Base;
 using BenDing.Domain.Models.Params.DifferentPlaces;
+using BenDing.Domain.Models.Params.Resident;
 using BenDing.Domain.Models.Params.SystemManage;
 using BenDing.Domain.Models.Params.UI.DifferentPlaces;
 using BenDing.Domain.Models.Params.Web;
@@ -31,20 +34,28 @@ namespace BenDing.Service.Providers
     {
         private readonly IWebServiceBasicService _serviceBasicService;
         private readonly IWebBasicRepository _webBasicRepository;
-        private MedicalInsuranceMap _medicalInsuranceMap;
+        private readonly MedicalInsuranceMap _medicalInsuranceMap;
         private readonly ISystemManageRepository _systemManageRepository;
-        private InpatientMap _inpatientMap; 
+        private readonly InpatientMap _inpatientMap;
+        private readonly IHisSqlRepository _hisSqlRepository;
+        private readonly IMedicalInsuranceSqlRepository _medicalInsuranceSqlRepository;
+        
+
         public YdMedicalInsuranceService(
             IWebServiceBasicService iWebServiceBasicService,
             IWebBasicRepository webBasicRepository,
-            ISystemManageRepository systemManageRepository
+            ISystemManageRepository systemManageRepository,
+            IHisSqlRepository hisSqlRepository,
+            IMedicalInsuranceSqlRepository medicalInsuranceSqlRepository
             )
         {
             _serviceBasicService = iWebServiceBasicService;
             _webBasicRepository = webBasicRepository;
             _medicalInsuranceMap = new MedicalInsuranceMap();
             _systemManageRepository = systemManageRepository;
-            _inpatientMap= new InpatientMap();  
+            _inpatientMap= new InpatientMap();
+            _hisSqlRepository = hisSqlRepository;
+            _medicalInsuranceSqlRepository = medicalInsuranceSqlRepository;
         }
 
         ///<summary>
@@ -231,12 +242,17 @@ namespace BenDing.Service.Providers
             };
             //获取病人结算信息
             var settlementData = _serviceBasicService.GetHisHospitalizationSettlement(infoData);
-            var canCelParam = new LeaveHospitalHandleParam()
+           var diagnosisInfo=  CommonHelp.GetDiagnosis(settlementData.DiagnosisList);
+            var diagnosisList = settlementData.DiagnosisList.Select(c => new DifferentPlacesLeaveHospitalOtherDiagnosis
+            {
+                DiagnosisName = c.DiseaseName,
+                DiagnosisCode = c.ProjectCode
+            }).ToList();
+            var canCelParam = new YdInputLeaveHospitalHandleXml()
             {
                 AreaCode= medicalInsurance.AreaCode,
                 MedicalInsuranceHospitalizationNo = medicalInsurance.MedicalInsuranceHospitalizationNo,
                 PersonalNumber = medicalInsurance.IdentityMark,
-                
                 LeaveHospitalBedNumber = inpatient.LeaveHospitalBedNumber,
                 LeaveHospitalDepartmentCode = "0000",
                 LeaveHospitalDepartmentName = settlementData.LeaveHospitalDepartmentName,
@@ -244,18 +260,318 @@ namespace BenDing.Service.Providers
                 LeaveHospitalDiagnosisDoctorCode = "",
                 LeaveHospitalDiagnosisDoctorName = "",
                 LeaveHospitalReason = "",
-                LeaveHospitalMedicalRecordNo= inpatient.HospitalizationNo
+                LeaveHospitalMedicalRecordNo= inpatient.HospitalizationNo,
+                LeaveHospitalMainDiagnosisIcd10 = diagnosisInfo.AdmissionMainDiagnosisIcd10,
+                LeaveHospitalDiagnosisIcd10Two = diagnosisInfo.DiagnosisIcd10Two,
+                LeaveHospitalDiagnosisIcd10Three = diagnosisInfo.DiagnosisIcd10Three,
+                LeaveHospitalMainDiagnosis = diagnosisInfo.DiagnosisDescribe,
+                DiagnosisList = diagnosisList,
+                LeaveHospitalNo= inpatient.HospitalizationNo,
+                Operators = userBase.UserName,
+                Remarks=""
+
             };
-            //resultData.TransactionCode = "YYJK004";
-            //resultData.InputXml = XmlSerializeHelper.HisXmlSerialize(canCelParam);
+            resultData.TransactionCode = "YYJK006";
+            resultData.InputXml = XmlSerializeHelper.HisXmlSerialize(canCelParam);
             return resultData;
 
 
         }
+        /// <summary>
+        /// 出院办理
+        /// </summary>
+        /// <param name="param"></param>
+        public void YdLeaveHospital(GetYdLeaveHospitalUiParam param)
+        {
+            var outputData =
+                XmlSerializeHelper.YdDeSerializer<YdOutputLeaveHospitalHandleXml>(param.SettlementJson);
+            var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
+            userBase.TransKey = param.TransKey;
+            var medicalInsurance = _medicalInsuranceMap.QueryFirstEntity(param.BusinessId);
+            medicalInsurance.LeaveHospitalSerialNumber = outputData.LeaveHospitalSerialNumber;
+            medicalInsurance.LeaveHospitalTime =Convert.ToDateTime(outputData.OperationTime) ;
+            _medicalInsuranceMap.LeaveHospital(medicalInsurance);
+            //添加日志
+            var logParam = new AddHospitalLogParam()
+            {
+                JoinOrOldJson = JsonConvert.SerializeObject(param),
+                User = userBase,
+                Remark = "医保出院办理",
+                RelationId = medicalInsurance.Id,
+                BusinessId = param.BusinessId,
+            };
+            _systemManageRepository.AddHospitalLog(logParam);
 
-        // LeaveHospital
-        //UiBaseDataParam
-        public YdHospitalizationRegisterParam GetYdWorkerHospitalizationRegister(
+        }
+        /// <summary>
+        /// 获取取消出院办理参数
+        /// </summary>
+        /// <param name="param"></param>
+        public YdBaseParam GetYdCancelLeaveHospitalParam(UiBaseDataParam param)
+        {
+            var resultData = new YdBaseParam();
+            var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
+            userBase.TransKey = param.TransKey;
+            var medicalInsurance = _medicalInsuranceMap.QueryFirstEntity(param.BusinessId);
+            var inpatient = _inpatientMap.QueryFirstEntity(param.BusinessId);
+            StringBuilder ctrXml = new StringBuilder();
+            ctrXml.Append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
+            ctrXml.Append("<control>");
+            ctrXml.Append($"<baa008>{medicalInsurance.AreaCode}</baa008>");//参保人统筹地区编码
+            ctrXml.Append($"<aaz217>{medicalInsurance.MedicalInsuranceHospitalizationNo}</aaz217>");//就诊记录号
+            ctrXml.Append($"<aac001>{medicalInsurance.IdentityMark}</aac001>");//个人编号
+            ctrXml.Append($"<aac002>{inpatient.IdCardNo}</aac002>");//身份证号
+            ctrXml.Append($"<aac003>{inpatient.PatientName}</aac003>");//姓名
+            ctrXml.Append($"<bkc131>{userBase.UserName}</bkc131>");//出院经办人
+            ctrXml.Append("</control>");
+            resultData.TransactionCode = "YYJK007";
+            resultData.InputXml = ctrXml.ToString();
+            return resultData;
+
+
+        }
+        /// <summary>
+        /// 取消出院办理
+        /// </summary>
+        /// <param name="param"></param>
+        public void YdCancelLeaveHospital(GetYdLeaveHospitalUiParam param)
+        {
+            var outputData =
+                XmlSerializeHelper.YdDeSerializer<YdOutputLeaveHospitalHandleXml>(param.SettlementJson);
+            var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
+            userBase.TransKey = param.TransKey;
+            var medicalInsurance = _medicalInsuranceMap.QueryFirstEntity(param.BusinessId);
+            medicalInsurance.LeaveHospitalSerialNumber = null;
+            medicalInsurance.LeaveHospitalTime = Convert.ToDateTime(outputData.OperationTime);
+            _medicalInsuranceMap.LeaveHospital(medicalInsurance);
+            //添加日志
+            var logParam = new AddHospitalLogParam()
+            {
+                JoinOrOldJson = JsonConvert.SerializeObject(param),
+                User = userBase,
+                Remark = "取消医保出院办理",
+                RelationId = medicalInsurance.Id,
+                BusinessId = param.BusinessId,
+            };
+            _systemManageRepository.AddHospitalLog(logParam);
+
+        }
+
+        /// <summary>
+        /// 获取异地处方上传参数
+        /// </summary>
+        /// <param name="param"></param>
+        public GetYdPrescriptionUploadParam GetYdPrescriptionUploadParam(GetYdPrescriptionUploadUiParam param)
+        {
+
+
+            //处方上传解决方案
+            //1.判断是id上传还是单个用户上传
+            //3.获取医院等级判断金额是否符合要求
+            //4.数据上传
+            //4.1 id上传
+            //4.1.2 获取医院等级判断金额是否符合要求
+            //4.1.3 数据上传
+            //4.1.3.1 数据上传失败,数据回写到日志
+            //4.1.3.2 数据上传成功,保存批次号，数据回写至基层
+            //4.2   单个病人整体上传
+            //4.2.2 获取医院等级判断金额是否符合要求
+            //4.2.3 数据上传
+            //4.2.3.1 数据上传失败,数据回写到日志
+            var isOrganizationCodeUpload = true;
+            
+            var resultData = new GetYdPrescriptionUploadParam();
+            var resultUpload = new RetrunPrescriptionUploadDto();
+            var uploadList = new List<YdInputPrescriptionUploadXml>();
+            List<QueryInpatientInfoDetailDto> queryData;
+            var queryParam = new InpatientInfoDetailQueryParam();
+            var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
+            //1.判断是id上传还是单个用户上传
+            if (param.DataIdList != null && param.DataIdList.Any())
+            {
+                queryParam.IdList = param.DataIdList;
+                queryParam.UploadMark = 0;
+                isOrganizationCodeUpload = false;
+               
+            }
+            else
+            {
+                queryParam.BusinessId = param.BusinessId;
+                queryParam.UploadMark = 0;
+            }
+
+            //获取病人明细
+            queryData = _hisSqlRepository.InpatientInfoDetailQuery(queryParam);
+            if (queryData.Any())
+            {
+                var queryBusinessId = (!string.IsNullOrWhiteSpace(queryParam.BusinessId))
+                    ? param.BusinessId
+                    : queryData.Select(c => c.BusinessId).FirstOrDefault();
+              
+                //获取病人医保信息
+                var medicalInsurance = _medicalInsuranceMap.QueryFirstEntity(param.BusinessId);
+                
+                    var queryPairCodeParam = new QueryMedicalInsurancePairCodeParam()
+                    {
+                        DirectoryCodeList = queryData.Select(d => d.DirectoryCode).Distinct().ToList(),
+                        OrganizationCode = userBase.OrganizationCode,
+                        IsDifferentPlaces = true
+                    };
+                    //获取医保对码数据
+                    var queryPairCode =
+                        _medicalInsuranceSqlRepository.QueryMedicalInsurancePairCode(queryPairCodeParam);
+                    
+                    //获取处方上传入参
+                    var paramIni = GetPrescriptionUploadParam(
+                        queryData, 
+                        queryPairCode,
+                        userBase,
+                        isOrganizationCodeUpload,
+                        param.BusinessId
+                        );
+                 
+                    int num = paramIni.DetailList.RowDataList.Count;
+                    resultUpload.Count = num;
+                    int a = 0;
+                    int limit = 40; //限制条数
+                    var count = Convert.ToInt32(num / limit) + ((num % limit) > 0 ? 1 : 0);
+                    var idList = new List<Guid>();
+                    while (a < count)
+                    {
+                        //排除已上传数据
+
+                        var rowDataListAll = paramIni.DetailList.RowDataList.Where(d => !idList.Contains(d.Id))
+                            .OrderBy(c => c.PrescriptionSort).ToList();
+                        var sendList = rowDataListAll.Take(limit).Select(s => s.Id).ToList();
+                       
+                        var uploadRowParam = new YdInputPrescriptionUploadXml()
+                        {
+                            Operators = paramIni.Operators,
+                            AreaCode = medicalInsurance.AreaCode,
+                            PersonalCode = medicalInsurance.IdentityMark,
+                            VisitRecordNumber = medicalInsurance.MedicalInsuranceHospitalizationNo
+                        };
+
+                        uploadRowParam.DetailList.RowDataList = rowDataListAll.Where(c => sendList.Contains(c.Id)).ToList(); ;
+                        uploadRowParam.nums = sendList.Count();
+                    ////数据上传
+                        uploadList.Add(uploadRowParam);
+                       
+                        idList.AddRange(sendList);
+                        resultUpload.Num += sendList.Count();
+                        a++;
+                    }
+
+                }
+            
+
+            resultData.RetrunUpload = resultUpload;
+            resultData.UploadList = uploadList;
+            return resultData;
+
+        }
+
+        /// <summary>
+        /// 处方上传
+        /// </summary>
+        /// <param name="param"></param>
+        public void YdPrescriptionUpload(GetYdPrescriptionUploadUiParam param)
+        {
+            var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
+            var outputData =
+                XmlSerializeHelper.YdDeSerializer<YdOutputPrescriptionUploadXml>(param.SettlementJson);
+        }
+
+
+
+
+        /// <summary>
+        /// 获取处方上传入参
+        /// </summary>
+        /// <returns></returns>
+        private YdInputPrescriptionUploadXml GetPrescriptionUploadParam(
+            List<QueryInpatientInfoDetailDto> param,
+            List<QueryMedicalInsurancePairCodeDto> pairCodeList, 
+            UserInfoDto user,
+            bool isOrganizationCodeUpload,
+            string businessId )
+        {
+
+            var resultData = new YdInputPrescriptionUploadXml();
+
+            resultData.Operators = CommonHelp.GuidToStr(user.UserId);
+            var rowDataList = new List<YdPrescriptionUploadRowParam>();
+            foreach (var item in param)
+            {
+                var pairCodeData = pairCodeList.FirstOrDefault(c => c.DirectoryCode == item.DirectoryCode);
+
+                if (pairCodeData != null)
+                {
+                    var rowData = new YdPrescriptionUploadRowParam()
+                    {
+                        PrescriptionNum=CommonHelp.GuidToStr(businessId),
+                        MedicalAdvice= item.DataSort.ToString(),
+                        PrescriptionSort= item.DataSort.ToString(),
+                        ProjectCode= pairCodeData.ProjectCode,
+                        FixedEncoding = pairCodeData.FixedEncoding,
+                        ProjectName= item.DirectoryName,
+                        ProjectCodeType = pairCodeData.ProjectCodeType,
+                        Quantity=item.Quantity,
+                        UnitPrice= item.UnitPrice,
+                        Amount=item.Amount,
+                        Unit=item.Unit,
+                        Formulation=item.Formulation,
+                        Specification=item.Specification,
+                        Dosage=Convert.ToDecimal(item.Dosage),
+                        Usage= item.Usage,
+                        ManufacturerName= pairCodeData.Manufacturer,
+                        DoctorJobNumber="",
+                        DoctorName=item.BillDoctorName,
+                        InDepartmentName= item.OperateDepartmentName,
+                        DirectoryDate= CommonHelp.FormatDateTime(item.BillTime),
+                       
+                    };
+                    //是否现在使用药品
+                    if (pairCodeData.RestrictionSign == "1")
+                    {
+                        if (isOrganizationCodeUpload == false)
+                        {
+                            if (item.ApprovalMark == 0)
+                            {
+                                throw new Exception(item.DirectoryName + "为限制性药品未审核");
+                            }
+                          
+                            rowData.LimitApprovalMark = item.ApprovalMark.ToString();
+                        }
+
+
+
+                    }
+
+                    if (isOrganizationCodeUpload == true &&
+                        pairCodeData.RestrictionSign == "1"
+                        && item.ApprovalMark == 0)
+                    {
+                        //不做处理
+                    }
+                    else
+                    {
+                        rowDataList.Add(rowData);
+                    }
+
+                    
+
+                }
+                
+
+
+            }
+
+            resultData.DetailList.RowDataList = rowDataList;
+            return resultData;
+
+        }
+        private YdHospitalizationRegisterParam GetYdWorkerHospitalizationRegister(
             YdHospitalizationRegisterUiParam param, InpatientInfoDto paramDto, UserInfoDto user)
         {
             var diagnosisData = CommonHelp.GetWorkDiagnosis(param.DiagnosisList);

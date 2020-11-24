@@ -596,7 +596,8 @@ namespace BenDing.Repository.Providers.Web
                             inner join [dbo].[MedicalInsuranceProject] as b on b.ProjectCode=a.ProjectCode
                             where a.OrganizationCode='{param.OrganizationCode}' and a.[DirectoryCode] in({updateId})
                              and a.IsDelete=0  and b.IsDelete=0";// and b.EffectiveSign=1 
-                        resultData = sqlConnection.Query<QueryMedicalInsurancePairCodeDto>(sqlStr).ToList();
+                        if (param.IsDifferentPlaces) sqlStr += " and IsDifferentPlaces=1";
+                         resultData = sqlConnection.Query<QueryMedicalInsurancePairCodeDto>(sqlStr).ToList();
                         sqlConnection.Close();
                     }
                     return resultData;

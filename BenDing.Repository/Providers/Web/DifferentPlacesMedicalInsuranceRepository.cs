@@ -75,7 +75,7 @@ namespace BenDing.Repository.Providers.Web
         /// 异地出院办理
         /// </summary>
         /// <param name="param"></param>
-        public LeaveHospitalHandleDto LeaveHospitalHandle(LeaveHospitalHandleParam param)
+        public LeaveHospitalHandleDto LeaveHospitalHandle(YdInputLeaveHospitalHandleXml param)
         {
             var resultData = new LeaveHospitalHandleDto();
             var xmlStr = XmlHelp.SaveXml(param);
