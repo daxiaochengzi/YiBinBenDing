@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace BenDing.Domain.Models.Params.DifferentPlaces
+namespace BenDing.Domain.Models.DifferentPlacesXml.PrescriptionUploadCancel
 {/// <summary>
  /// 异地处方上传取消
  /// </summary>
     [XmlRoot("ROW", IsNullable = false)]
-    public class YdPrescriptionUploadCancelParam
+    public class YdInputPrescriptionUploadCancelXml
     {/// <summary>
         /// 个人编码
         /// </summary>

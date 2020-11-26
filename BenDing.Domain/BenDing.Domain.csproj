@@ -52,7 +52,10 @@
     <Compile Include="Infrastructures\IBaseDeleteAudited.cs" />
     <Compile Include="Infrastructures\IBaseEntity.cs" />
     <Compile Include="Infrastructures\IBaseModificationAudited.cs" />
+    <Compile Include="Models\DifferentPlacesXml\HospitalizationPreSettlement\YdOutputHospitalizationPreSettlementXml.cs" />
     <Compile Include="Models\DifferentPlacesXml\HospitalizationRegister\YdOutputHospitalizationRegisterXml.cs" />
+    <Compile Include="Models\DifferentPlacesXml\HospitalizationSettlement\YdInputHospitalizationSettlementXml.cs" />
+    <Compile Include="Models\DifferentPlacesXml\HospitalizationSettlement\YdOutputHospitalizationSettlementXml.cs" />
     <Compile Include="Models\DifferentPlacesXml\LeaveHospital\YdOutputLeaveHospitalHandleXml.cs" />
     <Compile Include="Models\DifferentPlacesXml\YdPrescriptionUpload\YdOutputPrescriptionUploadXml.cs" />
     <Compile Include="Models\Dto\Base\DiagnosisData.cs" />
@@ -75,7 +78,8 @@
     <Compile Include="Models\Entitys\MedicalInsurance.cs" />
     <Compile Include="Models\Params\Base\BaseTradeParams.cs" />
     <Compile Include="Models\Params\Base\YdBaseParam.cs" />
-    <Compile Include="Models\Params\DifferentPlaces\YdHospitalizationPreSettlementParam.cs" />
+    <Compile Include="Models\Params\Base\YdIdListBaseParam.cs" />
+    <Compile Include="Models\DifferentPlacesXml\HospitalizationPreSettlement\YdInputHospitalizationPreSettlementXml.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdHospitalizationRegisterJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdUserInfoJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\LeaveHospitalHandleJsonDto.cs" />
@@ -115,8 +119,12 @@
     <Compile Include="Models\Entitys\HospitalLog.cs" />
     <Compile Include="Models\Params\Base\PaginationWebParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\GetYdPrescriptionUploadParam.cs" />
+    <Compile Include="Models\Params\DifferentPlaces\YdUpdateHospitalizationFeeParam.cs" />
+    <Compile Include="Models\Params\UI\DifferentPlaces\GetYdHospitalizationPreSettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\DifferentPlaces\GetYdHospitalizationSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\GetYdLeaveHospitalUiParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\GetYdPrescriptionUploadUiParam.cs" />
+    <Compile Include="Models\Params\UI\DifferentPlaces\GetYdCancelPrescriptionUploadUiParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\YdHospitalizationRegisterUiParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdHospitalizationSettlementParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdOutpatientPreSettlementParam.cs" />
@@ -241,7 +249,7 @@
     <Compile Include="Models\Params\Resident\QueryOrganizationInpatientInfoUiParam.cs" />
     <Compile Include="Models\Params\Resident\QueryPrescriptionDetailDto.cs" />
     <Compile Include="Models\Params\Resident\QueryPrescriptionDetailParam.cs" />
-    <Compile Include="Models\Params\DifferentPlaces\YdPrescriptionUploadCancelParam.cs" />
+    <Compile Include="Models\DifferentPlacesXml\PrescriptionUploadCancel\YdInputPrescriptionUploadCancelXml.cs" />
     <Compile Include="Models\Params\Resident\YdPrescriptionUploadParam.cs" />
     <Compile Include="Models\DifferentPlacesXml\YdPrescriptionUpload\YdInputPrescriptionUploadXml.cs" />
     <Compile Include="Models\Params\SystemManage\AddHospitalLogParam.cs" />

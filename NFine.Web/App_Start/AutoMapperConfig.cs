@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using AutoMapper;
+using BenDing.Domain.Models.DifferentPlacesXml.HospitalizationPreSettlement;
 using BenDing.Domain.Models.Dto.DifferentPlaces;
 using BenDing.Domain.Models.Dto.JsonEntity;
 using BenDing.Domain.Models.Dto.JsonEntity.DifferentPlaces;
@@ -59,7 +60,8 @@ namespace NFine.Web.App_Start
                 cfg.CreateMap<WorkerHospitalSettlementCardBackDataDto, WorkerHospitalSettlementCardBackDto>();
                 //异地
                 cfg.CreateMap<YdUserInfoJsonDto, DifferentPlacesUserInfoDto>();
-               cfg.CreateMap<YdHospitalizationRegisterJsonDto, DifferentPlacesHospitalizationRegisterDto>();
+                cfg.CreateMap<YdHospitalizationRegisterJsonDto, DifferentPlacesHospitalizationRegisterDto>();
+                cfg.CreateMap<YdOutputHospitalizationPreSettlementXml, YdHospitalizationPreSettlementJsonDto>();
                 
             });
         }

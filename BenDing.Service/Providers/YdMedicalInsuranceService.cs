@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using BenDing.Domain.Models.DifferentPlacesXml.HospitalizationPreSettlement;
 using BenDing.Domain.Models.DifferentPlacesXml.HospitalizationRegister;
+using BenDing.Domain.Models.DifferentPlacesXml.HospitalizationSettlement;
 using BenDing.Domain.Models.DifferentPlacesXml.LeaveHospital;
+using BenDing.Domain.Models.DifferentPlacesXml.PrescriptionUploadCancel;
 using BenDing.Domain.Models.DifferentPlacesXml.YdPrescriptionUpload;
 using BenDing.Domain.Models.Dto.JsonEntity.DifferentPlaces;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
-using BenDing.Domain.Models.Dto.Workers;
 using BenDing.Domain.Models.Entitys;
 using BenDing.Domain.Models.Enums;
 using BenDing.Domain.Models.HisXml;
@@ -404,10 +405,6 @@ namespace BenDing.Service.Providers
             queryData = _hisSqlRepository.InpatientInfoDetailQuery(queryParam);
             if (queryData.Any())
             {
-                var queryBusinessId = (!string.IsNullOrWhiteSpace(queryParam.BusinessId))
-                    ? param.BusinessId
-                    : queryData.Select(c => c.BusinessId).FirstOrDefault();
-              
                 //获取病人医保信息
                 var medicalInsurance = _medicalInsuranceMap.QueryFirstEntity(param.BusinessId);
                 
@@ -452,7 +449,7 @@ namespace BenDing.Service.Providers
                             VisitRecordNumber = medicalInsurance.MedicalInsuranceHospitalizationNo
                         };
 
-                        uploadRowParam.DetailList.RowDataList = rowDataListAll.Where(c => sendList.Contains(c.Id)).ToList(); ;
+                        uploadRowParam.DetailList.RowDataList = rowDataListAll.Where(c => sendList.Contains(c.Id)).ToList();
                         uploadRowParam.nums = sendList.Count();
                     ////数据上传
                         uploadList.Add(uploadRowParam);
@@ -472,7 +469,7 @@ namespace BenDing.Service.Providers
         }
 
         /// <summary>
-        /// 处方上传
+        /// 异地处方上传
         /// </summary>
         /// <param name="param"></param>
         public void YdPrescriptionUpload(GetYdPrescriptionUploadUiParam param)
@@ -480,10 +477,363 @@ namespace BenDing.Service.Providers
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
             var outputData =
                 XmlSerializeHelper.YdDeSerializer<YdOutputPrescriptionUploadXml>(param.SettlementJson);
+            var rowXml = param.DataIdList.Select(c => new HospitalizationFeeUploadRowXml() { SerialNumber = c }).ToList();
+            //交易码
+            var transactionId = Guid.NewGuid().ToString("N");
+            var medicalInsurance = _medicalInsuranceMap.QueryFirstEntity(param.BusinessId);
+           //更新数据库
+            _medicalInsuranceSqlRepository.YdUpdateHospitalizationFee(new YdUpdateHospitalizationFeeParam()
+            {
+                BatchNumber = CommonHelp.GuidToStr(transactionId),
+                User = userBase,
+                TransactionId = transactionId,
+                IdList = param.DataIdList
+            });
+            //回参
+            var xmlData = new HospitalizationFeeUploadXml()
+            {
+                MedicalInsuranceHospitalizationNo = medicalInsurance.MedicalInsuranceHospitalizationNo,
+                RowDataList = rowXml,
+            };
+            var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
+            userBase.TransKey = param.BusinessId;
+            var saveXml = new SaveXmlDataParam()
+            {
+                User = userBase,
+                MedicalInsuranceBackNum = "CXJB004",
+                MedicalInsuranceCode = "31",
+                BusinessId = param.BusinessId,
+                BackParam = strXmlBackParam
+            };
+            //存基层
+            _webBasicRepository.SaveXmlData(saveXml);
+            //添加日志
+            var logParam = new AddHospitalLogParam()
+            {
+                JoinOrOldJson = JsonConvert.SerializeObject(param),
+                User = userBase,
+                Remark = "处方上传",
+                RelationId = medicalInsurance.Id,
+                BusinessId = param.BusinessId,
+            };
+            _systemManageRepository.AddHospitalLog(logParam);
+
+        }
+        /// <summary>
+        /// 获取异地取消处方上传参数
+        /// </summary>
+        /// <param name="param"></param>
+        public YdIdListBaseParam GetYdCancelPrescriptionUploadParam(GetYdCancelPrescriptionUploadUiParam param)
+        {
+            var resultData = new YdIdListBaseParam();
+            var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
+            userBase.TransKey = param.TransKey;
+            //获取医保病人信息
+            var residentDataParam = new QueryMedicalInsuranceResidentInfoParam()
+            {
+                BusinessId = param.BusinessId,
+                OrganizationCode = userBase.OrganizationCode,
+            };
+            var deleteParam = new YdInputPrescriptionUploadCancelXml();
+            List<QueryInpatientInfoDetailDto> queryData;
+            //获取病人明细
+            var queryDataDetail = _hisSqlRepository.InpatientInfoDetailQuery
+                (new InpatientInfoDetailQueryParam() { BusinessId = param.BusinessId });
+            //获取选择
+            queryData = param.DataIdList != null ? queryDataDetail.Where(c => param.DataIdList.Contains(c.Id.ToString()) && c.UploadMark==1).ToList() : queryDataDetail.Where(d=>d.UploadMark==1).ToList();
+            //获取病人医保信息
+            var residentData = _medicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(residentDataParam);
+            if (queryData.Any())
+            {
+                deleteParam.VisitRecordNumber = residentData.MedicalInsuranceHospitalizationNo;
+                if (param.DataIdList != null && param.DataIdList.Count > 0)
+                {
+                    deleteParam.PrescriptionNum = CommonHelp.GuidToStr(param.BusinessId);
+                    //获取已上传数据、
+                    var uploadDataId = queryData.Select(d => new YdPrescriptionUploadCancelRowParam() { PrescriptionSort = d.DataSort }).ToList();
+                    deleteParam.DetailList.RowDataList = uploadDataId;
+                }
+ 
+            }
+            resultData.TransactionCode = "YYJK009";
+            resultData.IdList = queryData.Select(c => c.Id.ToString()).ToList();
+            resultData.InputXml = XmlSerializeHelper.HisXmlSerialize(deleteParam);
+            return resultData;
         }
 
+        /// <summary>
+        /// 异地取消处方上传
+        /// </summary>
+        /// <param name="param"></param>
+        public void YdCancelPrescriptionUpload(GetYdCancelPrescriptionUploadUiParam param)
+        {
+            var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
+            userBase.TransKey = param.TransKey;
+            //获取病人明细
+            var queryDataDetail = _hisSqlRepository.InpatientInfoDetailQuery
+                (new InpatientInfoDetailQueryParam() { BusinessId = param.BusinessId });
+            List<QueryInpatientInfoDetailDto> queryData;
+            //获取选择
+            queryData = param.DataIdList != null ? queryDataDetail.Where(c => param.DataIdList.Contains(c.Id.ToString())).ToList() : queryDataDetail;
+            //更新数据库
+            _medicalInsuranceSqlRepository.YdUpdateHospitalizationFee(new YdUpdateHospitalizationFeeParam()
+            {
+               
+                IsDelete = true,
+                IdList = param.DataIdList
+            });
+            //日志
+            var joinJson = JsonConvert.SerializeObject(param);
+            var logParam = new AddHospitalLogParam
+            {
+                User = userBase,
+                RelationId = Guid.Parse(param.BusinessId),
+                JoinOrOldJson = joinJson,
+                ReturnOrNewJson = "",
+                BusinessId = param.BusinessId,
+                Remark = "医保取消处方明细id执行成功"
+            };
+            _systemManageRepository.AddHospitalLog(logParam);
+            var medicalInsurance = _medicalInsuranceMap.QueryFirstEntity(param.BusinessId);
+            // 回参构建
+            var xmlData = new HospitalizationFeeUploadCancelXml()
+            {
+                MedicalInsuranceHospitalizationNo = medicalInsurance.MedicalInsuranceHospitalizationNo,
+                RowDataList = queryData.Select(c => new HospitalizationFeeUploadRowXml() { SerialNumber = c.DetailId }).ToList()
+            };
+            var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
+            var saveXml = new SaveXmlDataParam()
+            {
+                User = userBase,
+                MedicalInsuranceBackNum = "CXJB005",
+                MedicalInsuranceCode = "32",
+                BusinessId = param.BusinessId,
+                BackParam = strXmlBackParam
+            };
+            //存基层
+            _webBasicRepository.SaveXmlData(saveXml);
+            //日志
+            logParam.Remark = "基层取消处方明细id执行成功";
+            _systemManageRepository.AddHospitalLog(logParam);
+        }
+        /// <summary>
+        /// 获取异地住院预结算参数
+        /// </summary>
+        /// <param name="param"></param>
+        public YdBaseParam GetYdHospitalizationPreSettlementParam(GetYdCancelPrescriptionUploadUiParam param)
+        {
+            var resultData = new YdBaseParam();
+            var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
+            userBase.TransKey = param.TransKey;
+            var medicalInsurance = _medicalInsuranceMap.QueryFirstEntity(param.BusinessId);
+            //获取病人明细
+            var queryDataDetail = _hisSqlRepository.InpatientInfoDetailQuery
+                (new InpatientInfoDetailQueryParam() { BusinessId = param.BusinessId });
+            var infoData = new GetInpatientInfoParam()
+            {
+                User = userBase,
+                BusinessId = param.BusinessId,
+            };
+            //获取病人结算信息
+            var settlementData = _serviceBasicService.GetHisHospitalizationSettlement(infoData);
+            var preSettlementParam = new YdInputHospitalizationPreSettlementXml()
+            {
+                AreaCode = medicalInsurance.AreaCode,
+                Operators = userBase.UserName,
+                PersonalCode = medicalInsurance.IdentityMark,
+                VisitRecordNumber = medicalInsurance.MedicalInsuranceHospitalizationNo,
+                TotalAmount = settlementData.AllAmount,
+                Nums = queryDataDetail.Count()//需排除不传医保项目
+            };
+            resultData.TransactionCode = "YYJK013";
+            resultData.InputXml = XmlSerializeHelper.HisXmlSerialize(preSettlementParam);
+            return resultData;
+        }
+
+        /// <summary>
+        /// 异地住院预结算
+        /// </summary>
+        /// <param name="param"></param>
+        public SettlementDto YdHospitalizationPreSettlement(GetYdCancelPrescriptionUploadUiParam param)
+        {
+            var resultData = new SettlementDto();
+            var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
+            var outputData =
+                XmlSerializeHelper.YdDeSerializer<YdOutputHospitalizationPreSettlementXml>(param.SettlementJson);
+            var jsonData = AutoMapper.Mapper.Map<YdHospitalizationPreSettlementJsonDto>(outputData);
+            resultData.PayMsg = CommonHelp.GetPayMsg(JsonConvert.SerializeObject(jsonData));
+            resultData.CashPayment = jsonData.CashPayAmount;
+            //resultData.ReimbursementExpenses = jsonData.ReimbursementExpenses;
+            resultData.TotalAmount = jsonData.TotalAmount;
+            var medicalInsurance = _medicalInsuranceMap.QueryFirstEntity(param.BusinessId);
+            var updateParam = new UpdateMedicalInsuranceResidentSettlementParam()
+            {
+                ReimbursementExpensesAmount = CommonHelp.ValueToDouble(jsonData.MedicalInsuranceTotalPayAmount),
+                SelfPayFeeAmount = resultData.CashPayment,
+                OtherInfo = JsonConvert.SerializeObject(resultData),
+                Id = medicalInsurance.Id,
+                UserId = userBase.UserId,
+                SettlementNo = outputData.DocumentNo,
+                MedicalInsuranceAllAmount = resultData.TotalAmount,
+                PreSettlementTransactionId = userBase.TransKey,
+                MedicalInsuranceState = MedicalInsuranceState.MedicalInsurancePreSettlement
+            };
+            //存入中间库
+            _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateParam);
+            var logParam = new AddHospitalLogParam()
+            {
+                JoinOrOldJson = JsonConvert.SerializeObject(param),
+                ReturnOrNewJson = JsonConvert.SerializeObject(resultData),
+                User = userBase,
+                BusinessId = param.BusinessId,
+                Remark = "异地住院病人预结算"
+            };
+            _systemManageRepository.AddHospitalLog(logParam);
+            return resultData;
+        }
+
+        /// <summary>
+        /// 获取异地住院结算参数
+        /// </summary>
+        /// <param name="param"></param>
+        public YdBaseParam GetYdHospitalizationSettlementParam(GetYdHospitalizationSettlementUiParam param)
+        {
+           
+            var resultData = new YdBaseParam();
+            var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
+            userBase.TransKey = param.TransKey;
+            var medicalInsurance = _medicalInsuranceMap.QueryFirstEntity(param.BusinessId);
+            //获取病人明细
+            var queryDataDetail = _hisSqlRepository.InpatientInfoDetailQuery
+                (new InpatientInfoDetailQueryParam() { BusinessId = param.BusinessId });
+            var infoData = new GetInpatientInfoParam()
+            {
+                User = userBase,
+                BusinessId = param.BusinessId,
+            };
+            //获取病人结算信息
+            var settlementData = _serviceBasicService.GetHisHospitalizationSettlement(infoData);
+            if (medicalInsurance.MedicalInsuranceState !=(int) MedicalInsuranceState.MedicalInsurancePreSettlement) throw new Exception("当前病人未办理预结算,不能办理结算!!!");
+            if (medicalInsurance.MedicalInsuranceState == (int)MedicalInsuranceState.HisSettlement) throw new Exception("当前病人已办理医保结算,不能办理再次结算!!!");
+            var preSettlementParam = new YdInputHospitalizationSettlementXml()
+            {
+                AreaCode = medicalInsurance.AreaCode,
+                Operators = userBase.UserName,
+                PersonalCode = medicalInsurance.IdentityMark,
+                VisitRecordNumber = medicalInsurance.MedicalInsuranceHospitalizationNo,
+                TotalAmount = settlementData.AllAmount,
+                DownAmount= param.DownAmount,
+                Nums = queryDataDetail.Count()//需排除不传医保项目
+            };
+            resultData.TransactionCode = "YYJK011";
+            resultData.InputXml = XmlSerializeHelper.HisXmlSerialize(preSettlementParam);
+            return resultData;
+        }
+        /// <summary>
+        /// 异地住院结算
+        /// </summary>
+        /// <param name="param"></param>
+        public void YdHospitalizationSettlement(GetYdHospitalizationSettlementUiParam param)
+        {
+            var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
+            userBase.TransKey = param.TransKey;
+            var medicalInsurance = _medicalInsuranceMap.QueryFirstEntity(param.BusinessId);
+            var inpatient = _inpatientMap.QueryFirstEntity(param.BusinessId);
+            var infoData = new GetInpatientInfoParam()
+            {
+                User = userBase,
+                BusinessId = param.BusinessId,
+            };
+            //获取his结算
+            var hisSettlement = _serviceBasicService.GetHisHospitalizationSettlement(infoData);
+            var outputData =
+                XmlSerializeHelper.YdDeSerializer<YdOutputHospitalizationSettlementXml>(param.SettlementJson);
+         // var   ReimbursementExpensesAmount= outputData.TotalAmount- outputData.
+
+            var updateData = new UpdateMedicalInsuranceResidentSettlementParam()
+            {
+                UserId = userBase.UserId,
+                //ReimbursementExpensesAmount = CommonHelp.ValueToDouble(outputData.),
+                SelfPayFeeAmount = outputData.CashPayAmount,
+                OtherInfo = JsonConvert.SerializeObject(outputData),
+                Id = medicalInsurance.Id,
+                SettlementNo = outputData.DocumentNo,
+                MedicalInsuranceAllAmount = outputData.TotalAmount,
+                SettlementTransactionId = userBase.UserId,
+                MedicalInsuranceState = MedicalInsuranceState.MedicalInsuranceSettlement
+            };
+            //存入中间层
+            _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateData);
+            //添加日志
+            var logParam = new AddHospitalLogParam()
+            {
+                JoinOrOldJson = JsonConvert.SerializeObject(param),
+                ReturnOrNewJson = JsonConvert.SerializeObject(outputData),
+                User = userBase,
+                Remark = "医保异地住院结算",
+                RelationId = medicalInsurance.Id,
+                BusinessId = param.BusinessId,
+            };
+            _systemManageRepository.AddHospitalLog(logParam);
+
+            //decimal insuranceBalance = !string.IsNullOrWhiteSpace(param.InsuranceBalance) == true
+            //    ? Convert.ToDecimal(param.InsuranceBalance) : 0;
+            //var cashPayment = CommonHelp.ValueToDouble(hisSettlement.AllAmount - reimbursementExpenses);
+            // 回参构建
+            var xmlData = new HospitalSettlementXml()
+            {
+
+                MedicalInsuranceHospitalizationNo = medicalInsurance.MedicalInsuranceHospitalizationNo,
+                //CashPayment = data.CashPayment,
+                SettlementNo = outputData.DocumentNo,
+                PaidAmount = outputData.PaidAmount,
+                AllAmount = outputData.TotalAmount,
+                PatientName = inpatient.PatientName,
+                //AccountBalance = insuranceBalance,
+                AccountAmountPay = outputData.AccountPayAmount,
+            };
 
 
+            var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
+            var saveXml = new SaveXmlDataParam()
+            {
+                User = userBase,
+                MedicalInsuranceBackNum = outputData.DocumentNo,
+                MedicalInsuranceCode = "41",
+                BusinessId = param.BusinessId,
+                BackParam = strXmlBackParam
+            };
+            //结算存基层
+            _webBasicRepository.SaveXmlData(saveXml);
+
+            //添加日志
+
+            _systemManageRepository.AddHospitalLog(new AddHospitalLogParam()
+            {
+                JoinOrOldJson = JsonConvert.SerializeObject(xmlData),
+                ReturnOrNewJson = "",
+                User = userBase,
+                Remark = "基层居民住院结算",
+                RelationId = medicalInsurance.Id,
+                BusinessId = param.BusinessId
+            });
+            var updateParamData = new UpdateMedicalInsuranceResidentSettlementParam()
+            {
+                UserId = param.UserId,
+                Id = medicalInsurance.Id,
+                MedicalInsuranceState = MedicalInsuranceState.HisSettlement,
+                IsHisUpdateState = true
+            };
+
+            //  更新中间层
+            _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateParamData);
+            //结算后保存信息
+            var saveParam = AutoMapper.Mapper.Map<SaveInpatientSettlementParam>(hisSettlement);
+            saveParam.Id = (Guid)medicalInsurance.Id;
+            saveParam.User = userBase;
+            //saveParam.LeaveHospitalDiagnosisJson = JsonConvert.SerializeObject(param.DiagnosisList);
+            _hisSqlRepository.SaveInpatientSettlement(saveParam);
+        }
 
         /// <summary>
         /// 获取处方上传入参

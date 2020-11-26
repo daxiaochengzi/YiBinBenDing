@@ -7,6 +7,7 @@ using System.Linq;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
 using BenDing.Domain.Models.Enums;
+using BenDing.Domain.Models.Params.DifferentPlaces;
 using BenDing.Domain.Models.Params.Resident;
 using BenDing.Domain.Models.Params.UI;
 using BenDing.Domain.Models.Params.Web;
@@ -902,6 +903,49 @@ namespace BenDing.Repository.Providers.Web
                         resultData = sqlConnection.Execute(querySql);
                         sqlConnection.Close();
                     }
+                    return resultData;
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(querySql);
+                    throw new Exception(e.Message);
+                }
+
+
+            }
+
+
+        }
+        /// <summary>
+        /// 异地处方上传数据更新
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public int YdUpdateHospitalizationFee(YdUpdateHospitalizationFeeParam param)
+        {
+            int resultData = 0;
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                string querySql = null;
+                try
+                {
+                    sqlConnection.Open();
+                    var updateId = CommonHelp.ListToStr(param.IdList);
+                    if (param.IsDelete == false)
+                    {
+                        querySql +=
+                            $@"update [dbo].[HospitalizationFee] set [UploadMark]=1,BatchNumber='{param.BatchNumber}',
+                               TransactionId='{param.TransactionId}',UploadUserId='{param.User.UserId}',UploadUserName='{param.User.UserName}',UploadTime=GetDATE()
+                               where id in ({updateId}) and IsDelete=0;";
+                    }
+                    else //取消上传
+                    {
+                      
+                        querySql = $"update [dbo].[HospitalizationFee] set [UploadMark]=0 where id in ({updateId});";
+
+                    }
+                    resultData = sqlConnection.Execute(querySql);
+                    sqlConnection.Close();
                     return resultData;
                 }
                 catch (Exception e)

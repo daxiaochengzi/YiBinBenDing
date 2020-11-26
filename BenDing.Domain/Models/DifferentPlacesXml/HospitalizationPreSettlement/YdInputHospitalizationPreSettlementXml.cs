@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
 
-namespace BenDing.Domain.Models.Params.DifferentPlaces
+namespace BenDing.Domain.Models.DifferentPlacesXml.HospitalizationPreSettlement
 {
     [XmlRoot("ROW", IsNullable = false)]
-    public class YdHospitalizationPreSettlementParam
+    public class YdInputHospitalizationPreSettlementXml
     {
 
         /// <summary>

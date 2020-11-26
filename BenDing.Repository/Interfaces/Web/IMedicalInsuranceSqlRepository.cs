@@ -6,6 +6,7 @@ using System.Text;
 
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
+using BenDing.Domain.Models.Params.DifferentPlaces;
 using BenDing.Domain.Models.Params.Resident;
 using BenDing.Domain.Models.Params.UI;
 using BenDing.Domain.Models.Params.Web;
@@ -112,6 +113,13 @@ namespace BenDing.Repository.Interfaces.Web
         /// <param name="user"></param>
         /// <returns></returns>
         int UpdateHospitalizationFee(List<UpdateHospitalizationFeeParam> param, bool batchConfirmFail, UserInfoDto user);
+
+        /// <summary>
+        /// 异地处方上传数据更新
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        int YdUpdateHospitalizationFee(YdUpdateHospitalizationFeeParam param);
         /// <summary>
         /// 医保项目Excel导入
         /// </summary>
