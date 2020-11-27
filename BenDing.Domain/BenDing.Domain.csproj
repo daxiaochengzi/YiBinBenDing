@@ -52,6 +52,8 @@
     <Compile Include="Infrastructures\IBaseDeleteAudited.cs" />
     <Compile Include="Infrastructures\IBaseEntity.cs" />
     <Compile Include="Infrastructures\IBaseModificationAudited.cs" />
+    <Compile Include="Models\DifferentPlacesXml\CancleHospitalizationSettlement\YdOutputCancelHospitalizationSettlementXml.cs" />
+    <Compile Include="Models\DifferentPlacesXml\DoctorOrderUpload\YdBaseOutputDoctorOrderUploadXml.cs" />
     <Compile Include="Models\DifferentPlacesXml\HospitalizationPreSettlement\YdOutputHospitalizationPreSettlementXml.cs" />
     <Compile Include="Models\DifferentPlacesXml\HospitalizationRegister\YdOutputHospitalizationRegisterXml.cs" />
     <Compile Include="Models\DifferentPlacesXml\HospitalizationSettlement\YdInputHospitalizationSettlementXml.cs" />
@@ -76,7 +78,10 @@
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdOutpatientPreSettlementJsonDto.cs" />
     <Compile Include="Models\Entitys\Inpatient.cs" />
     <Compile Include="Models\Entitys\MedicalInsurance.cs" />
+    <Compile Include="Models\Entitys\MedicalInsuranceSettleDetail.cs" />
     <Compile Include="Models\Params\Base\BaseTradeParams.cs" />
+    <Compile Include="Models\Params\Base\KeyParameter.cs" />
+    <Compile Include="Models\Params\Base\TradeParams.cs" />
     <Compile Include="Models\Params\Base\YdBaseParam.cs" />
     <Compile Include="Models\Params\Base\YdIdListBaseParam.cs" />
     <Compile Include="Models\DifferentPlacesXml\HospitalizationPreSettlement\YdInputHospitalizationPreSettlementXml.cs" />
@@ -120,6 +125,7 @@
     <Compile Include="Models\Params\Base\PaginationWebParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\GetYdPrescriptionUploadParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdUpdateHospitalizationFeeParam.cs" />
+    <Compile Include="Models\Params\UI\DifferentPlaces\GetYdCancelHospitalizationSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\GetYdHospitalizationPreSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\GetYdHospitalizationSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\GetYdLeaveHospitalUiParam.cs" />
@@ -366,6 +372,7 @@
     <Compile Include="Models\Params\Web\QueryPatientInfoParam.cs" />
     <Compile Include="Models\Params\Web\SaveInpatientInfoDetailParam.cs" />
     <Compile Include="Models\Params\Web\SaveInpatientSettlementParam.cs" />
+    <Compile Include="Models\Params\Web\SaveSettlementDetailParam.cs" />
     <Compile Include="Models\Params\Web\SaveXmlData.cs" />
     <Compile Include="Models\Params\Web\SaveXmlDataParam.cs" />
     <Compile Include="Models\Params\Web\SettlementCancelParam.cs" />
@@ -397,6 +404,7 @@
     <Compile Include="Xml\CommonHelp.cs" />
     <Compile Include="Xml\LogParam.cs" />
     <Compile Include="Xml\Logs.cs" />
+    <Compile Include="Xml\MappingInfo.cs" />
     <Compile Include="Xml\MedicalInsuranceDll.cs" />
     <Compile Include="Xml\ValidXmlDto.cs" />
     <Compile Include="Xml\XmlHelp.cs" />

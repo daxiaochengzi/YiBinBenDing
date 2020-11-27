@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using BenDing.Domain.Models.Dto.Resident;
+using BenDing.Domain.Models.Params.Base;
 using Newtonsoft.Json;
 
 namespace BenDing.Domain.Xml
@@ -597,6 +598,30 @@ namespace BenDing.Domain.Xml
             var resultData = JsonConvert.DeserializeObject<T>(jsonTextc);
             return resultData;
 
+        }
+        /// <summary>
+        /// xml节点转键值对字典
+        /// </summary>
+        /// <param name="xml"></param>
+        /// <param name="nodeName"></param>
+        /// <returns></returns>
+        public static KeyParameter GetXmlNodesToKP(string xml, string nodeName)
+        {
+            var kp = new KeyParameter();
+            try
+            {
+                var xmldom = new XmlDocument();
+                xmldom.LoadXml(xml);
+
+                foreach (XmlNode item in xmldom.SelectSingleNode(nodeName).ChildNodes)
+                {
+                    kp[item.Name.ToLower()] = item.InnerText;
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return kp;
         }
     }
 }

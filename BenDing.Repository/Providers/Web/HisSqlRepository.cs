@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
+using BenDing.Domain.Models.Entitys;
 using BenDing.Domain.Models.Enums;
 using BenDing.Domain.Models.Params;
 using BenDing.Domain.Models.Params.Base;
@@ -16,6 +17,7 @@ using BenDing.Domain.Models.Params.SystemManage;
 using BenDing.Domain.Models.Params.UI;
 using BenDing.Domain.Models.Params.Web;
 using BenDing.Domain.Xml;
+using BenDing.Repository.EntityMap;
 using BenDing.Repository.Interfaces.Web;
 using Dapper;
 using NFine.Code;
@@ -1738,6 +1740,81 @@ namespace BenDing.Repository.Providers.Web
             //职工
             if (residentInfo.InsuranceType == "310") resultData = param.WorkersSelfPayProportion;
             return resultData;
+        }
+        public TradeParams CreateParams(string tradeid)
+        {
+            return new TradeParams(tradeid);
+        }
+        public void SaveSettlementDetail(SaveSettlementDetailParam param)
+        {
+            try
+            {
+                var callparam = CreateParams("52");
+                callparam.OutData = param.OutputXml;
+                callparam.parseout();
+                var dataset = XmlHelp.GetXmlNodesToKP(param.OutputXml, "row");//只取第一行
+
+                var detailList = new List<MedicalInsuranceSettleDetail>();
+                var xmlList = new Dictionary<string, string[]>();
+                switch (param.SettlementType)
+                {
+                    case 1:
+                        xmlList = MappingInfo.FeiyongTypeMZ;
+                        break;
+                
+                    case 3:
+                        xmlList = MappingInfo.FeiyongTypeZY;
+                        break;
+
+                }
+                foreach (var item in xmlList)
+                {
+                    if (callparam.OutKeys.Contains(item.Key) || dataset.Items.ContainsKey(item.Key))
+                    {
+                        //是否重复
+                        if (detailList.Where(s => s.SettlementCode == item.Key).ToList().Count > 0)
+                        {
+                            continue;
+                        }
+                        var arrStr = item.Value;
+
+                        var detail = new MedicalInsuranceSettleDetail();
+                        detail.BusinessId = param.BusinessId;
+                        detail.SettlementNo = param.SettlementNo;
+                        detail.LiquidationType = param.LiquidationType;
+                        detail.SettlementCode = item.Key;
+                        detail.SettlementType = int.Parse(arrStr[0]);
+                        detail.SettlementEn = arrStr[1];
+                        detail.SettlementCh = arrStr[2];
+                        detail.SettlementOrder = (detailList.Count + 1);
+                        detail.SettlementVal = CommonHelp.GetNull(callparam[item.Key], dataset[item.Key]);
+                        detail.CreateUserId = param.User.UserId;
+                        detail.OrganizationCode = param.User.OrganizationCode;
+                        detail.OrganizationName = param.User.OrganizationName;
+                        detail.IsDelete = false;
+                        detail.CreateTime=DateTime.Now;
+                        detailList.Add(detail);
+                    }
+                }
+
+                ////删除明细记录
+               DeleteDatabase(new DeleteDatabaseParam()
+                {
+                    User = param.User,
+                    Field = "BusinessId",
+                    Value = param.BusinessId,
+                    TableName = "MedicalInsuranceSettleDetail"
+                });
+                var settleDetailMap = new MedicalInsuranceSettleDetailMap();
+                settleDetailMap._db.Insertable(detailList);
+                //InsertEntityList(detailList);
+
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception("保存结算明细失败:" + e.Message);
+            }
         }
 
     }

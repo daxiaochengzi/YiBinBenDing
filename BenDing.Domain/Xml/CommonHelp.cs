@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.XPath;
 using BenDing.Domain.Models.Dto.Base;
 using BenDing.Domain.Models.Dto.Resident;
@@ -697,7 +698,15 @@ namespace BenDing.Domain.Xml
 
             return null;
         }
-
+        public static string GetNull(object obj, string defaultVal = "")
+        {
+            if (obj == null || string.IsNullOrEmpty(obj.ToString()))
+            {
+                return defaultVal;
+            }
+            return obj.ToString();
+        }
+       
     }
     
 

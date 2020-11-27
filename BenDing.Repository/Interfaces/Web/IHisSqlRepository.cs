@@ -211,5 +211,12 @@ namespace BenDing.Repository.Interfaces.Web
         /// <param name="organizationCode"></param>
         /// <returns></returns>
          DataTable MedicalInsurancePairCodeTableData(string organizationCode);
+        /// <summary>
+        /// 保存医保结算数据明细
+        /// </summary>
+        /// <param name="param"></param>
+         void SaveSettlementDetail(SaveSettlementDetailParam param);
+
+
     }
 }

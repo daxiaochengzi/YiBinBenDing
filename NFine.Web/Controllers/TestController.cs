@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using BenDing.Domain.Models.DifferentPlacesXml.DoctorOrderUpload;
 using BenDing.Domain.Models.DifferentPlacesXml.HospitalizationRegister;
 using BenDing.Domain.Models.Dto;
 using BenDing.Domain.Models.Dto.Base;
@@ -603,22 +604,7 @@ namespace NFine.Web.Controllers
                 };
                 //存基层
                 webServiceBasic.SaveXmlData(saveXml);
-                //var dd = new ResidentUserInfoParam { IdentityMark = "1", InformationNumber = "111" };
-                //var userBase = webServiceBasicService.GetUserBaseInfo(param.UserId);
-                //var strXmlIntoParam = XmlSerializeHelper.XmlSerialize(dd);
-                //var strXmlBackParam = XmlSerializeHelper.XmlSerialize(dd);
-                //var saveXmlData = new SaveXmlData();
-                //saveXmlData.OrganizationCode = userBase.OrganizationCode;
-                //saveXmlData.AuthCode = userBase.AuthCode;
-                //saveXmlData.BusinessId = param.BusinessId;
-                //saveXmlData.TransactionId = param.BusinessId;
-                //saveXmlData.MedicalInsuranceBackNum = "CXJB009";
-                //saveXmlData.BackParam = CommonHelp.EncodeBase64("utf-8", strXmlIntoParam);
-                //saveXmlData.IntoParam = CommonHelp.EncodeBase64("utf-8", strXmlBackParam);
-                //saveXmlData.MedicalInsuranceCode = "41";
-                //saveXmlData.UserId = param.UserId;
-                // webServiceBasic.HIS_InterfaceList("38", JsonConvert.SerializeObject(saveXmlData));
-
+              
 
 
             });
@@ -860,10 +846,34 @@ namespace NFine.Web.Controllers
         [HttpGet]
         public void TestSqlSugar()
         {
+    
             var dataList = _hospitalLogMap.GetList();
-           var ccc= _hospitalLogMap._db.Ado.GetDataTable("select * from table");
+             var ccc= _hospitalLogMap._db.Ado.GetDataTable("select * from table");
             //_hospitalLogMap.CurrentDb.DeleteById(1);
             //_sqlSugarRepository.QueryHospitalLog();
+        }
+
+        /// <summary>
+        /// 获取基层信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public void GetBaseData([FromUri]UiBaseDataParam param)
+        {
+            var userBase = webServiceBasicService.GetUserBaseInfo(param.UserId);
+            userBase.TransKey = param.TransKey;
+            var xmlData = new MedicalInsuranceXmlDto();
+            xmlData.BusinessId = param.BusinessId;
+            xmlData.HealthInsuranceNo = "34";
+            xmlData.TransactionId = userBase.TransKey;
+            xmlData.AuthCode = userBase.AuthCode;
+            xmlData.UserId = userBase.UserId;
+            xmlData.OrganizationCode = userBase.OrganizationCode;
+            var jsonParam = JsonConvert.SerializeObject(xmlData);
+            var data = webServiceBasic.HIS_Interface("39", jsonParam);
+            var baseOutput = XmlSerializeHelper.YdDeSerializer<YdBaseOutputDoctorOrderUploadXml>(data.Msg.ToString());
+
+            // var baseOutput=  XmlHelp.DeSerializer<YdBaseOutputDoctorOrderUploadXml>(data.Msg.ToString());
         }
     }
 }

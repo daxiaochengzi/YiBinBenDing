@@ -23,7 +23,7 @@ namespace BenDing.Domain.Models.DifferentPlacesXml.YdPrescriptionUpload
         public List<YdOutputPrescriptionUploadRowXml> RowDataList { get; set; }
 
     }
-
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
     public class YdOutputPrescriptionUploadRowXml
     {
         /// <summary>

@@ -63,6 +63,7 @@
     </Compile>
     <Compile Include="EntityMap\InpatientMap.cs" />
     <Compile Include="EntityMap\MedicalInsuranceMap.cs" />
+    <Compile Include="EntityMap\MedicalInsuranceSettleDetailMap.cs" />
     <Compile Include="Interfaces\Web\IMedicalInsuranceSqlRepository.cs" />
     <Compile Include="Interfaces\Web\IHisSqlRepository.cs" />
     <Compile Include="Interfaces\Web\IOutpatientDepartmentRepository.cs" />
