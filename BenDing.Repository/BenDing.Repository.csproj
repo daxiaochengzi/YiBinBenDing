@@ -61,6 +61,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="EntityMap\HospitalizationFeeMap.cs" />
     <Compile Include="EntityMap\InpatientMap.cs" />
     <Compile Include="EntityMap\MedicalInsuranceMap.cs" />
     <Compile Include="EntityMap\MedicalInsuranceSettleDetailMap.cs" />

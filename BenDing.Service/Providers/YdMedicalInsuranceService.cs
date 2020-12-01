@@ -179,7 +179,6 @@ namespace BenDing.Service.Providers
 
 
         }
-        
         /// <summary>
         /// 取消入院登记
         /// </summary>
@@ -225,7 +224,6 @@ namespace BenDing.Service.Providers
            
 
         }
-
         /// <summary>
         /// 获取出院办理参数
         /// </summary>

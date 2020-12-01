@@ -871,8 +871,9 @@ namespace NFine.Web.Controllers
             xmlData.OrganizationCode = userBase.OrganizationCode;
             var jsonParam = JsonConvert.SerializeObject(xmlData);
             var data = webServiceBasic.HIS_Interface("39", jsonParam);
-            var baseOutput = XmlSerializeHelper.YdDeSerializer<YdBaseOutputDoctorOrderUploadXml>(data.Msg.ToString());
 
+            YdBaseOutputDoctorOrderUploadXml baseOutput = XmlSerializeHelper.YdDeSerializer<YdBaseOutputDoctorOrderUploadXml>(data.Msg.ToString());
+         
             // var baseOutput=  XmlHelp.DeSerializer<YdBaseOutputDoctorOrderUploadXml>(data.Msg.ToString());
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BenDing.Domain.Models.DifferentPlacesXml.DoctorOrderUpload;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
 using BenDing.Domain.Models.Enums;
@@ -12,6 +13,7 @@ using BenDing.Domain.Models.Params.UI;
 using BenDing.Domain.Models.Params.Web;
 using BenDing.Domain.Models.Params.Workers;
 using BenDing.Domain.Xml;
+using BenDing.Repository.EntityMap;
 using BenDing.Repository.Interfaces.Web;
 using BenDing.Service.Interfaces;
 using Newtonsoft.Json;
@@ -23,6 +25,7 @@ namespace BenDing.Service.Providers
         private readonly IResidentMedicalInsuranceRepository _residentMedicalInsuranceRepository;
         private readonly IWebBasicRepository _webBasicRepository;
         private readonly IHisSqlRepository _hisSqlRepository;
+     
         private readonly IMedicalInsuranceSqlRepository _medicalInsuranceSqlRepository;
         private readonly ISystemManageRepository _systemManageRepository;
         private readonly IWebServiceBasicService _webserviceBasicService;
@@ -44,6 +47,7 @@ namespace BenDing.Service.Providers
             _medicalInsuranceSqlRepository = medicalInsuranceSqlRepository;
             _systemManageRepository = systemManageRepository;
             _webserviceBasicService = serviceBasicService;
+          
 
         }
         public ResidentUserInfoDto GetUserInfo(ResidentUserInfoParam param)
@@ -52,6 +56,7 @@ namespace BenDing.Service.Providers
 
             return resultData;
         }
+      
 
         /// <summary>
         /// 入院登记

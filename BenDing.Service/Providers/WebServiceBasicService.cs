@@ -4,9 +4,11 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BenDing.Domain.Models.DifferentPlacesXml.DoctorOrderUpload;
 using BenDing.Domain.Models.Dto.JsonEntity;
 using BenDing.Domain.Models.Dto.Web;
 using BenDing.Domain.Models.Dto.Workers;
+using BenDing.Domain.Models.Entitys;
 using BenDing.Domain.Models.Enums;
 using BenDing.Domain.Models.HisXml;
 using BenDing.Domain.Models.Params;
@@ -18,6 +20,7 @@ using BenDing.Domain.Models.Params.UI;
 using BenDing.Domain.Models.Params.Web;
 using BenDing.Domain.Models.Params.Workers;
 using BenDing.Domain.Xml;
+using BenDing.Repository.EntityMap;
 using BenDing.Repository.Interfaces.Web;
 using BenDing.Service.Interfaces;
 using Newtonsoft.Json;
@@ -31,6 +34,7 @@ namespace BenDing.Service.Providers
         private readonly IHisSqlRepository _hisSqlRepository;
         private readonly IMedicalInsuranceSqlRepository _medicalInsuranceSqlRepository;
         private readonly IWebBasicRepository _webServiceBasic;
+     
         private InpatientBase inpatientBaseService = new InpatientBase();
         private readonly ISystemManageRepository _systemManageRepository;
 
@@ -52,6 +56,7 @@ namespace BenDing.Service.Providers
             _hisSqlRepository = hisSqlRepository;
             _medicalInsuranceSqlRepository = medicalInsuranceSqlRepository;
             _systemManageRepository = iSystemManageRepository;
+          
 
         }
 
@@ -617,7 +622,7 @@ namespace BenDing.Service.Providers
                 //          "条记录";
             }
         }
-
+       
 
         /// <summary>
         /// 保存HIS系统中科室、医师、病区、床位的基本信息

@@ -76,6 +76,7 @@
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdHospitalizationPreSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdHospitalizationSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\DifferentPlaces\YdOutpatientPreSettlementJsonDto.cs" />
+    <Compile Include="Models\Entitys\HospitalizationFee.cs" />
     <Compile Include="Models\Entitys\Inpatient.cs" />
     <Compile Include="Models\Entitys\MedicalInsurance.cs" />
     <Compile Include="Models\Entitys\MedicalInsuranceSettleDetail.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="Models\Params\Base\PaginationWebParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\GetYdPrescriptionUploadParam.cs" />
     <Compile Include="Models\Params\DifferentPlaces\YdUpdateHospitalizationFeeParam.cs" />
+    <Compile Include="Models\Params\UI\DifferentPlaces\DoctorAdviceUploadUiParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\GetYdCancelHospitalizationSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\GetYdHospitalizationPreSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\GetYdHospitalizationSettlementUiParam.cs" />
@@ -265,6 +267,7 @@
     <Compile Include="Models\Params\UI\AddHospitalOrganizationGradeUiParam.cs" />
     <Compile Include="Models\Params\UI\CancelMonthlyHospitalizationUiParam.cs" />
     <Compile Include="Models\Params\UI\DirectoryComparisonManagementUiParam.cs" />
+    <Compile Include="Models\Params\UI\DifferentPlaces\DoctorAdvicePageUiParam.cs" />
     <Compile Include="Models\Params\UI\GetInformationUiParam.cs" />
     <Compile Include="Models\Params\UI\GetMonthlyHospitalizationCancelUiParam.cs" />
     <Compile Include="Models\Params\UI\GetOutpatientUiParam.cs" />
