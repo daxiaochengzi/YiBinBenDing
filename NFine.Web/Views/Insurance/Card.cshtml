@@ -13,7 +13,7 @@
                     <select id="AfferentSign" name="AfferentSign" lay-filter="AfferentSign" lay-verify="required">
                         <option id="AfferentSignIcCard" value="1" selected>身份证号</option>
                         <option id="AfferentSignNum" value="2">个人编号</option>
-                        @*<option id="CardReading" value="3">读卡</option>*@
+                        <option id="CardReading" value="3">读卡</option>
                     </select>
                 </div>
             </div>
@@ -31,8 +31,11 @@
                     <input type="text" id="CardPwd" name="CardPwd" placeholder="请输入卡密码" autocomplete="off" disabled class="layui-input layui-disabled">
                 </div>
             </div>
-
+        
         </div>
+        <label style="color: red;margin-left: 18%" >
+            温馨提示:异地只能通过读卡获取病人信息
+        </label>
     </form>
 </div>
 <script>
@@ -50,7 +53,7 @@
                 var data = {
                     "IdentityMark": $('#IdentityMark').val(),
                     "CardPwd": $('#CardPwd').val(),
-                    "AfferentSign": $('#AfferentSign').val(),
+                    "AfferentSign": $('#AfferentSign').val()
                 };
                 return data;
             };
@@ -61,6 +64,8 @@
             }
          
             var idCardNo = getUrlParam('IdCardNo');
+            var checkPwd = getUrlParam('CheckPwd');
+          //  if (checkPwd==="0")
             $("#IdentityMark").val(idCardNo);  
             form.render();
             //查询方式切换
@@ -75,8 +80,13 @@
                         $("#markTextLable").text("身份证号");
                     }
                     else if (val === "3") {
-                        $("#CardPwd").attr("class", "layui-input");
-                        $("#CardPwd").removeAttr("disabled");
+                       
+                         if (checkPwd === "0") {
+                             $("#CardPwd").attr("class", "layui-input");
+                             $("#CardPwd").removeAttr("disabled");
+                         }
+                        $("#IdentityMark").val("");
+                        $("#markTextLable").text("卡号");
                     }
                 });
         });

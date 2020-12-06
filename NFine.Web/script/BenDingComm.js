@@ -44,16 +44,19 @@ function DetectActiveX() {
     return true;
 }
 function queryData(getInpatientInfoBack) {
+    var activeX = document.getElementById("CSharpActiveX");
+    var activeData = activeX.CheckPwd();
+   
    layer.open({
         type: 2, //弹窗类型 ['dialog', 'page', 'iframe', 'loading', 'tips']
-        area: ['500px', '220px'],
+        area: ['500px', '240px'],
         shift: 2, //可选动画类型0-6
         scrollbar: false,
         skin: 'layui-layer-rim', //加上边框
         title: false,
         closeBtn: 0, //不显示关闭按钮
         moveType: 1,//拖拽模式，0或者1
-        content: "Card?IdCardNo=" + baseInfo.HospitalInfo.IdentityMark,
+       content: "Card?IdCardNo=" + baseInfo.HospitalInfo.IdentityMark + "&CheckPwd=" + activeData,
         btn: ['确定', '取消']
         , yes: function (index) {
 

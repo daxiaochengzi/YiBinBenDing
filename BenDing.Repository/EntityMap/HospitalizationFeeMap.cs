@@ -12,7 +12,7 @@ namespace BenDing.Repository.EntityMap
 {
   public  class HospitalizationFeeMap: DbContextBase<HospitalizationFee>
     {
-      //  Dictionary<int, List<QueryHospitalizationFeeDto>>
+      
         public Dictionary<int, List<HospitalizationFee>> DoctorAdvicePageList(DoctorAdvicePageUiParam param)
         {
             var resultData = new Dictionary<int, List<HospitalizationFee>>();
@@ -28,9 +28,20 @@ namespace BenDing.Repository.EntityMap
 
             return resultData;
         }
-
-        public void DoctorAdviceUpload()
+        /// <summary>
+        /// 更新实体
+        /// </summary>
+        /// <param name="param"></param>
+        public void DoctorAdviceUpload(List<HospitalizationFee> param)
         {
+            var result = _db.Updateable(param).UpdateColumns(it => new {
+                it.DoctorAdviceUploadMark,
+                it.DoctorAdviceUploadUserName,
+                it.DoctorAdviceUploadUserId,
+                it.DoctorAdviceUploadTime
+            }).WhereColumns(it => new { it.Id }).ExecuteCommand();
+          
+           
         }
     }
 }

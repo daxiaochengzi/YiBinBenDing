@@ -59,6 +59,7 @@
     <Compile Include="Models\DifferentPlacesXml\HospitalizationSettlement\YdInputHospitalizationSettlementXml.cs" />
     <Compile Include="Models\DifferentPlacesXml\HospitalizationSettlement\YdOutputHospitalizationSettlementXml.cs" />
     <Compile Include="Models\DifferentPlacesXml\LeaveHospital\YdOutputLeaveHospitalHandleXml.cs" />
+    <Compile Include="Models\DifferentPlacesXml\PayCard\YdOutpatientPayCardXml.cs" />
     <Compile Include="Models\DifferentPlacesXml\YdPrescriptionUpload\YdOutputPrescriptionUploadXml.cs" />
     <Compile Include="Models\Dto\Base\DiagnosisData.cs" />
     <Compile Include="Models\Dto\Base\GetPostUrlDto.cs" />
@@ -131,6 +132,7 @@
     <Compile Include="Models\Params\UI\DifferentPlaces\GetYdHospitalizationPreSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\GetYdHospitalizationSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\GetYdLeaveHospitalUiParam.cs" />
+    <Compile Include="Models\Params\UI\DifferentPlaces\GetYdOutpatientPayCardParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\GetYdPrescriptionUploadUiParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\GetYdCancelPrescriptionUploadUiParam.cs" />
     <Compile Include="Models\Params\UI\DifferentPlaces\YdHospitalizationRegisterUiParam.cs" />

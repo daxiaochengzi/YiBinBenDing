@@ -10,8 +10,12 @@ namespace BenDing.Domain.Models.Params.UI.DifferentPlaces
 {
   public  class DoctorAdviceUploadUiParam:UiBaseDataParam
   {
-      public int? DoctorAdviceUploadMark { get; set; } = null;
+       public int? DoctorAdviceUploadMark { get; set; } = null;
+      /// <summary>
+      /// 
+      /// </summary>
+       public List<string> IdList { get; set; } = null;
 
-        public UserInfoDto User { get; set; }
-    }
+      public UserInfoDto User { get; set; } = null;
+  }
 }
