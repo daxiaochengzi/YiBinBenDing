@@ -436,33 +436,33 @@ namespace BenDing.Repository.Providers.Web
 
                     var item = new ResidentProjectDownloadRowDataRowDto
                     {
-                        EffectiveSign = dr["有效标志"].ToString(),
-                        RestrictionSign = dr["限制药标志"].ToString() == "1" ? "1" : "0",
+                    
                         ProjectCode = CommonHelp.FilterSqlStr(dr["本位码"].ToString()),
                         ProjectName = CommonHelp.FilterSqlStr(dr["项目名称"].ToString()),
-                        StartTime = dr["开始日期"].ToString(),
-                        EndTime = dr["结束日期"].ToString(),
+                        ProjectBigType = CommonHelp.FilterSqlStr(dr["目录大类"].ToString()),// 1 药品 2 诊疗 3 材料 4 其他
                         ProjectLevel = dr["项目等级"].ToString(),
+                        ProjectCodeType = CommonHelp.FilterSqlStr(dr["医保分类"].ToString()),
                         WorkersSelfPayProportion = CommonHelp.getNum(dr["职工自付比例"].ToString()),
                         ResidentSelfPayProportion = CommonHelp.getNum(dr["居民自付比例"].ToString()),
-                        Formulation = dr["剂型"].ToString(),
+                        Unit = CommonHelp.FilterSqlStr(dr["单位"].ToString()),
                         Specification = dr["规格"].ToString(),
-                        Manufacturer = dr["生产厂家"].ToString(),
+                        Formulation = dr["剂型"].ToString(),
+                        QuasiFontSize = CommonHelp.FilterSqlStr(dr["批准文号"].ToString()),
+                        RestrictionSign = dr["限制药标志"].ToString() == "1" ? "1" : "0",
                         LimitPaymentScope = CommonHelp.FilterSqlStr(dr["限制支付范围"].ToString()),
+                        MnemonicCode = CommonHelp.FilterSqlStr(dr["拼音助记码"].ToString()),
                         ZeroBlock = CommonHelp.getNum(dr["二乙以下限价"].ToString()),
                         OneBlock = CommonHelp.getNum(dr["二级乙等限价"].ToString()),
                         TwoBlock = CommonHelp.getNum(dr["二级甲等限价"].ToString()),
                         ThreeBlock = CommonHelp.getNum(dr["三级乙等限价"].ToString()),
                         FourBlock = CommonHelp.getNum(dr["三级甲等限价"].ToString()),
+                        Manufacturer = dr["生产厂家"].ToString(),
                         NewCodeMark = dr["是否新码"].ToString() == "新码" ? "1" : "0",
-                        MnemonicCode = CommonHelp.FilterSqlStr(dr["拼音助记码"].ToString()),
-                        QuasiFontSize = CommonHelp.FilterSqlStr(dr["批准文号"].ToString()),
-                        ProjectCodeType = CommonHelp.FilterSqlStr(dr["医保分类"].ToString()),
-                        Unit = CommonHelp.FilterSqlStr(dr["单位"].ToString()),
-                        ProjectBigType = CommonHelp.FilterSqlStr(dr["目录大类"].ToString()),// 1 药品 2 诊疗 3 材料 4 其他
+                        EffectiveSign = dr["有效标志"].ToString(),
+                        StartTime = dr["开始日期"].ToString(),
+                        EndTime = dr["结束日期"].ToString(),
                         NewUpdateTime = dr["更新日期"].ToString(),
                         Remark = dr["备注"].ToString(),
-
                     };
 
                     drugCatalogData.Add(item);
