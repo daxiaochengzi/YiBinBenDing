@@ -18,5 +18,9 @@ namespace BenDing.Domain.Models.Dto.Resident
         /// 保险类别
         /// </summary>
         public string InsuranceType { get; set; }
+        /// <summary>
+        /// 查询类型
+        /// </summary>
+        public  string AfferentSign { get; set; }
     }
 }

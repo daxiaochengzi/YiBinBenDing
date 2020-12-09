@@ -10,7 +10,7 @@ HospitalInfo:{
         "OperatorId": null,   //操作人员
         "InsuranceType": null, // 险种类型,
         "IdentityMark": null,    //身份标志   身份证号或个人编号
-        "AfferentSign": null,// 传入标志 1为公民身份号码 2为个人编号,
+        "AfferentSign": null,// 传入标志 1为公民身份号码 2为个人编号,3异地,
         "CardPwd": null //卡密码
     },
     Inpatient: {
@@ -23,7 +23,9 @@ HospitalInfo:{
         "ResidentInsuranceBalance": null,//居民医保账户余额
         "WorkersInsuranceBalance": null,//职工医保账户余额
         "MentorBalance": null, //门特余额
-        "OverallPaymentBalance": null //统筹支付余额
+        "OverallPaymentBalance": null, //统筹支付余额
+        "CardNo": null, //卡号
+        "AdministrativeArea": null //行政区域
     }
 };
 //判断插件是否存在
@@ -69,7 +71,6 @@ function queryData(getInpatientInfoBack) {
                     baseInfo.HospitalInfo.AfferentSign = cardData.AfferentSign;
                     baseInfo.HospitalInfo.CardPwd = cardData.CardPwd;
                     getReadCardInpatientInfo(getInpatientInfoBack);
-
                     layer.close(index);
                 }
 
@@ -99,7 +100,6 @@ function buttonStatus(buttonId, status) {
         iniJs("#" + buttonId).attr("disabled", 'disabled');
     }
 }
-
 //获取结算返回值
 function settlementData(data) {
    
@@ -121,7 +121,6 @@ function settlementData(data) {
     }
 
 }
-
 function getHospitalInfo(getHospitalInfoParam) {
    
     var params = {
@@ -217,6 +216,7 @@ function getInpatientInfo(getInpatientInfoBack)
             baseInfo.Inpatient["WorkersInsuranceBalance"] = activeJsonInfo.WorkersInsuranceBalance;
             baseInfo.Inpatient["MentorBalance"] = activeJsonInfo.MentorBalance;
             baseInfo.Inpatient["OverallPaymentBalance"] = activeJsonInfo.OverallPaymentBalance;
+            
             baseInfo.HospitalInfo.AfferentSign = "2";
             baseInfo.HospitalInfo.IdentityMark = activeJsonInfo.PersonalCoding;
             getInpatientInfoBack();
@@ -231,7 +231,7 @@ function getReadCardInpatientInfo(getInpatientInfoBack) {
         msgError("密码不能为空!!!");
     }
     var activeX = document.getElementById("CSharpActiveX");
-    var activeData = activeX.OutpatientMethods(cardPwd, JSON.stringify(baseInfo.HospitalInfo), "ReadCardUserInfo");
+    var activeData = activeX.MedicalInsuranceExecute(cardPwd, JSON.stringify(baseInfo.HospitalInfo), "YdReadCardInfo");
     var activeJsonData = JSON.parse(activeData);
     if (activeJsonData.Success === false) {
         msgError(activeJsonData.Message);
@@ -248,7 +248,9 @@ function getReadCardInpatientInfo(getInpatientInfoBack) {
         baseInfo.Inpatient["WorkersInsuranceBalance"] = activeJsonInfo.WorkersInsuranceBalance;
         baseInfo.Inpatient["MentorBalance"] = activeJsonInfo.MentorBalance;
         baseInfo.Inpatient["OverallPaymentBalance"] = activeJsonInfo.OverallPaymentBalance;
-        baseInfo.HospitalInfo.AfferentSign = "2";
+        baseInfo.Inpatient["CardNo"] = activeJsonInfo.CardNo;
+        baseInfo.Inpatient["AdministrativeArea"] = activeJsonInfo.AdministrativeArea;
+        baseInfo.HospitalInfo.AfferentSign = "4";
         baseInfo.HospitalInfo.IdentityMark = activeJsonInfo.PersonalCoding;
         getInpatientInfoBack();
     }

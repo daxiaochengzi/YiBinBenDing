@@ -81,7 +81,8 @@ namespace NFine.Web
             container.RegisterType<IOutpatientDepartmentNewService, OutpatientDepartmentNewService>();
             container.RegisterType<IResidentMedicalInsuranceNewService, ResidentMedicalInsuranceNewService>();
             container.RegisterType<IWorkerMedicalInsuranceNewService, WorkerMedicalInsuranceNewService>();
-            
+            container.RegisterType<IYdMedicalInsuranceService, YdMedicalInsuranceService>();
+
             #endregion
             #region Repository
             container.RegisterType<IResidentMedicalInsuranceRepository, ResidentMedicalInsuranceRepository>();

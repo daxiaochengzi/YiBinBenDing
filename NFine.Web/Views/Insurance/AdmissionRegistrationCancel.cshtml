@@ -103,6 +103,8 @@
             var isBirthHospital = 0;
             //险种类型
             var insuranceType = null;
+            var afferentSign = null;
+
             var jsonToForm = function (jsonData, formFilter) {
                 //给表单赋值
                 form.val(formFilter,
@@ -131,7 +133,6 @@
                 $.ajax({
                     type: 'POST',
                     url: hostNew + '/GetAdmissionRegistrationCancelInfo',
-                    data: params,
                     async: false,
                     data: JSON.stringify(params),
                     dataType: "json",
@@ -144,8 +145,10 @@
                         } else {
                             isBirthHospital = data.Data.IsBirthHospital;
                             insuranceType = data.Data.InsuranceType;
+                            afferentSign = data.Data.InsuranceType;
                             jsonToForm(data.Data.InpatientInfo, "LAY-form-render");
-                            buttonStatus('HospitalizationRegisterCancel', true)
+
+                            buttonStatus('HospitalizationRegisterCancel', true);
                             //HospitalizationRegisterCancel
                             //layer.msg('费用上传成功', { icon: 6, shade: 0.1, skin: 'layui-layer-molv' });
                         }
@@ -176,9 +179,15 @@
                     "CancelLimit": "2"/*取消程度*/
                    
                 }
+                var url;
+                if (afferentSign === "4") {
+                    url = '/GetYdCancelHospitalizationRegisterParam';
+                } else {
+                    url = '/GetLeaveHospitalSettlementCancelParam';
+                }
                 $.ajax({
                     type: 'POST',
-                    url: hostNew + '/GetLeaveHospitalSettlementCancelParam',
+                    url: hostNew + url,
                     async: false,
                     data: JSON.stringify(cancelParams),
                     dataType: "json",
@@ -194,9 +203,19 @@
 
                             var activeData;
                             var activeJsonData;
-                        
+                            if (afferentSign === "4") {
+                                //异地取消入院
+                                activeData = activeX.YdMedicalInsuranceMethods(data.Data.InputXml, JSON.stringify(baseInfo.HospitalInfo), data.Data.TransactionCode);
+                                activeJsonData = JSON.parse(activeData);
+
+                                if (activeJsonData.Success === false) {
+                                    msgError(activeJsonData.Message);
+                                } else {
+                                    leaveHospitalSettlementCancel(cancelParams);
+                                }
+                            }
                             if (insuranceType === "342") {
-                                //居民取消结算
+                                //居民取消入院
                                 activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "LeaveHospitalSettlementCancel");
                                 activeJsonData = JSON.parse(activeData);
                                 if (activeJsonData.Success === false) {
@@ -230,10 +249,17 @@
              
             }
             function leaveHospitalSettlementCancel(cancelParams) {
+                var url;
+                if (afferentSign === "4") {
+                    
+                    url = "/YdCancelHospitalizationRegister";
+                } else {
+                    url = '/MedicalInsuranceHospitalizationRegisterCancel';
+                }
                 //医保入院登记取消
                 $.ajax({
                     type: 'POST',
-                    url: hostNew + '/MedicalInsuranceHospitalizationRegisterCancel',
+                    url: hostNew + url,
                     async: false,
                     data: JSON.stringify(cancelParams),
                     dataType: "json",
@@ -243,10 +269,7 @@
                             var errData = data.Message;
                             layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
                         } else {
-
-
                             layer.alert('取消医保入院登记成功', { icon: 6, shade: 0.1, skin: 'layui-layer-molv', title: '温馨提示' });
-
                             buttonStatus("HospitalizationRegisterCancel", false);
                         }
                     }

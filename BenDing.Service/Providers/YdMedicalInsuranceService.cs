@@ -34,7 +34,7 @@ namespace BenDing.Service.Providers
     /// <summary>
     /// 异地医保服务
     /// </summary>
-   public class YdMedicalInsuranceService
+   public class YdMedicalInsuranceService: IYdMedicalInsuranceService
     {
         private readonly IWebServiceBasicService _serviceBasicService;
         private readonly IWebBasicRepository _webBasicRepository;

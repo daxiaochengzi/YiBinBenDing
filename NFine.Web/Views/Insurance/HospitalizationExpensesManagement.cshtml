@@ -145,7 +145,7 @@
             var status = $(this).attr('data-status');
             getList(status);
         });
-     
+        var afferentSign=null;
         function getList(status) {
                
             switch (status) {
@@ -175,6 +175,32 @@
         window.getHospitalInfoBack = function () { };
 
         getHospitalInfo(getHospitalInfoBack);
+        //获取医保病人信息
+        function getMedicalInsuranceInpatientInfo() {
+            var info =  {
+                "BusinessId": businessId /*当前住院记录的业务ID*/
+                , "UserId": $("#empid").val() /*授权操作人的ID*/
+                , "TransKey": $("#transkey").val()
+            }
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/GetMedicalInsuranceInpatientInfo',
+                async: false,
+                data: JSON.stringify(info),
+                dataType: "json",
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        msgError(errData);
+                    } else {
+                        afferentSign = data.Data.AfferentSign;
+                    }
+                }
+            });
+        }
+
+        getMedicalInsuranceInpatientInfo();
         //未传
         function inHospitalContentsTable() {
             var params = {
@@ -296,7 +322,6 @@
             });
             queryHospitalizationFeeAmount();
         }
-
         function uploadOrganizationContentsTable() {
             var uploadParam = {
                
@@ -525,7 +550,6 @@
                     }
                 });
             });
-
         //处方上传（费用清单上传）
         var prescriptionUpload = function (tableData) {
             getPrescriptionUploadParam(tableData);
@@ -712,10 +736,11 @@
 
         //数据回写
         function prescriptionUploadDatas(uploadParam) {
-
+            var url = "/PrescriptionUpload";
+            if (afferentSign === "3") url = "/YdPrescriptionUpload";
             $.ajax({
                 type: 'POST',
-                url: hostNew + '/PrescriptionUpload',
+                url: hostNew + url,
                 async: false,
                 data: JSON.stringify(uploadParam),
                 dataType: "json",
@@ -741,9 +766,12 @@
                 , "TransKey": $("#transkey").val()
                 
             }
+            var url ="/GetPrescriptionUploadParam";
+            if (afferentSign === "3") url = "/GetYdPrescriptionUploadParam";
+            
             $.ajax({
                 type: 'POST',
-                url: hostNew + '/GetPrescriptionUploadParam',
+                url: hostNew + url,
                 async: false,
                 data: JSON.stringify(uploadParam),
                 dataType: "json",
@@ -753,22 +781,38 @@
                         var errData = data.Message;
                         msgError(errData);
                         //样式类名:墨绿深蓝风
-                    } else {
+                    } else {//	YYJK008
                         var uploadData = data.Data.UploadList;
+                        var activeData;
+                        var activeJsonData;
                         if (uploadData !== undefined && uploadData !== null && uploadData.length > 0) {
                             var activeX = document.getElementById("CSharpActiveX");
                             for (var i = 0; i < uploadData.length; i++) {
                                 var uploadDataParam = uploadData[i];
-                                var activeData = activeX.HospitalizationMethods(JSON.stringify(uploadDataParam), JSON.stringify(baseInfo.HospitalInfo), "PrescriptionUploadData");
-                                var activeJsonData = JSON.parse(activeData);
-                                if (activeJsonData.Success === false) {
-                                    msgError(activeJsonData.Message);
+                                //异地上传
+                                if (afferentSign === "3") {
+                                    activeData = activeX.YdMedicalInsuranceMethods(uploadDataParam, JSON.stringify(baseInfo.HospitalInfo), "YYJK008");
+                                     activeJsonData = JSON.parse(activeData);
+                                    if (activeJsonData.Success === false) {
+                                        msgError(activeJsonData.Message);
+                                    }
+                                    else {
+                                        uploadParam["SettlementJson"] = activeJsonData.Data;
+                                        prescriptionUploadDatas(uploadParam);
+                                    }
+                                } else {
+                                     activeData = activeX.HospitalizationMethods(JSON.stringify(uploadDataParam), JSON.stringify(baseInfo.HospitalInfo), "PrescriptionUploadData");
+                                     activeJsonData = JSON.parse(activeData);
+                                    if (activeJsonData.Success === false) {
+                                        msgError(activeJsonData.Message);
+                                    }
+                                    else {
+                                        uploadParam["ProjectBatch"] = activeJsonData.Data;
+                                        uploadParam["UploadData"] = uploadDataParam;
+                                        prescriptionUploadDatas(uploadParam);
+                                    }
                                 }
-                                else {
-                                    uploadParam["ProjectBatch"] = activeJsonData.Data;
-                                    uploadParam["UploadData"] = uploadDataParam;
-                                    prescriptionUploadDatas(uploadParam);
-                                }
+                                
                             }
                         }
                         //else {

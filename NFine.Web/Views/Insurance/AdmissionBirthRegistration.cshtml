@@ -272,23 +272,33 @@
                 var medicalCategory = $("#MedicalCategory");
                 medicalCategory.empty();
                 var optionHtml = " <option value=''>请选择医疗类别</option>";
-                //居民
-                if (num === "342") {
-                    optionHtml += "<option value='71'>71-顺产</option>";
-                    optionHtml += "<option value='72'>72-剖宫产</option>";
-                    optionHtml += "<option value='41'>41-病理剖宫产</option>";
+                //异地1
+                if (baseInfo.HospitalInfo.AfferentSign === "4") {
+                    optionHtml += "<option value='1'>医疗</option>";
+                    optionHtml += "<option value='2'>工伤医疗</option>";
+                    optionHtml += "<option value='3'>工伤康复</option>";
                     $("#SpouseIdCardNoDiv").hide();
                     $("#SpouseNameDiv").hide();
+                } else {
+                    //居民
+                    if (num === "342") {
+                        optionHtml += "<option value='71'>71-顺产</option>";
+                        optionHtml += "<option value='72'>72-剖宫产</option>";
+                        optionHtml += "<option value='41'>41-病理剖宫产</option>";
+                        $("#SpouseIdCardNoDiv").hide();
+                        $("#SpouseNameDiv").hide();
                   
-                }
-                //职工
-                if (num === "310") {
-                    optionHtml += "<option value='71'>71-顺产</option>";
-                    optionHtml += "<option value='72'>72-剖宫产</option>";
+                    }
+                    //职工
+                    if (num === "310") {
+                        optionHtml += "<option value='71'>71-顺产</option>";
+                        optionHtml += "<option value='72'>72-剖宫产</option>";
                  
-                    $("#HouseholdNatureDiv").hide();
+                        $("#HouseholdNatureDiv").hide();
+                    }
+
                 }
-               
+              
                 medicalCategory.append(optionHtml);
 
             }
@@ -423,6 +433,12 @@
                 field.DiagnosisList = diagnosisList;
                 field["IdentityMark"] = baseInfo.HospitalInfo.IdentityMark;
                 field["AfferentSign"] = baseInfo.HospitalInfo.AfferentSign;
+
+                if (baseInfo.HospitalInfo.AfferentSign === "4") {
+
+                    field["InsuranceNo"] = baseInfo.Inpatient.CardNo;
+                    field["AreaCode"] = baseInfo.Inpatient.AdministrativeArea;
+                }
                 //if ($("#InsuranceType").val() === "310") {
                 //    field["AfferentSign"] = "3";
                 //    field.AfferentSign = "3";
@@ -435,9 +451,15 @@
                 var fieldParam = getBirthHospitalizationRegisterParamIni(paramData);
                 if (fieldParam === false) return false;
                 buttonStatus("BirthRegister", false);
+                var url;
+                if (baseInfo.HospitalInfo.AfferentSign === "4") {
+                    url = '/GetYdHospitalizationRegisterParam';
+                } else {
+                    url = '/GetBirthHospitalizationRegisterParam';
+                }
                 $.ajax({
                     type: 'POST',
-                    url: hostNew + '/GetBirthHospitalizationRegisterParam',
+                    url: hostNew + url,
                     async: false,
                     data: JSON.stringify(fieldParam),
                     dataType: "json",
@@ -453,8 +475,10 @@
                             var insuranceTypeValue = $("#InsuranceType").val();
                             var activeData;
                             var activeJsonData;
-                            if (insuranceTypeValue === "342") { //居民入生育院登记
-                                activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "HospitalizationRegister");
+                            if (baseInfo.HospitalInfo.AfferentSign === "4") {
+                                //异地入院登记
+                                
+                                activeData = activeX.YdMedicalInsuranceMethods(data.Data.InputXml, JSON.stringify(baseInfo.HospitalInfo), data.Data.TransactionCode);
                                 activeJsonData = JSON.parse(activeData);
                                 if (activeJsonData.Success === false) {
                                     msgError(activeJsonData.Message);
@@ -462,18 +486,30 @@
                                     fieldParam["SettlementJson"] = activeJsonData.Data;
                                     birthHospitalizationRegister(fieldParam);
                                 }
-                            }
-                            if (insuranceTypeValue === "310") {
-                                //职工入生育院登记
-                                activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "WorkerBirthHospitalizationRegister");
-                                activeJsonData = JSON.parse(activeData);
-                                if (activeJsonData.Success === false) {
-                                    msgError(activeJsonData.Message);
-                                } else {
-                                    fieldParam["SettlementJson"] = activeJsonData.Data;
-                                    birthHospitalizationRegister(fieldParam);
+                            } else {
+                                if (insuranceTypeValue === "342") { //居民入生育院登记
+                                    activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "HospitalizationRegister");
+                                    activeJsonData = JSON.parse(activeData);
+                                    if (activeJsonData.Success === false) {
+                                        msgError(activeJsonData.Message);
+                                    } else {
+                                        fieldParam["SettlementJson"] = activeJsonData.Data;
+                                        birthHospitalizationRegister(fieldParam);
+                                    }
+                                }
+                                if (insuranceTypeValue === "310") {
+                                    //职工入生育院登记
+                                    activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "WorkerBirthHospitalizationRegister");
+                                    activeJsonData = JSON.parse(activeData);
+                                    if (activeJsonData.Success === false) {
+                                        msgError(activeJsonData.Message);
+                                    } else {
+                                        fieldParam["SettlementJson"] = activeJsonData.Data;
+                                        birthHospitalizationRegister(fieldParam);
+                                    }
                                 }
                             }
+                           
 
 
 
@@ -485,11 +521,15 @@
             }
             //住院登记
             function birthHospitalizationRegister(parameters) {
-               
-               
+                var url;
+                if (baseInfo.HospitalInfo.AfferentSign === "4") {
+                    url = '/YdHospitalizationRegister';
+                } else {
+                    url = '/BirthHospitalizationRegister';
+                }
                 $.ajax({
                     type: 'POST',
-                    url: hostNew + '/BirthHospitalizationRegister',
+                    url: hostNew + url,
                     async: false,
                     data: JSON.stringify(parameters),
                     dataType: "json",
@@ -507,6 +547,7 @@
                     }
                 });
             }
+
             $('#queryData').on('click', function () {
             
                 queryData(getInpatientInfoBack);
@@ -515,7 +556,6 @@
             //登记
             form.on('submit(BirthRegister)',
                 function (data) {
-
                     getBirthHospitalizationRegisterParam(data);
                     return false; 
                 });

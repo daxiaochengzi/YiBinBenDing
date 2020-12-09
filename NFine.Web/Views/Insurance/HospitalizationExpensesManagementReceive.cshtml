@@ -62,6 +62,7 @@
             UploadMark: 1,
             TransKey: $("#empid").val()
         };
+        var afferentSign = null;
         //插件检查
         var verification = DetectActiveX();
         if (verification === false) {
@@ -160,6 +161,32 @@
             //执行查询
             tableDataLoad(layTableId);
         });
+        //获取医保病人信息
+        function getMedicalInsuranceInpatientInfo() {
+            var info =  {
+                "BusinessId": businessId /*当前住院记录的业务ID*/
+                , "UserId": $("#empid").val() /*授权操作人的ID*/
+                , "TransKey": $("#transkey").val()
+            }
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/GetMedicalInsuranceInpatientInfo',
+                async: false,
+                data: JSON.stringify(info),
+                dataType: "json",
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        msgError(errData);
+                    } else {
+                        afferentSign = data.Data.AfferentSign;
+                    }
+                }
+            });
+        }
+
+        getMedicalInsuranceInpatientInfo();
         //处方撤销上传
         var prescriptionUploadReceive = function (tableData) {
             var params = {
@@ -176,10 +203,12 @@
         getHospitalInfo(getHospitalInfoBack);
         //获取取消处方上传参数
         function deletePrescriptionUpload(uploadParam) {
-
+            var url ="/DeletePrescriptionUpload";
+            if (afferentSign === "3") url = "/YdCancelPrescriptionUpload";
+           
             $.ajax({
                 type: "POST",
-                url: hostNew + "/DeletePrescriptionUpload",
+                url: hostNew + url,
                 data: JSON.stringify(uploadParam),
                 dataType: "json",
                 contentType: 'application/json',
@@ -202,10 +231,12 @@
         }
         //获取取消处方上传参数
         function getDeletePrescriptionUploadParam(params) {
-          
+            var url = "/GetDeletePrescriptionUploadParam";
+            if (afferentSign === "3") url = "/GetYdCancelPrescriptionUploadParam";
+            
             $.ajax({
                 type: "POST",
-                url: hostNew +"/GetDeletePrescriptionUploadParam",
+                url: hostNew + url,
                 data: JSON.stringify(params) ,
                 dataType: "json",
                 contentType: 'application/json',
@@ -215,18 +246,35 @@
                         var errData = data.Message;
                         //样式类名:墨绿深蓝风
                         msgError(errData);
-                    } else
-                    {
+                    } else {
+                        var activeData;
+                        var activeJsonData;
                         var activeX = document.getElementById("CSharpActiveX");
-                        //取消处方上传
-                        var activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "DeletePrescriptionUpload");
-                        var activeJsonData = JSON.parse(activeData);
-                        if (activeJsonData.Success === false) {
-                            msgError(activeJsonData.Message);
+                        if (afferentSign === "3") {
+                            //取消处方上传
+                            
+                            activeData = activeX.YdMedicalInsuranceMethods(data.Data.InputXml, JSON.stringify(baseInfo.HospitalInfo), data.Data.TransactionCode);
+                            activeJsonData = JSON.parse(activeData);
+                            if (activeJsonData.Success === false) {
+                                msgError(activeJsonData.Message);
+                            } else {
+                                params["SettlementJson"] = activeJsonData.Data;
+                                params["DataIdList"] = data.Data.IdList;
+                                deletePrescriptionUpload(params);
+                            }
+
                         } else {
-                           deletePrescriptionUpload(params);
+                            //取消处方上传
+                             activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "DeletePrescriptionUpload");
+                             activeJsonData = JSON.parse(activeData);
+                            if (activeJsonData.Success === false) {
+                                msgError(activeJsonData.Message);
+                            } else {
+                                deletePrescriptionUpload(params);
+                            }
+
                         }
-                       
+                      
                     }
                 },
                 complete: function () {

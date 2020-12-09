@@ -15,6 +15,7 @@ using BenDing.Domain.Models.Params.OutpatientDepartment;
 using BenDing.Domain.Models.Params.Resident;
 using BenDing.Domain.Models.Params.SystemManage;
 using BenDing.Domain.Models.Params.UI;
+using BenDing.Domain.Models.Params.UI.DifferentPlaces;
 using BenDing.Domain.Models.Params.Web;
 using BenDing.Domain.Models.Params.Workers;
 using BenDing.Domain.Xml;
@@ -42,6 +43,8 @@ namespace NFine.Web.Controllers
         private readonly IOutpatientDepartmentRepository _outpatientDepartmentRepository;
         private readonly IWorkerMedicalInsuranceService _workerMedicalInsuranceService;
         private readonly IWorkerMedicalInsuranceNewService _workerMedicalInsuranceNewService;
+        private readonly IYdMedicalInsuranceService _ydMedicalInsuranceService;
+        
 
         /// <summary>
         /// 
@@ -59,6 +62,7 @@ namespace NFine.Web.Controllers
         /// <param name="outpatientDepartmentNewService"></param>
         /// <param name="residentMedicalInsuranceNewService"></param>
         /// <param name="workerMedicalInsuranceNewService"></param>
+        /// <param name="ydMedicalInsuranceService"></param>
 
         public BenDingNewController(IResidentMedicalInsuranceRepository insuranceRepository,
             IWebServiceBasicService webServiceBasicService,
@@ -72,7 +76,8 @@ namespace NFine.Web.Controllers
             IWorkerMedicalInsuranceService workerMedicalInsuranceService,
             IOutpatientDepartmentNewService outpatientDepartmentNewService,
             IResidentMedicalInsuranceNewService residentMedicalInsuranceNewService,
-            IWorkerMedicalInsuranceNewService workerMedicalInsuranceNewService
+            IWorkerMedicalInsuranceNewService workerMedicalInsuranceNewService,
+            IYdMedicalInsuranceService ydMedicalInsuranceService
             )
         {
             _webServiceBasicService = webServiceBasicService;
@@ -88,7 +93,9 @@ namespace NFine.Web.Controllers
             _outpatientDepartmentNewService = outpatientDepartmentNewService;
             _residentMedicalInsuranceNewService = residentMedicalInsuranceNewService;
             _workerMedicalInsuranceNewService = workerMedicalInsuranceNewService;
-            
+            _ydMedicalInsuranceService = ydMedicalInsuranceService;
+
+
         }
 
         #region 门诊
@@ -305,6 +312,7 @@ namespace NFine.Web.Controllers
                 resultData.InpatientInfo = inpatientData;
                 resultData.InsuranceType = residentData.InsuranceType;
                 resultData.IsBirthHospital = residentData.IsBirthHospital;
+                resultData.AfferentSign = residentData.AfferentSign;
                 y.Data = resultData;
             });
 
@@ -723,7 +731,7 @@ namespace NFine.Web.Controllers
         {
             return new ApiJsonResultData(ModelState, new HospitalizationPresettlementDto()).RunWithTry(y =>
             {
-                var resultData = new SettlementDto();
+               
                 //获取医保病人信息
                 var residentData = _medicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(new QueryMedicalInsuranceResidentInfoParam()
                 {
@@ -864,7 +872,7 @@ namespace NFine.Web.Controllers
         {
             return new ApiJsonResultData(ModelState, new HospitalizationPresettlementDto()).RunWithTry(y =>
             {
-                var resultData = new SettlementDto();
+               
                 if (param.DiagnosisList == null) throw new Exception("诊断不能为空!!!");
                 var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
                 userBase.TransKey = param.TransKey;
@@ -945,7 +953,7 @@ namespace NFine.Web.Controllers
         {
             return new ApiJsonResultData(ModelState, new HospitalizationPresettlementDto()).RunWithTry(y =>
             {
-                decimal insuranceBalance = !string.IsNullOrWhiteSpace(param.InsuranceBalance) == true
+                decimal insuranceBalance = !string.IsNullOrWhiteSpace(param.InsuranceBalance)
                     ? Convert.ToDecimal(param.InsuranceBalance): 0;
                 var resultData = new SettlementDto();
                 if (param.DiagnosisList == null) throw new Exception("诊断不能为空!!!");
@@ -1349,6 +1357,7 @@ namespace NFine.Web.Controllers
                 if (feeDataList != null && feeDataList.Any())
                 {
                     var feeData = feeDataList.FirstOrDefault();
+                    if (feeData==null) throw new Exception("查询当前项目失败！！！");
                     if (string.IsNullOrWhiteSpace(feeData.ProjectCode)) throw new Exception("当前项目未医保对码,不能调整!!!");
                    
 
@@ -1566,8 +1575,308 @@ namespace NFine.Web.Controllers
             });
 
         }
-       
         #endregion
+        #region 异地
+        /// <summary>
+        /// 获取医保病人信息
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetMedicalInsuranceInpatientInfo([FromBody]UiBaseDataParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            { //获取医保病人信息
+                var residentData = _medicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(new QueryMedicalInsuranceResidentInfoParam()
+                {
+                    BusinessId = param.BusinessId
+                });
 
+               
+                y.Data = residentData;
+            });
+        }
+
+        /// <summary>
+        /// 获取异地入院登记参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetYdHospitalizationRegisterParam([FromBody]YdHospitalizationRegisterUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+                {
+                    var data= _ydMedicalInsuranceService.GetYdHospitalizationRegisterParam(param);
+                    y.Data = data;
+                });
+        }
+        /// <summary>
+        /// 异地入院登记
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData YdHospitalizationRegister([FromBody]YdHospitalizationRegisterUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                 _ydMedicalInsuranceService.YdHospitalizationRegister(param);
+              
+            });
+        }
+        /// <summary>
+        /// 获取异地入院登记参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetYdCancelHospitalizationRegisterParam([FromBody]UiBaseDataParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                var data = _ydMedicalInsuranceService.GetYdCancelHospitalizationRegisterParam(param);
+                y.Data = data;
+            });
+        }
+        /// <summary>
+        /// 取消入院登记
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData YdCancelHospitalizationRegister([FromBody]UiBaseDataParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                 _ydMedicalInsuranceService.YdCancelHospitalizationRegister(param);
+                
+            });
+        }
+        /// <summary>
+        /// 获取出院办理参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetYdLeaveHospitalParam([FromBody]UiBaseDataParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                _ydMedicalInsuranceService.GetYdLeaveHospitalParam(param);
+
+            });
+        }
+        /// <summary>
+        /// 出院办理
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData YdLeaveHospital([FromBody]GetYdLeaveHospitalUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                _ydMedicalInsuranceService.YdLeaveHospital(param);
+
+            });
+        }
+        /// <summary>
+        /// 获取取消出院办理参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetYdCancelLeaveHospitalParam([FromBody]UiBaseDataParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+               y.Data= _ydMedicalInsuranceService.GetYdCancelLeaveHospitalParam(param);
+
+            });
+        }
+        /// <summary>
+        /// 取消出院办理
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData YdCancelLeaveHospital([FromBody]GetYdLeaveHospitalUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                _ydMedicalInsuranceService.YdCancelLeaveHospital(param);
+
+            });
+        }
+        /// <summary>
+        /// 获取异地处方上传参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetYdPrescriptionUploadParam([FromBody]GetYdPrescriptionUploadUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                y.Data = _ydMedicalInsuranceService.GetYdPrescriptionUploadParam(param);
+
+            });
+        }
+        /// <summary>
+        /// 异地处方上传
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData YdPrescriptionUpload([FromBody]GetYdPrescriptionUploadUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                _ydMedicalInsuranceService.YdPrescriptionUpload(param);
+
+            });
+        }
+        /// <summary>
+        /// 获取异地取消处方上传参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetYdCancelPrescriptionUploadParam([FromBody]GetYdCancelPrescriptionUploadUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+              y.Data=  _ydMedicalInsuranceService.GetYdCancelPrescriptionUploadParam(param);
+
+            });
+        }
+        /// <summary>
+        /// 异地取消处方上传
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData YdCancelPrescriptionUpload([FromBody]GetYdCancelPrescriptionUploadUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                 _ydMedicalInsuranceService.YdCancelPrescriptionUpload(param);
+
+            });
+        }
+        /// <summary>
+        /// 获取异地住院预结算参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetYdHospitalizationPreSettlementParam([FromBody]GetYdCancelPrescriptionUploadUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                y.Data = _ydMedicalInsuranceService.GetYdHospitalizationPreSettlementParam(param);
+
+            });
+        }
+        /// <summary>
+        /// 异地住院预结算
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData YdHospitalizationPreSettlement([FromBody]GetYdCancelPrescriptionUploadUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                y.Data = _ydMedicalInsuranceService.YdHospitalizationPreSettlement(param);
+
+            });
+        }
+        /// <summary>
+        /// 获取异地住院结算参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetYdHospitalizationSettlementParam([FromBody]GetYdHospitalizationSettlementUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                y.Data = _ydMedicalInsuranceService.GetYdHospitalizationSettlementParam(param);
+
+            });
+        }
+        /// <summary>
+        /// 异地住院结算
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData YdHospitalizationSettlement([FromBody]GetYdHospitalizationSettlementUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                _ydMedicalInsuranceService.YdHospitalizationSettlement(param);
+                // y.Data =
+            });
+        }
+        /// <summary>
+        /// 获取取消异地结算参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetYdCancelHospitalizationSettlementParam([FromBody]GetYdHospitalizationSettlementUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                y.Data = _ydMedicalInsuranceService.GetYdCancelHospitalizationSettlementParam(param);
+
+            });
+        }
+        /// <summary>
+        /// 取消异地结算
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData YdCancelHospitalizationSettlement([FromBody]GetYdHospitalizationSettlementUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                _ydMedicalInsuranceService.YdCancelHospitalizationSettlement(param);
+
+            });
+        }
+        /// <summary>
+        /// 获取异地门诊划卡参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetYdOutpatientPayCardParam([FromBody]GetYdOutpatientPayCardParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+              y.Data=  _ydMedicalInsuranceService.GetYdOutpatientPayCardParam(param);
+
+            });
+        }
+        /// <summary>
+        /// 异地门诊刷卡
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData YdOutpatientPayCard([FromBody]GetYdOutpatientPayCardParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                _ydMedicalInsuranceService.YdOutpatientPayCard(param);
+
+            });
+        }
+        #endregion
     }
 }

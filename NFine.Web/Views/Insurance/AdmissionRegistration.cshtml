@@ -223,20 +223,30 @@
             //获取医疗类别
             function getMedicalCategory(num) {
 
-                var optionHtml =null;
-                //居民
-                if (num === "342") {
-                    optionHtml += "<option value='11'>11-普通入院</option>";
-                    optionHtml += "<option value='14'>14-大病门诊</option>";
-                    optionHtml += "<option value='15'>15-大病住院</option>";
-                    optionHtml += "<option value='22'>22-急诊入院</option>";
-                    optionHtml += "<option value='23'>23-市内转院住院</option>";
+                var optionHtml = null;
+                //异地1
+                if (baseInfo.HospitalInfo.AfferentSign === "4") {
+                    optionHtml += "<option value='1'>医疗</option>";
+                    optionHtml += "<option value='2'>工伤医疗</option>";
+                    optionHtml += "<option value='3'>工伤康复</option>";
+                    $("#SpouseIdCardNoDiv").hide();
+                    $("#SpouseNameDiv").hide();
+                } else {
+                    //居民
+                    if (num === "342") {
+                        optionHtml += "<option value='11'>11-普通入院</option>";
+                        optionHtml += "<option value='14'>14-大病门诊</option>";
+                        optionHtml += "<option value='15'>15-大病住院</option>";
+                        optionHtml += "<option value='22'>22-急诊入院</option>";
+                        optionHtml += "<option value='23'>23-市内转院住院</option>";
+                    }
+                    //职工
+                    if (num === "310") {
+                        optionHtml += "<option value='21'>11-普通入院</option>";
+                        optionHtml += "<option value='41'>41-工伤住院</option>";
+                    }
                 }
-                //职工
-                if (num === "310") {
-                    optionHtml += "<option value='21'>11-普通入院</option>";
-                    optionHtml += "<option value='41'>41-工伤住院</option>";
-                }
+                
                 $("#MedicalCategory").append(optionHtml);
 
             }
@@ -339,6 +349,7 @@
                         $("#FetusNumberId").hide();
                         $("#HouseholdNatureId").hide();
                     }
+                    
                 });
           
 
@@ -385,6 +396,11 @@
                     field["AfferentSign"] = "3";
                     field.AfferentSign = "3";
                 }
+                if (baseInfo.HospitalInfo.AfferentSign === "4") {
+
+                    field["InsuranceNo"] = baseInfo.Inpatient.CardNo;
+                    field["AreaCode"] = baseInfo.Inpatient.AdministrativeArea;
+                }
                 return field;
             }
 
@@ -392,10 +408,16 @@
             function getHospitalizationRegisterParam(data) {
                 var fieldParam = getHospitalizationRegisterParamIni(data);
                 if (fieldParam === false) return false;
+                var url;
+                if (baseInfo.HospitalInfo.AfferentSign === "4") {
+                    url = '/GetYdHospitalizationRegisterParam';
+                } else {
+                    url = '/GetHospitalizationRegisterParam';
+                }
                 buttonStatus("register", false);
                 $.ajax({
                     type: 'POST',
-                    url: hostNew + '/GetHospitalizationRegisterParam',
+                    url: hostNew + url,
                     async: false,
                     data: JSON.stringify(fieldParam),
                     dataType: "json",
@@ -413,30 +435,58 @@
                             var insuranceTypeValue = $("#InsuranceType").val();
                             var activeData;
                             var activeJsonData;
-                            if (insuranceTypeValue === "342") { //医保入院登记
-                                activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "HospitalizationRegister");
+                            if (baseInfo.HospitalInfo.AfferentSign === "4") {
+                                //异地入院登记
+                                activeData = activeX.YdMedicalInsuranceMethods(data.Data.InputXml, JSON.stringify(baseInfo.HospitalInfo), data.Data.TransactionCode);
                                 activeJsonData = JSON.parse(activeData);
                                 if (activeJsonData.Success === false) {
                                     msgError(activeJsonData.Message);
-                                    return false;
                                 } else {
                                     fieldParam["SettlementJson"] = activeJsonData.Data;
                                     hospitalizationRegister(fieldParam);
                                 }
                             }
-                            if (insuranceTypeValue === "310") {
-                                //医保入院登记
-                                activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "WorkerHospitalizationRegister");
-                                activeJsonData = JSON.parse(activeData);
-                                if (activeJsonData.Success === false) {
-                                    msgError(activeJsonData.Message);
-                                    return false;
-                                } else {
-                                    fieldParam["SettlementJson"] = activeJsonData.Data;
-                                    hospitalizationRegister(fieldParam);
+                            else
+                                {
+                                    if (baseInfo.HospitalInfo.AfferentSign === "4") {
+                                        activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "HospitalizationRegister");
+                                        activeJsonData = JSON.parse(activeData);
+                                        if (activeJsonData.Success === false) {
+                                            msgError(activeJsonData.Message);
+                                            return false;
+                                        } else {
+                                            fieldParam["SettlementJson"] = activeJsonData.Data;
+                                            hospitalizationRegister(fieldParam);
+                                        }
+                                    } else {
+                                        if (insuranceTypeValue === "342") { //医保入院登记
+                                            activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "HospitalizationRegister");
+                                            activeJsonData = JSON.parse(activeData);
+                                            if (activeJsonData.Success === false) {
+                                                msgError(activeJsonData.Message);
+                                                return false;
+                                            } else {
+                                                fieldParam["SettlementJson"] = activeJsonData.Data;
+                                                hospitalizationRegister(fieldParam);
+                                            }
+                                        }
+                                        if (insuranceTypeValue === "310") {
+                                            //医保入院登记
+                                            activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "WorkerHospitalizationRegister");
+                                            activeJsonData = JSON.parse(activeData);
+                                            if (activeJsonData.Success === false) {
+                                                msgError(activeJsonData.Message);
+                                                return false;
+                                            } else {
+                                                fieldParam["SettlementJson"] = activeJsonData.Data;
+                                                hospitalizationRegister(fieldParam);
+
+                                            }
+                                        }
+                                    }
 
                                 }
-                            }
+                          
 
                         }
                     }
@@ -446,9 +496,15 @@
             }
             //住院登记
             function hospitalizationRegister(fieldParam) {
+                var url;
+                if (baseInfo.HospitalInfo.AfferentSign === "4") {
+                    url = '/YdHospitalizationRegister';
+                } else {
+                    url = '/HospitalizationRegister';
+                }
                 $.ajax({
                     type: 'POST',
-                    url: hostNew + '/HospitalizationRegister',
+                    url: hostNew + url,
                     async: false,
                     data: JSON.stringify(fieldParam),
                     dataType: "json",
