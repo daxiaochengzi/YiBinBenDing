@@ -116,7 +116,7 @@ namespace NFine.Web.Controllers
             });
         }
         /// <summary>
-        /// 获取门诊计划生育预结算参数
+        /// 获取门诊计划生育预结算参数 
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -366,6 +366,7 @@ namespace NFine.Web.Controllers
                 resultData.MedicalTreatmentTotalCost = queryOutpatientData.AllAmount;
                 resultData.SettlementNo = cancelSettlementData.SettlementNo;
                 resultData.SettlementType = residentData.SettlementType;
+                resultData.InsuranceType = residentData.InsuranceType;
                 if (!string.IsNullOrWhiteSpace(residentData.OtherInfo))
                 {
                     resultData.PayMsg = CommonHelp.GetPayMsg(residentData.OtherInfo);
@@ -405,7 +406,6 @@ namespace NFine.Web.Controllers
         //    });
 
         //}
-        
         /// <summary>
         /// 门诊生育结算
         /// </summary>
@@ -1557,7 +1557,9 @@ namespace NFine.Web.Controllers
                 _hisSqlRepository.BatchExamineData(new BatchExamineDataParam()
                 {
                     DataIdList = param.DataIdList,
-                    User = userBase
+                    User = userBase,
+                    BusinessId=param.BusinessId
+
                 } );
                
             });

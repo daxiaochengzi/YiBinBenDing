@@ -13,6 +13,13 @@ namespace BenDing.Domain.Models.Params.Resident
     /// </summary>
         public UserInfoDto User { get; set; }
         /// <summary>
+        /// 业务id
+        /// </summary>
+
+      
+
+        public string BusinessId { get; set; }
+        /// <summary>
         /// id
         /// </summary>
         public List<string> DataIdList { get; set; } = null;

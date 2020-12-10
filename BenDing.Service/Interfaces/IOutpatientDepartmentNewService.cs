@@ -91,7 +91,7 @@ namespace BenDing.Service.Interfaces
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        NationEcTransParam OutpatientNationEcTransParam(OutpatientNationEcTransUiParam param);
+        string OutpatientNationEcTransParam(OutpatientNationEcTransUiParam param);
         /// <summary>
         /// 电子医保支付
         /// </summary>

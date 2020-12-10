@@ -150,6 +150,7 @@
         var isBirthHospital = null;
         //结算类别
         var settlementType = null;
+        var insuranceType = null;
         //form数据回显:数据回显到Form表单主体部分
         var jsonToForm = function (jsonData, formFilter) {
             //给表单赋值
@@ -197,6 +198,7 @@
                 } else {
                     isBirthHospital = data.Data.IsBirthHospital;
                     settlementType = data.Data.SettlementType;
+                    insuranceType = data.Data.InsuranceType;
                     jsonToForm(data.Data, "LAY-form-render");
                     if (data.Data.PayMsg !== null) {
                         settlementData(data.Data.PayMsg);
@@ -244,8 +246,15 @@
                             }
                         }
                         //电子凭证
-                       else if (settlementType === "3") {
+                        else if (settlementType === "3" && insuranceType==="310") {
+                            activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "WorkerCancelSettlementCard");
 
+                            activeJsonData = JSON.parse(activeData);
+                            if (activeJsonData.Success === false) {
+                                msgError(activeJsonData.Message);
+                            } else {
+                                CancelOutpatientDepartmentCost();
+                            }
                         }//计划生育
                         else if (settlementType ===null) {
                             if (isBirthHospital === 0) {

@@ -1005,11 +1005,12 @@ namespace BenDing.Repository.Providers.Web
                 try
                 {
                     sqlConnection.Open();
-                    strSql = $@"update [dbo].[HospitalizationFee] set ApprovalMark=1, [ApprovalUserName]='{param.User.UserName}',[ApprovalTime]=GETDATE(),[ApprovalUserId]='{param.User.UserId}'";
+                    strSql = $@"update [dbo].[HospitalizationFee] set ApprovalMark=1, [ApprovalUserName]='{param.User.UserName}',
+                       [ApprovalTime]=GETDATE(),[ApprovalUserId]='{param.User.UserId}' where IsDelete=0 and HospitalizationId='{param.BusinessId}'";
                     if (param.DataIdList != null && param.DataIdList.Any())
                     {
                         var idlist = CommonHelp.ListToStr(param.DataIdList);
-                        strSql += $" where IsDelete=0 and Id in({idlist}) ";
+                        strSql += $" and Id in({idlist}) ";
                         var data = sqlConnection.Execute(strSql);
                     }
                   
