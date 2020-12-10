@@ -204,7 +204,7 @@
         //获取取消处方上传参数
         function deletePrescriptionUpload(uploadParam) {
             var url ="/DeletePrescriptionUpload";
-            if (afferentSign === "3") url = "/YdCancelPrescriptionUpload";
+            if (afferentSign === "4") url = "/YdCancelPrescriptionUpload";
            
             $.ajax({
                 type: "POST",
@@ -232,7 +232,7 @@
         //获取取消处方上传参数
         function getDeletePrescriptionUploadParam(params) {
             var url = "/GetDeletePrescriptionUploadParam";
-            if (afferentSign === "3") url = "/GetYdCancelPrescriptionUploadParam";
+            if (afferentSign === "4") url = "/GetYdCancelPrescriptionUploadParam";
             
             $.ajax({
                 type: "POST",
@@ -250,7 +250,7 @@
                         var activeData;
                         var activeJsonData;
                         var activeX = document.getElementById("CSharpActiveX");
-                        if (afferentSign === "3") {
+                        if (afferentSign === "4") {
                             //取消处方上传
                             
                             activeData = activeX.YdMedicalInsuranceMethods(data.Data.InputXml, JSON.stringify(baseInfo.HospitalInfo), data.Data.TransactionCode);

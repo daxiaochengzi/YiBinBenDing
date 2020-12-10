@@ -737,7 +737,7 @@
         //数据回写
         function prescriptionUploadDatas(uploadParam) {
             var url = "/PrescriptionUpload";
-            if (afferentSign === "3") url = "/YdPrescriptionUpload";
+            if (afferentSign === "4") url = "/YdPrescriptionUpload";
             $.ajax({
                 type: 'POST',
                 url: hostNew + url,
@@ -767,7 +767,7 @@
                 
             }
             var url ="/GetPrescriptionUploadParam";
-            if (afferentSign === "3") url = "/GetYdPrescriptionUploadParam";
+            if (afferentSign === "4") url = "/GetYdPrescriptionUploadParam";
             
             $.ajax({
                 type: 'POST',
@@ -790,7 +790,7 @@
                             for (var i = 0; i < uploadData.length; i++) {
                                 var uploadDataParam = uploadData[i];
                                 //异地上传
-                                if (afferentSign === "3") {
+                                if (afferentSign === "4") {
                                     activeData = activeX.YdMedicalInsuranceMethods(uploadDataParam, JSON.stringify(baseInfo.HospitalInfo), "YYJK008");
                                      activeJsonData = JSON.parse(activeData);
                                     if (activeJsonData.Success === false) {
