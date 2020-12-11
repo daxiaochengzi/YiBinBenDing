@@ -693,7 +693,7 @@ namespace BenDing.Service.Providers
             }
             resultData.Nums = rowDataList.Count();
             resultData.RowDataList = rowDataList;
-            return XmlSerializeHelper.XmlSerialize(resultData) ;
+            return XmlSerializeHelper.HisXmlSerialize(resultData) ;
         }
         /// <summary>
         /// 门诊电子医保
@@ -860,7 +860,7 @@ namespace BenDing.Service.Providers
             resultData.DiagnosisIcd10 = diagnosisData.ProjectCode;
             resultData.DiagnosisName = diagnosisData.DiseaseName;
             resultData.TotalAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost); 
-            return XmlSerializeHelper.XmlSerialize(resultData);
+            return XmlSerializeHelper.HisXmlSerialize(resultData);
         }
         /// <summary>
         /// 门诊居民电子凭证

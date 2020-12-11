@@ -434,7 +434,7 @@ namespace NFine.Web.Controllers
             {
               
               var data=  _outpatientDepartmentNewService.OutpatientNationEcTransParam(param);
-                y.Data = XmlSerializeHelper.XmlSerialize(data);
+                y.Data = data;
             });
 
         }
@@ -482,7 +482,7 @@ namespace NFine.Web.Controllers
             return new ApiJsonResultData(ModelState).RunWithTry(y =>
             {
                 var data = _outpatientDepartmentNewService.GetOutpatientNationEcTransResidentParam(param);
-                y.Data = XmlSerializeHelper.XmlSerialize(data);
+                y.Data = data;
             });
 
         }

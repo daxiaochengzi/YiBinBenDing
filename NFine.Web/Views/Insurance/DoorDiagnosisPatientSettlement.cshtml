@@ -32,7 +32,7 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">结算方式</label>
                     <div class="layui-input-block">
-                        <input type="radio" id="SettlementThree" name="Settlement" value="2" title="门诊刷卡结算">
+                        <input type="radio" id="SettlementThree" name="Settlement" value="2" checked="checked" title="门诊刷卡结算">
                         <input type="radio" id="SettlementTwo" name="Settlement" value="1" title="职工计划生育结算">
                         <input type="radio" id="SettlementOne" name="Settlement" value="3" title="医保电子凭证结算">
                     </div>
@@ -537,7 +537,6 @@
                             outpatientNationEcTrans(activeJsonData.Data);
                         }
 
-                       
                     }
                 }
 
@@ -667,7 +666,6 @@
         //门诊结算
         $('#DoorDiagnosisSettlement').on('click', function () {
           
-           
             //var settlementVal = $('input[name="Settlement"]:checked').val();
             var settlementVal = "1";
             if (settlementVal === "1") {
