@@ -233,11 +233,11 @@ namespace BenDing.Repository.Providers.Web
                     {   //西药
                         if (param.ProjectCodeType == "1")
                         {
-                            whereSql += $" and ProjectCodeType in('11','91','92')";
+                            whereSql += $" and ProjectCodeType in('11','12')";
                         }//中药
                         if (param.ProjectCodeType == "0")
                         {
-                            whereSql += $" and ProjectCodeType in('12','13','91','92')";
+                            whereSql += $" and ProjectCodeType in('13')";
                         }//耗材
                         if (param.ProjectCodeType == "3")
                         {

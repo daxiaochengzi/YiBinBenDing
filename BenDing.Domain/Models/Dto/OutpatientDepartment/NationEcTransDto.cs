@@ -37,5 +37,10 @@ namespace BenDing.Domain.Models.Dto.OutpatientDepartment
         /// </summary>
         [JsonProperty(PropertyName = "PO_ZFZFJE")]
         public decimal SelfPayAmount { get; set; }
+        /// <summary>
+        /// 账户余额
+        /// </summary>
+        [JsonProperty(PropertyName = "PO_AAE240")]
+        public decimal BalanceAmount { get; set; }
     }
 }

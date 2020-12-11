@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BenDing.Domain.Models.Dto.JsonEntity;
 using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Dto.Web;
-using BenDing.Domain.Models.Dto.Workers;
 using BenDing.Domain.Models.Enums;
 using BenDing.Domain.Models.HisXml;
-using BenDing.Domain.Models.Params.Base;
 using BenDing.Domain.Models.Params.OutpatientDepartment;
-using BenDing.Domain.Models.Params.Resident;
 using BenDing.Domain.Models.Params.SystemManage;
 using BenDing.Domain.Models.Params.UI;
 using BenDing.Domain.Models.Params.Web;
@@ -700,12 +695,11 @@ namespace BenDing.Service.Providers
             resultData.RowDataList = rowDataList;
             return XmlSerializeHelper.XmlSerialize(resultData) ;
         }
-
         /// <summary>
         /// 门诊电子医保
         /// </summary>
         /// <param name="param"></param>
-        public void OutpatientNationEcTrans(OutpatientNationEcTransUiParam param)
+        public NationEcTransDto OutpatientNationEcTrans(OutpatientNationEcTransUiParam param)
         {
             var iniData = JsonConvert.DeserializeObject<NationEcTransDto>(param.SettlementJson);
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
@@ -758,9 +752,9 @@ namespace BenDing.Service.Providers
             // 回参构建
             var xmlData = new OutpatientDepartmentCostXml()
             {
-                AccountBalance = !string.IsNullOrWhiteSpace(param.AccountBalance) == true ? Convert.ToDecimal(param.AccountBalance) : 0,
+                AccountBalance = iniData.BalanceAmount,
                 MedicalInsuranceOutpatientNo = iniData.AccountPaySerialNumber,
-                CashPayment = iniData.SelfPayAmount < 0 ? 0 : iniData.SelfPayAmount,
+                CashPayment =  iniData.SelfPayAmount,
                 SettlementNo = iniData.AccountPaySerialNumber,
                 AllAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost),
                 PatientName = outpatientPerson.PatientName,
@@ -788,7 +782,13 @@ namespace BenDing.Service.Providers
             };
             //  更新中间层
             _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateParamData);
+            return iniData;
         }
+        /// <summary>
+        /// 居民电子凭证支付参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
         public string GetOutpatientNationEcTransResidentParam(OutpatientNationEcTransUiParam param)
         {
             var resultData = new NationEcTransResidentParam();
@@ -823,14 +823,6 @@ namespace BenDing.Service.Providers
             _medicalInsuranceSqlRepository.SaveMedicalInsurance(userBase, saveData);
             var rowDataList = new List<NationEcTransResidentRowParam>();
 
-         
-            //resultData.Remark = param.Remark;
-            //decimal downAccountAmount = 0;
-            //if (!string.IsNullOrWhiteSpace(param.DownAccountAmount))
-            //{
-            //    downAccountAmount = Convert.ToDecimal(param.DownAccountAmount);
-            //}
-          
             //升序
             var dataSort = outpatientDetailPerson.OrderBy(c => c.BillTime).ToArray();
             int num = 0;
@@ -847,7 +839,6 @@ namespace BenDing.Service.Providers
                         Quantity = item.Quantity,
                         TotalAmount = CommonHelp.ValueToDouble(item.Amount),
                         DirectoryName = item.DirectoryName,
-                     
 
                     };
 
@@ -858,9 +849,110 @@ namespace BenDing.Service.Providers
 
             }
             resultData.Num = rowDataList.Count();
-           
+            resultData.IdCardNo = outpatientPerson.IdCardNo;
+            resultData.PatientName = outpatientPerson.PatientName;
+            resultData.VisitDate = Convert.ToDateTime(outpatientPerson.VisitDate).ToString("yyyyMMddHHmmss");
             resultData.RowDataList = rowDataList;
+            resultData.SerialNumber = CommonHelp.GuidToStr(param.BusinessId);
+            var diagnosisData = outpatientPerson.DiagnosisList.FirstOrDefault(c => c.IsMainDiagnosis == "是");
+            if (diagnosisData == null) throw new Exception("诊断:不能为空!!!");
+            if (!string.IsNullOrWhiteSpace(diagnosisData.ProjectCode) == false) throw new Exception("诊断:" + diagnosisData.DiseaseName + "未医保对码!!!");
+            resultData.DiagnosisIcd10 = diagnosisData.ProjectCode;
+            resultData.DiagnosisName = diagnosisData.DiseaseName;
+            resultData.TotalAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost); 
             return XmlSerializeHelper.XmlSerialize(resultData);
+        }
+        /// <summary>
+        /// 门诊居民电子凭证
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public OutpatientNationEcTransResidentBackDto OutpatientNationEcTransResident(OutpatientNationEcTransUiParam param)
+        {
+            var resultData = new OutpatientNationEcTransResidentBackDto();
+            var iniData = JsonConvert.DeserializeObject<OutpatientNationEcTransResidentJsonDto>(param.SettlementJson);
+            var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
+            userBase.TransKey = param.TransKey;
+            //门诊病人信息存储
+            var id = Guid.NewGuid();
+            var outpatientParam = new GetOutpatientPersonParam()
+            {
+                User = userBase,
+                UiParam = param,
+                Id = id,
+            };
+            var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
+            if (outpatientPerson == null) throw new Exception("his中未获取到当前病人!!!");
+            var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
+            {
+                BusinessId = param.BusinessId,
+            };
+            //日志写入
+            _systemManageRepository.AddHospitalLog(new AddHospitalLogParam()
+            {
+                User = userBase,
+                JoinOrOldJson = JsonConvert.SerializeObject(param),
+                ReturnOrNewJson = JsonConvert.SerializeObject(iniData),
+                RelationId = outpatientParam.Id,
+                BusinessId = param.BusinessId,
+                Remark = iniData.SettlementNo + "电子记录好"
+            });
+            //获取医保病人信息
+            var residentData = _medicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(queryResidentParam);
+            if (residentData.MedicalInsuranceState != MedicalInsuranceState.MedicalInsurancePreSettlement) throw new Exception("当前病人未办理预结算,不能办理结算!!!");
+            //存中间库
+
+            var updateData = new UpdateMedicalInsuranceResidentSettlementParam()
+            {
+                UserId = userBase.UserId,
+                SelfPayFeeAmount = iniData.CashPaymentAmount,
+                OtherInfo = JsonConvert.SerializeObject(iniData),
+                Id = residentData.Id,
+                SettlementNo = iniData.SettlementNo,
+                MedicalInsuranceAllAmount = outpatientPerson.MedicalTreatmentTotalCost,
+                SettlementTransactionId = userBase.UserId,
+                MedicalInsuranceState = MedicalInsuranceState.MedicalInsuranceSettlement,
+                SettlementType = "3",
+
+            };
+            //存入中间层
+            _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateData);
+
+            // 回参构建
+            var xmlData = new OutpatientDepartmentCostXml()
+            {
+                AccountBalance = iniData.BalanceAmount,
+                MedicalInsuranceOutpatientNo = iniData.SettlementNo,
+                CashPayment = iniData.CashPaymentAmount,
+                SettlementNo = iniData.SettlementNo,
+                AllAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost),
+                PatientName = outpatientPerson.PatientName,
+                AccountAmountPay = iniData.BalancePaymentAmount,
+                MedicalInsuranceType = param.InsuranceType == "310" ? "1" : param.InsuranceType,
+            };
+            var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
+            var saveXml = new SaveXmlDataParam()
+            {
+                User = userBase,
+                MedicalInsuranceBackNum = "zydj",
+                MedicalInsuranceCode = "48",
+                BusinessId = param.BusinessId,
+                BackParam = strXmlBackParam
+            };
+            ////存基层
+            _webBasicRepository.SaveXmlData(saveXml);
+            var updateParamData = new UpdateMedicalInsuranceResidentSettlementParam()
+            {
+                UserId = param.UserId,
+                Id = residentData.Id,
+                MedicalInsuranceState = MedicalInsuranceState.HisSettlement,
+                IsHisUpdateState = true,
+
+            };
+            //  更新中间层
+            _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateParamData);
+             resultData = AutoMapper.Mapper.Map<OutpatientNationEcTransResidentBackDto>(iniData);
+            return resultData;
         }
 
         /// <summary>

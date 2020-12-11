@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BenDing.Domain.Models.Dto.JsonEntity;
 using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Dto.Workers;
 using BenDing.Domain.Models.Params.OutpatientDepartment;
@@ -96,13 +97,25 @@ namespace BenDing.Service.Interfaces
         /// 电子医保支付
         /// </summary>
         /// <param name="param"></param>
-         void OutpatientNationEcTrans(OutpatientNationEcTransUiParam param);
+        NationEcTransDto OutpatientNationEcTrans(OutpatientNationEcTransUiParam param);
+        /// <summary>
+        /// 居民电子凭证支付参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        string GetOutpatientNationEcTransResidentParam(OutpatientNationEcTransUiParam param);
+        /// <summary>
+        /// 居民电子凭证支付
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        OutpatientNationEcTransResidentBackDto OutpatientNationEcTransResident(OutpatientNationEcTransUiParam param);
         /// <summary>
         /// 获取划卡参数
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-         WorkerHospitalSettlementCardParam WorkerOutpatientSettlementCardParam(
+        WorkerHospitalSettlementCardParam WorkerOutpatientSettlementCardParam(
             WorkerHospitalSettlementCardUiParam param);
         /// <summary>
         /// 门诊划卡

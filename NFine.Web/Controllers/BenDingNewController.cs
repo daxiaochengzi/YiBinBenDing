@@ -438,7 +438,7 @@ namespace NFine.Web.Controllers
             });
 
         }
-
+        
         /// <summary>
         /// 门诊电子支付
         /// </summary>
@@ -449,12 +449,66 @@ namespace NFine.Web.Controllers
         {
             return new ApiJsonResultData(ModelState).RunWithTry(y =>
             {
-             _outpatientDepartmentNewService.OutpatientNationEcTrans(param);
-               
+              var data=_outpatientDepartmentNewService.OutpatientNationEcTrans(param);
+                var msg = new List<PayMsgData>();
+                msg.Add(new PayMsgData()
+                {
+                    Name = "账户支金额",
+                    Value = data.AccountPayAmount.ToString(CultureInfo.InvariantCulture)
+                });
+                msg.Add(new PayMsgData()
+                {
+                    Name = "自付金额",
+                    Value = data.SelfPayAmount.ToString(CultureInfo.InvariantCulture)
+                });
+                y.Data = new OutpatientCostReturnDataDto()
+                {
+                 
+                    SelfPayFeeAmount = data.SelfPayAmount,
+                    PayMsg = msg
+                };
+              
+            });
+
+        }
+        /// <summary>
+        /// 获取门诊居民参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetOutpatientNationEcTransResidentParam([FromBody]OutpatientNationEcTransUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                var data = _outpatientDepartmentNewService.GetOutpatientNationEcTransResidentParam(param);
+                y.Data = XmlSerializeHelper.XmlSerialize(data);
             });
 
         }
 
+        /// <summary>
+        /// 居民电子凭证支付
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData OutpatientNationEcTransResident([FromBody]OutpatientNationEcTransUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                var data = _outpatientDepartmentNewService.OutpatientNationEcTransResident(param);
+               
+                y.Data = new OutpatientCostReturnDataDto()
+                {
+                    ReimbursementExpensesAmount = data.ReimbursementAmount,
+                    SelfPayFeeAmount = data.CashPaymentAmount,
+                    PayMsg = CommonHelp.GetPayMsg(JsonConvert.SerializeObject(data))
+                };
+
+            });
+
+        }
         /// <summary>
         /// 获取门诊划卡参数
         /// </summary>

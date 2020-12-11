@@ -34,7 +34,7 @@
                     <div class="layui-input-block">
                         <input type="radio" id="SettlementThree" name="Settlement" value="2" title="门诊刷卡结算">
                         <input type="radio" id="SettlementTwo" name="Settlement" value="1" title="职工计划生育结算">
-                        <input type="radio" id="SettlementOne" name="Settlement" value="3" title="医保电子凭证结算"  disabled="">
+                        <input type="radio" id="SettlementOne" name="Settlement" value="3" title="医保电子凭证结算">
                     </div>
 
                 </div>
@@ -202,6 +202,7 @@
             if (activeData === "0") {
                 passWordKey = "0";
                 $("#passwordDiv").show();
+                $("#CardPwd").focus();
             }
         }
         //form数据回显:数据回显到Form表单主体部分
@@ -273,10 +274,10 @@
                            
                 buttonStatus("DoorDiagnosisPreSettlement", true);
             }
-            //if (settlementVal === "3" )//电子凭证结算
-            //{
-            //    buttonStatus("OutpatientNationEcTrans", true);
-            //}
+            if (settlementVal === "3" )//电子凭证结算
+            {
+                buttonStatus("OutpatientNationEcTrans", true);
+            }
             if (settlementVal === "2" )//刷卡结算
             {
                 buttonStatus("SettlementCard", true);
@@ -500,10 +501,11 @@
         }
         //获取电子社保支付参数
         function outpatientNationEcTransParam() {
-          
+            var url = "/OutpatientNationEcTransParam";
+            if (baseInfo.Inpatient.InsuranceType !== "310") url = "/GetOutpatientNationEcTransResidentParam";
             $.ajax({
                 type: 'POST',
-                url: hostNew + '/OutpatientNationEcTransParam',
+                url: hostNew + url,
                 data: params,
                 dataType: "json",
                 async: false,
@@ -513,14 +515,26 @@
                         layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
                     } else {
                         var activeX = document.getElementById("CSharpActiveX");
+                        var activeData;
+                        var activeJsonData; 
                         //电子医保支付
-                      
-                        var activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"NationEcTrans");
-                        var activeJsonData = JSON.parse(activeData);
+                        if (baseInfo.Inpatient.InsuranceType !== "310") {
+                            activeData = activeX.OutpatientMethods(data.Data,
+                                JSON.stringify(baseInfo.HospitalInfo),
+                                "NationEcTrans");
+                            activeJsonData = JSON.parse(activeData);
+                        }
+                        else {
+                            activeData = activeX.OutpatientMethods(data.Data,
+                                JSON.stringify(baseInfo.HospitalInfo),
+                                "NationEcTransResident");
+                              activeJsonData = JSON.parse(activeData);
+                        }
+                         
                         if (activeJsonData.Success === false) {
                             msgError(activeJsonData.Message);
                         } else {
-                            outpatientNationEcTrans(activeJsonData.Data, activeJsonData.OtherInfo);
+                            outpatientNationEcTrans(activeJsonData.Data);
                         }
 
                        
@@ -530,13 +544,14 @@
             });
         }
         //电子社保支付
-        function outpatientNationEcTrans(settlementDataInfo, accountBalance) {
+        function outpatientNationEcTrans(settlementDataInfo) {
             var ecTransParam = $.extend({}, params);
+            var url = "/outpatientNationEcTrans";
+            if (baseInfo.Inpatient.InsuranceType !== "310") url = "/OutpatientNationEcTransResident";
             ecTransParam["SettlementJson"] = settlementDataInfo;
-            ecTransParam["AccountBalance"] = accountBalance;
             $.ajax({
                 type: 'POST',
-                url: hostNew + '/outpatientNationEcTrans',
+                url: hostNew + url,
                 data: ecTransParam,
                 dataType: "json",
                 async: false,
@@ -546,6 +561,7 @@
                         layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
                     } else {
                         $('#CashPayment').val(data.Data.SelfPayFeeAmount);
+                      
                         layer.alert('电子凭证支付成功', { icon: 6, shade: 0.1, skin: 'layui-layer-molv' });
                         //添加预结算信息
                         if (data.Data.PayMsg !== null) {
@@ -560,7 +576,6 @@
         //获取门诊划卡参数
         function workerOutpatientSettlementCardParam() {
             var getCardParam = $.extend({}, params);
-
             if (passWordKey === "0") getCardParam["CardPwd"] = $("#CardPwd").val();
             $.ajax({
                 type: 'POST',
