@@ -74,6 +74,7 @@
     <Compile Include="Models\Dto\JsonEntity\LeaveHospitalDiagnosisDataJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\HisHospitalizationSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\MonthlyHospitalizationJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\NationEcTransJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\OutpatientDetailJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\OutpatientInfoJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\OutpatientNationEcTransResidentJsonDto.cs" />

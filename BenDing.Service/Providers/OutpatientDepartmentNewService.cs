@@ -188,7 +188,7 @@ namespace BenDing.Service.Providers
             if (residentData == null) throw new Exception("当前病人未结算,不能取消结算!!!");
             if (residentData.MedicalInsuranceState != MedicalInsuranceState.HisSettlement) throw new Exception("当前病人未结算,不能取消结算!!!");
             //划卡
-            if (residentData.SettlementType == "2")
+            if (residentData.SettlementType == "2" || residentData.SettlementType == "3")
             {
                 var inputParam = new WorkerCancelSettlementCardParam()
                 {
@@ -702,6 +702,10 @@ namespace BenDing.Service.Providers
         public NationEcTransDto OutpatientNationEcTrans(OutpatientNationEcTransUiParam param)
         {
             var iniData = JsonConvert.DeserializeObject<NationEcTransDto>(param.SettlementJson);
+            var dataJson = new NationEcTransJsonDto();
+            dataJson.AccountPayAmount = iniData.AccountPayAmount;
+            dataJson.BalanceAmount= iniData.BalanceAmount;
+            dataJson.SelfPayAmount= iniData.SelfPayAmount;
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
             userBase.TransKey = param.TransKey;
             //门诊病人信息存储
@@ -737,7 +741,7 @@ namespace BenDing.Service.Providers
             {
                 UserId = userBase.UserId,
                 SelfPayFeeAmount = iniData.SelfPayAmount,
-                OtherInfo = JsonConvert.SerializeObject(iniData),
+                OtherInfo = JsonConvert.SerializeObject(dataJson),
                 Id = residentData.Id,
                 SettlementNo = iniData.AccountPaySerialNumber,
                 MedicalInsuranceAllAmount = outpatientPerson.MedicalTreatmentTotalCost,
