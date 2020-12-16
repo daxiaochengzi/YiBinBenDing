@@ -589,7 +589,6 @@
                     } else {
                         var activeX = document.getElementById("CSharpActiveX");
                         //划卡支付
-                      
                         var activeData = activeX.HospitalizationMethods(JSON.stringify(data.Data), JSON.stringify(baseInfo.HospitalInfo),"WorkerCardSettlement");
                         var activeJsonData = JSON.parse(activeData);
                         if (activeJsonData.Success === false) {

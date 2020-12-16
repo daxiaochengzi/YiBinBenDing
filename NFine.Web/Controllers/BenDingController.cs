@@ -2015,6 +2015,28 @@ namespace NFine.Web.Controllers
             return response;
 
         }
+        /// <summary>
+        /// 下载文件
+        /// </summary>
+        [HttpGet]
+        public HttpResponseMessage DownloadFramework()
+        {
+            string fileName = "FrameworkENU.exe";
+            string filePath = HttpContext.Current.Server.MapPath("~/") + "bin/FrameworkENU.exe";
+            FileStream stream = new FileStream(filePath, FileMode.Open);
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+            response.Content = new StreamContent(stream);
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = HttpUtility.UrlEncode(fileName)
+            };
+            response.Headers.Add("Access-Control-Expose-Headers", "FileName");
+            response.Headers.Add("FileName", HttpUtility.UrlEncode(fileName));
+            return response;
+
+        }
+        
 
         /// <summary>
         /// 下载文件
