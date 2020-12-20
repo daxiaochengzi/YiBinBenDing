@@ -392,7 +392,7 @@ namespace BenDing.Repository.Providers.Web
             int totalNum = 0;
             foreach (DataRow dr in dt.Rows)
             {
-                if (!string.IsNullOrWhiteSpace(CommonHelp.FilterSqlStr(dr["本位码"].ToString())))
+                if (!string.IsNullOrWhiteSpace(CommonHelp.FilterSqlStr(dr["项目编码"].ToString())))
                 {
                     //string endTime = dr["终止日期"].ToString();
                     //if (!string.IsNullOrWhiteSpace(endTime))
@@ -437,7 +437,7 @@ namespace BenDing.Repository.Providers.Web
                     var item = new ResidentProjectDownloadRowDataRowDto
                     {
                     
-                        ProjectCode = CommonHelp.FilterSqlStr(dr["本位码"].ToString()),
+                        ProjectCode = CommonHelp.FilterSqlStr(dr["项目编码"].ToString()),
                         ProjectName = CommonHelp.FilterSqlStr(dr["项目名称"].ToString()),
                         ProjectBigType = CommonHelp.FilterSqlStr(dr["目录大类"].ToString()),// 1 药品 2 诊疗 3 材料 4 其他
                         ProjectLevel = dr["项目等级"].ToString(),

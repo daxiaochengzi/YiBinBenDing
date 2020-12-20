@@ -102,6 +102,7 @@
     <Compile Include="Models\Entitys\HospitalLog.cs" />
     <Compile Include="Models\Entitys\ICD10PairCode.cs" />
     <Compile Include="Models\Params\Base\PaginationWebParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\GetResidentOutpatientSettlementParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\MonthlyHospitalizationCancelParam.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\MonthlyHospitalizationDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\OutpatientCostReturnDataDto.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="Models\Params\OutpatientDepartment\OutpatientPlanBirthSettlementParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\OutpatientPlanBirthSettlementQueryParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\QueryOutpatientDepartmentCostParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\ResidentOutpatientSettlementCardParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\SaveOutpatientDetailParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\WorkerCancelSettlementCardParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\WorkerHospitalSettlementCardParam.cs" />
@@ -215,6 +217,7 @@
     <Compile Include="Models\Params\Resident\LeaveHospitalSettlementInfoParam.cs" />
     <Compile Include="Models\Params\Resident\LeaveHospitalSettlementParam.cs" />
     <Compile Include="Models\Params\Resident\LeaveHospitalSettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\GetResidentOutpatientSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\NotUploadMarkUiParam.cs" />
     <Compile Include="Models\Params\Resident\PatientLeaveHospitalInfoDto.cs" />
     <Compile Include="Models\Params\Resident\PrescriptionUploadAutomaticParam.cs" />
@@ -299,6 +302,7 @@
     <Compile Include="Models\Params\UI\QueryPrescriptionDetailUiParam.cs" />
     <Compile Include="Models\Params\UI\QueryProjectUiParam.cs" />
     <Compile Include="Models\Params\UI\ResidentHospitalizationRegisterUiParam.cs" />
+    <Compile Include="Models\Params\UI\GetResidentOutpatientSettlementCardUiParam.cs" />
     <Compile Include="Models\Params\UI\SaveXmlDataUiParam.cs" />
     <Compile Include="Models\Params\UI\SingleResidentInfoDownloadUIParam.cs" />
     <Compile Include="Models\Params\UI\TabelIni.cs" />
