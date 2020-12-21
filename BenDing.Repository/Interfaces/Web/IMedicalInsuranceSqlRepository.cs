@@ -6,6 +6,7 @@ using System.Text;
 
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
+using BenDing.Domain.Models.Params.OutpatientDepartment;
 using BenDing.Domain.Models.Params.Resident;
 using BenDing.Domain.Models.Params.UI;
 using BenDing.Domain.Models.Params.Web;
@@ -128,6 +129,11 @@ namespace BenDing.Repository.Interfaces.Web
         /// <param name="user"></param>
         /// <returns></returns>
         int NotUploadMark(List<string> param, bool cancel, UserInfoDto user);
+        /// <summary>
+        /// 更新刷卡结算
+        /// </summary>
+        /// <param name="param"></param>
+         void UpdateMedicalInsuranceCardSettlement(UpdateMedicalInsuranceCardSettlementParam param);
     }
    
      

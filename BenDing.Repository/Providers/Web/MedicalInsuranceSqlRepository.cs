@@ -7,6 +7,7 @@ using System.Linq;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
 using BenDing.Domain.Models.Enums;
+using BenDing.Domain.Models.Params.OutpatientDepartment;
 using BenDing.Domain.Models.Params.Resident;
 using BenDing.Domain.Models.Params.UI;
 using BenDing.Domain.Models.Params.Web;
@@ -93,6 +94,34 @@ namespace BenDing.Repository.Providers.Web
                     var data = sqlConnection.Execute(strSql);
                     sqlConnection.Close();
                     return data;
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(strSql);
+                    throw new Exception(e.Message);
+                }
+
+            }
+        }
+        /// <summary>
+        /// 更新刷卡结算
+        /// </summary>
+        /// <param name="param"></param>
+        public void UpdateMedicalInsuranceCardSettlement(UpdateMedicalInsuranceCardSettlementParam param)
+        {
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                string strSql = null;
+                try
+                {
+                    sqlConnection.Open();
+                    strSql =
+                        $@"update [dbo].[MedicalInsurance] set [WorkersStrokeCardInfo]='{param.WorkersStrokeCardInfo}',[WorkersStrokeCardNo]='{param.WorkersStrokeCardNo}',
+                        [WorkersStrokeTime]=getDate() where BusinessId='{param.BusinessId}' and isDelete=0";
+
+                  sqlConnection.Execute(strSql);
+                    sqlConnection.Close();
+                  
                 }
                 catch (Exception e)
                 {

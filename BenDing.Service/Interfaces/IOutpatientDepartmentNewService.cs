@@ -124,5 +124,39 @@ namespace BenDing.Service.Interfaces
         /// <returns></returns>
          WorkerHospitalSettlementCardBackDto WorkerOutpatientSettlementCard(
             WorkerHospitalSettlementCardUiParam param);
+        /// <summary>
+        /// 获取门诊居民预结算参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        string GetResidentOutpatientPreSettlementParam(GetResidentOutpatientSettlementUiParam param);
+        /// <summary>
+        /// 普通居民预结算
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+         OutpatientNationEcTransResidentBackDto ResidentOutpatientPreSettlement(
+            GetResidentOutpatientSettlementUiParam param);
+        /// <summary>
+        /// 获取门诊划卡参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        string ResidentOutpatientSettlementCardParam(
+            GetResidentOutpatientSettlementCardUiParam param);
+        /// <summary>
+        /// 门诊居民划卡
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        OutpatientNationEcTransResidentBackDto ResidentOutpatientSettlementCard(
+            GetResidentOutpatientSettlementCardUiParam param);
+        /// <summary>
+        /// 门诊居民确认结算
+        /// </summary>
+        /// <param name="param"></param>
+         void OutpatientResidentConfirmSettlement(OutpatientResidentConfirmSettlementUiParam param);
+
+
     }
 }

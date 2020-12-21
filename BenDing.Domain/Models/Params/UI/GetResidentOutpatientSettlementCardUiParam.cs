@@ -16,5 +16,10 @@ namespace BenDing.Domain.Models.Params.UI
         /// 卡号
         /// </summary>
         public string InsuranceNo { get; set; }
+        /// <summary>
+        /// 结算json
+        /// </summary>
+        public string SettlementJson { get; set; }
+
     }
 }

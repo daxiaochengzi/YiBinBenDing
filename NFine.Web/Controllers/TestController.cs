@@ -933,6 +933,13 @@ namespace NFine.Web.Controllers
         [HttpGet]
         public void CancelPairCode()
         {
+            StringBuilder ctrXml = new StringBuilder();
+            ctrXml.Append("<?xml version=\"1.0\" encoding=\"GBK\" standalone=\"yes\" ?>");
+            ctrXml.Append("<control>");
+            ctrXml.Append($"<yab003>{""}</yab003>");//医保经办机构（清算分中心）
+            ctrXml.Append($"<ykb053>{""}</ykb053>");//医院清算申请流水号
+            ctrXml.Append("</control>");
+          
             //
             //_hospitalLogMap.CurrentDb.DeleteById(1);
             //_sqlSugarRepository.QueryHospitalLog();

@@ -197,6 +197,7 @@
     <Compile Include="Models\Params\OutpatientDepartment\QueryOutpatientDepartmentCostParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\ResidentOutpatientSettlementCardParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\SaveOutpatientDetailParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\UpdateMedicalInsuranceCardSettlementParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\WorkerCancelSettlementCardParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\WorkerHospitalSettlementCardParam.cs" />
     <Compile Include="Models\Params\Resident\AddProjectBatchParam.cs" />
@@ -292,6 +293,7 @@
     <Compile Include="Models\Params\UI\OutpatientPlanBirthPreSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\GetOutpatientPlanBirthSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\OutpatientPlanBirthSettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\OutpatientResidentConfirmSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\PrescriptionUploadAutomaticUiParam.cs" />
     <Compile Include="Models\Params\UI\PrescriptionUploadUiParam.cs" />
     <Compile Include="Models\Params\UI\QueryCatalogUiParam.cs" />
