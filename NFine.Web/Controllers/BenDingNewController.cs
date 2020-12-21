@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using BenDing.Domain.Models.Dto.JsonEntity;
 using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
@@ -543,7 +544,77 @@ namespace NFine.Web.Controllers
             });
 
         }
+        /// <summary>
+        /// 获取门诊居民预结算参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetResidentOutpatientPreSettlementParam([FromBody]GetResidentOutpatientSettlementUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                var data = _outpatientDepartmentNewService.GetResidentOutpatientPreSettlementParam(param);
+                y.Data = data;
+            });
 
+        }
+        /// <summary>
+        /// 普通居民预结算
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData ResidentOutpatientPreSettlement([FromBody]GetResidentOutpatientSettlementUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                var data = _outpatientDepartmentNewService.ResidentOutpatientPreSettlement(param);
+                y.Data = new OutpatientCostReturnDataDto()
+                {
+                    SelfPayFeeAmount = data.CashPaymentAmount,
+                    PayMsg = CommonHelp.GetPayMsg(JsonConvert.SerializeObject(data))
+                };
+            });
+
+        }
+        /// <summary>
+        /// 获取门诊划卡参数 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData ResidentOutpatientSettlementCardParam([FromBody]GetResidentOutpatientSettlementCardUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                var data = _outpatientDepartmentNewService.ResidentOutpatientSettlementCardParam(param);
+                y.Data = data;
+            });
+
+        }
+        /// <summary>
+        /// 门诊居民划卡
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData ResidentOutpatientSettlementCard([FromBody]GetResidentOutpatientSettlementCardUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                var data = _outpatientDepartmentNewService.ResidentOutpatientSettlementCard(param);
+                y.Data = new OutpatientCostReturnDataDto()
+                {
+                    SelfPayFeeAmount = data.CashPaymentAmount,
+                    PayMsg = CommonHelp.GetPayMsg(JsonConvert.SerializeObject(data))
+                };
+            });
+
+        }
+
+        
+        
         #endregion
         #region 公共信息
         /// <summary>
