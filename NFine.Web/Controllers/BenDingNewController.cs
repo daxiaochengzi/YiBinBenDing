@@ -596,7 +596,7 @@ namespace NFine.Web.Controllers
         /// <summary>
         /// 门诊居民划卡
         /// </summary>
-        /// <param name="param"></param>
+        /// <param name="param"></param> 
         /// <returns></returns>
         [HttpPost]
         public ApiJsonResultData ResidentOutpatientSettlementCard([FromBody]GetResidentOutpatientSettlementCardUiParam param)
