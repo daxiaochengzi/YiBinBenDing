@@ -538,13 +538,13 @@
                         if (baseInfo.Inpatient.InsuranceType !== "310") {
                             activeData = activeX.OutpatientMethods(data.Data,
                                 JSON.stringify(baseInfo.HospitalInfo),
-                                "NationEcTrans");
+                                "NationEcTransResident");
                             activeJsonData = JSON.parse(activeData);
                         }
                         else {
                             activeData = activeX.OutpatientMethods(data.Data,
                                 JSON.stringify(baseInfo.HospitalInfo),
-                                "NationEcTransResident");
+                                "NationEcTrans");
                               activeJsonData = JSON.parse(activeData);
                         }
                          
@@ -740,38 +740,38 @@
             ////baseInfo.HospitalInfo.AfferentSign = "2";
             ////baseInfo.HospitalInfo.IdentityMark = "1001522187";
             ////iniInpatientInfo();
-            //queryData(getInpatientInfoBack);
-            //radioChecked();
+            queryData(getInpatientInfoBack);
+            radioChecked();
             $("#queryDataDiv").hide();
            
         });
         $('#ResidentSettlementCard').on('click', function () {
-           
-            $.ajax({
-                type: 'POST',
-                url: hostNew + '/GetOutpatientPlanBirthPreSettlementParam',
-                data: params,
-                dataType: "json",
-                async: false,
-                success: function (data) {
-                    if (data.Success === false) {
-                        var errData = data.Message;
-                        layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
-                    } else {
-                        var activeX = document.getElementById("CSharpActiveX");
+            
+            //$.ajax({
+            //    type: 'POST',
+            //    url: hostNew + '/GetResidentOutpatientPreSettlementParam',
+            //    data: params,
+            //    dataType: "json",
+            //    async: false,
+            //    success: function (data) {
+            //        if (data.Success === false) {
+            //            var errData = data.Message;
+            //            layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+            //        } else {
+            //            var activeX = document.getElementById("CSharpActiveX");
                        
-                        //门诊计划生育预结算
-                        var activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"OutpatientPlanBirthPreSettlement");
-                        var activeJsonData = JSON.parse(activeData);
-                        if (activeJsonData.Success === false) {
-                            msgError(activeJsonData.Message);
-                        } else {
-                            outpatientPlanBirthPreSettlement(activeJsonData.Data);
-                        }
-                    }
-                }
+            //            //门诊计划生育预结算
+            //            var activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"OutpatientPlanBirthPreSettlement");
+            //            var activeJsonData = JSON.parse(activeData);
+            //            if (activeJsonData.Success === false) {
+            //                msgError(activeJsonData.Message);
+            //            } else {
+            //                outpatientPlanBirthPreSettlement(activeJsonData.Data);
+            //            }
+            //        }
+            //    }
 
-            });
+            //});
 
         });
         

@@ -612,9 +612,6 @@ namespace NFine.Web.Controllers
             });
 
         }
-
-        
-        
         #endregion
         #region 公共信息
         /// <summary>
@@ -654,6 +651,7 @@ namespace NFine.Web.Controllers
             });
 
         }
+       
         #endregion
         #region 医保
         /// <summary>

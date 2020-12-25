@@ -613,6 +613,26 @@
                 }
             });
         }
+        //初始查询
+        function getDirectoryCategoryTypeCode(categoryName) {
+            var code = null;
+            switch (categoryName) {
+            case "中药":
+                code = "0";
+                break;
+            case "西药":
+                code = "1";
+                break;
+            case "诊疗":
+                code = "2";
+                break;
+            case "耗材":
+                code = "3";
+                break;
+            }
+                   
+
+        }
         //头工具栏事件
         table.on('toolbar(dataTableBillId)', function (obj) {
          
@@ -703,38 +723,45 @@
          
             var data = obj.data;
             var dataIds = [];
-            //console.log(obj)
             if (obj.event === 'PairCode'){
                 var directoryName = data.DirectoryName;
                 var directoryCode = data.DirectoryCode;
-               
-                var directoryCategoryCode = data.DirectoryCategoryCode;
-               
-                var params = "?EmpId=" +
-                    $("#empid").val() +
-                    "&InIDirectoryName=" +
-                    directoryName +
-                    "&InIDirectoryCode=" +
-                    directoryCode +
-                    "&InIProjectCodeType=" +
-                    directoryCategoryCode;
-                    
-                //iframe层-父子操作
+                var directoryCategoryCode = null;
+                //var directoryCategoryName = data.DirectoryCategoryCode;
+                //if (directoryCategoryName !== null && directoryCategoryName !== "")
+                //{
+                //    directoryCategoryCode= getDirectoryCategoryTypeCode(directoryCategoryName);
+                //}
+                //        //layer.open关闭刷新
+                //        //location.reload();
+
+                var manufacturerName = data.ManufacturerName;
+                var params =
+                    "?UserId=" +
+                        $("#empid").val() +
+                        "&ProjectName=" +
+                        directoryName +
+                        "&ProjectCode=" +
+                        directoryCode +
+                        "&ProjectCodeType=" +
+                        directoryCategoryCode+
+                        "&Manufacturer=" +
+                        manufacturerName;
+
                 layer.open({
-                    id: 'MedicalDirectoryCode',
+                    id: 'medicalDirectoryPairCode',
                     type: 2,
                     title: '对码信息',
                     shadeClose: true, //点击遮罩关闭层
-                    area: ['80%', '90%'],
+                    area: ['1080px', '540px'],
                     fixed: false, //不固定
                     maxmin: true,
-                    content: hostPage + '/MedicalDirectoryCode' + params,
+                    content: hostPage + '/MedicalDirectoryPairCode' + params,
                     end: function() { //无论是确认还是取消，只要层被销毁了，end都会执行，不携带任何参数。layer.open关闭事件
-                        //layer.open关闭刷新
-                        //location.reload();
-                        inHospitalContentsTable();
+                       inHospitalContentsTable();
                     }
                 });
+               
             }
             if (obj.event === 'UnUploadData') {
                 //var directoryName = data.Id;

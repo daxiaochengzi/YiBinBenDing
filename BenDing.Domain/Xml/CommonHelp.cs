@@ -28,12 +28,14 @@ namespace BenDing.Domain.Xml
         public static string GetWebServiceUrl()
         {
             string resultData = null;
-            //测试a
+            //测试
             //resultData = "http://47.111.29.88:11013/WebService.asmx";
             //叙州
             // resultData = "http://11.21.1.11:8002/WebService.asmx";
             //江安
             //resultData = "http://11.21.1.11:8001/WebService.asmx";
+            //翠屏
+            //resultData = "http://11.21.1.11:8088/WebService.asmx";
             resultData = GetValue("WebServiceUrl");
             return resultData;
         }

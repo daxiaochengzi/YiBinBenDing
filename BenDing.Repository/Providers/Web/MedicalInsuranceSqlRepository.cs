@@ -1031,7 +1031,6 @@ namespace BenDing.Repository.Providers.Web
             str = str.Replace("&", "&amp");
             str = str.Replace("<", "&lt");
             str = str.Replace(">", "&gt");
-
             str = str.Replace("delete", "");
             str = str.Replace("update", "");
             str = str.Replace("insert", "");
