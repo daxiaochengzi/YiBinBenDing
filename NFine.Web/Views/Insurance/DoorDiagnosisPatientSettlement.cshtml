@@ -32,10 +32,11 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">结算方式</label>
                     <div class="layui-input-block">
-                        <input type="radio" id="SettlementThree" name="Settlement" value="2" checked="checked" title="门诊刷卡结算">
-                        <input type="radio" id="SettlementFour" name="Settlement" value="4"   disabled="" title="门诊居民报账">
-                        <input type="radio" id="SettlementTwo" name="Settlement" value="1"  title="职工计划生育结算">
-                        <input type="radio" id="SettlementOne" name="Settlement" value="3" title="医保电子凭证结算">
+                        <input type="radio" id="SettlementThree" name="Settlement" value="2" checked="checked" title="门诊职工刷卡结算">
+                        <input type="radio" id="SettlementFour" name="Settlement" value="4"   disabled="" title="门诊居民有卡报账">
+                        <input type="radio" id="SettlementFive" name="Settlement" value="5"   disabled="" title="门诊居民无卡报账">
+                        <input type="radio" id="SettlementTwo" name="Settlement" value="1"  title="门诊职工计划生育结算">
+                        <input type="radio" id="SettlementOne" name="Settlement" value="3" title="门诊医保电子凭证结算">
                     </div>
 
                 </div>
@@ -148,8 +149,9 @@
 
             </div>
             <div class="layui-form-item" id="DoorDiagnosisPreSettlementDiv" style="text-align: center; margin-top: 20px;">
-                <button type="button" Id="SettlementCard" class="layui-btn layui-btn-disabled layui-btn-radius">门诊职工刷卡结算</button>
-                <button type="button" Id="ResidentSettlementCard" class="layui-btn layui-btn-disabled layui-btn-radius">门诊居民结算</button>
+                <button type="button" Id="SettlementCard" class="layui-btn layui-btn-disabled layui-btn-radius">职工刷卡结算</button>
+                <button type="button" Id="ResidentSettlementCard" class="layui-btn layui-btn-disabled layui-btn-radius">居民结算</button>
+
                 <button type="button" Id="DoorDiagnosisPreSettlement" class="layui-btn layui-btn-disabled layui-btn-radius">职工计划生育预结算</button>
                 <button type="button" Id="OutpatientNationEcTrans" class="layui-btn layui-btn-disabled layui-btn-radius">医保电子凭证结算</button>
             </div>
@@ -158,7 +160,7 @@
 
             </div>
             <div class="layui-form-item" style="text-align: center; margin-top: 20px;" id="ResidentSettlementCardDiv">
-                <button type="button" Id="DoorDiagnosisResidentCardSettlement" class="layui-btn layui-btn-disabled layui-btn-radius">门诊居民划卡</button>
+                <button type="button" Id="DoorDiagnosisResidentCardSettlement" class="layui-btn layui-btn-disabled layui-btn-radius">居民划卡</button>
                 <button type="button" Id="CompleteSettlement" class="layui-btn layui-btn-disabled layui-btn-radius">完成结算</button>
                 
             </div>
@@ -292,12 +294,15 @@
                 isPassKey();
             }
             //居民刷卡结算
-            if (settlementVal === "2" || settlementVal === "4") {
-                if (baseInfo.Inpatient.InsuranceType === "342") {
-                    buttonStatus("SettlementCard", true);
-                    isPassKey();
-                }
-              
+            if ( settlementVal === "4" && baseInfo.Inpatient.InsuranceType === "342") {
+                buttonStatus("ResidentSettlementCard", true);
+                isPassKey();
+            }
+            //居民刷卡结算
+            if ( settlementVal === "5" && baseInfo.Inpatient.InsuranceType === "342") {
+                buttonStatus("ResidentSettlementCard", true);
+                $("#passwordDiv").show();
+                $("#CardPwd").focus();
             }
            
             //if (settlementVal === "4" )//门诊结算
@@ -385,7 +390,6 @@
         function getOutpatientPlanBirthPreSettlementParam() {
             //隐藏预结算按钮
             $("#DoorDiagnosisPreSettlementDiv").hide();
-          
             $.ajax({
                 type: 'POST',
                 url: hostNew + '/GetOutpatientPlanBirthPreSettlementParam',
@@ -588,7 +592,6 @@
 
             });
         }
-
         //获取门诊划卡参数
         function workerOutpatientSettlementCardParam() {
             var getCardParam = $.extend({}, params);
@@ -621,7 +624,6 @@
 
             });
         }
-
         //门诊划卡
         function workerOutpatientSettlementCard(settlementDataInfo) {
             var cardParam = $.extend({}, params);
@@ -673,13 +675,131 @@
                 workerOutpatientSettlementCardParam();
             }
         }
+        //门诊居民结算
+        function residentOutpatientPreSettlement(settlementJsonData) {
+            var preParam = $.extend({}, params);;
+            preParam["SettlementJson"] = settlementJsonData;
+            $.ajax({
+                type: 'post',
+                url: hostNew + '/ResidentOutpatientPreSettlement',
+                data: preParam,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        msgError(errData);
+                      
+
+                    } else {
+                        $('#CashPayment').val(data.Data.SelfPayFeeAmount);
+                        layer.alert('门诊居民结算成功', { icon: 6, shade: 0.1, skin: 'layui-layer-molv' });
+                        $("#ResidentSettlementCardDiv").show();
+                        //隐藏预结算按钮
+                        if (data.Data.BalanceAmount > 0) {
+                            buttonStatus("DoorDiagnosisResidentCardSettlement", true);
+                            
+                        }
+                        buttonStatus("CompleteSettlement", true);
+                        //添加预结算信息
+                        if (data.Data.PayMsg !== null) {
+                            settlementData(data.Data.PayMsg);
+                        }
+                    }
+                }
+
+            });
+        }
+        //门诊居民确认结算
+        function outpatientResidentConfirmSettlement() {
+            $.ajax({
+                type: 'post',
+                url: hostNew + '/OutpatientResidentConfirmSettlement',
+                data: params,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        msgError(errData);
+                    } else {
+                        layer.alert('确认结算成功', { icon: 6, shade: 0.1, skin: 'layui-layer-molv' });
+                        buttonStatus("DoorDiagnosisResidentCardSettlement", false);
+                        buttonStatus("CompleteSettlement", false);
+                      
+                    }
+                }
+
+            });
+        }
+       
+        //门诊居民划卡
+        function residentOutpatientSettlementCard(settlementDataInfo) {
+            var cardParam = $.extend({}, params);
+            cardParam["SettlementJson"] = settlementDataInfo;
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/ResidentOutpatientSettlementCard',
+                data: cardParam,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                    } else {
+                        
+                        $('#CashPayment').val(data.Data.SelfPayFeeAmount);
+                        layer.alert('划卡支付成功', { icon: 6, shade: 0.1, skin: 'layui-layer-molv' });
+                        //添加预结算信息
+                        if (data.Data.PayMsg !== null) {
+                            settlementData(data.Data.PayMsg);
+                        }
+                    }
+                }
+
+            });
+        }
+        //获取门诊居民划卡参数
+        function residentOutpatientSettlementCardParam() {
+            var cardParam = $.extend({}, params);
+          
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/ResidentOutpatientSettlementCardParam',
+                data: cardParam,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                    } else {
+                        var activeX = document.getElementById("CSharpActiveX");
+                        //划卡支付
+                        var activeData = activeX.OutpatientMethods(JSON.stringify(data.Data), JSON.stringify(baseInfo.HospitalInfo), "ResidentSettlementCard");
+                        var activeJsonData = JSON.parse(activeData);
+                        if (activeJsonData.Success === false) {
+                            msgError(activeJsonData.Message);
+                        } else {
+                            residentOutpatientSettlementCard(activeJsonData.Data);
+                        }
+
+                       
+                    }
+                }
+
+            });
+        }
+
         $('#CardPwd').bind('keypress', function (event) {
           
             if (event.keyCode === 13) {
                 workerSettlementCard();
             }
         });
-      
         //门诊预结算
         $('#DoorDiagnosisPreSettlement').on('click', function () {
             getOutpatientPlanBirthPreSettlementParam();
@@ -731,7 +851,7 @@
         $('#SettlementCard').on('click', function () {
             workerSettlementCard();
         });
-      
+        //查询
         $('#queryData').on('click', function () {
           
             ////baseInfo.Inpatient.InsuranceType = "310";
@@ -745,34 +865,47 @@
             $("#queryDataDiv").hide();
            
         });
+        //门诊居民结算
         $('#ResidentSettlementCard').on('click', function () {
+            buttonStatus("SettlementCard", false);
+            var cardParam = $.extend({}, params);
             
-            //$.ajax({
-            //    type: 'POST',
-            //    url: hostNew + '/GetResidentOutpatientPreSettlementParam',
-            //    data: params,
-            //    dataType: "json",
-            //    async: false,
-            //    success: function (data) {
-            //        if (data.Success === false) {
-            //            var errData = data.Message;
-            //            layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
-            //        } else {
-            //            var activeX = document.getElementById("CSharpActiveX");
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/GetResidentOutpatientPreSettlementParam',
+                data: params,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                    } else {
+                        var activeX = document.getElementById("CSharpActiveX");
                        
-            //            //门诊计划生育预结算
-            //            var activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"OutpatientPlanBirthPreSettlement");
-            //            var activeJsonData = JSON.parse(activeData);
-            //            if (activeJsonData.Success === false) {
-            //                msgError(activeJsonData.Message);
-            //            } else {
-            //                outpatientPlanBirthPreSettlement(activeJsonData.Data);
-            //            }
-            //        }
-            //    }
+                        //门诊居民结算
+                        var activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"ResidentSettlement");
+                        var activeJsonData = JSON.parse(activeData);
+                        if (activeJsonData.Success === false) {
+                            msgError(activeJsonData.Message);
+                        } else {
+                            residentOutpatientPreSettlement(activeJsonData.Data);
+                        }
+                    }
+                }
 
-            //});
+            });
 
+        });
+        //确认结算
+        $('#CompleteSettlement').on('click', function () {
+            buttonStatus("CompleteSettlement", false);
+            outpatientResidentConfirmSettlement();
+        });
+        //门诊居民划卡
+        $('#DoorDiagnosisResidentCardSettlement').on('click', function () {
+            buttonStatus("DoorDiagnosisResidentCardSettlement", false);
+            outpatientResidentConfirmSettlement();
         });
         
         $.ajax({

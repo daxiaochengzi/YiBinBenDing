@@ -275,7 +275,7 @@ namespace BenDing.Repository.Providers.Web
                         //诊疗
                         if (param.ProjectCodeType == "2")
                         {
-                            whereSql += $" and ProjectCodeType not in('11','12','13','41','81','91','92')";
+                            whereSql += $" and ProjectCodeType not in('41','81','91','92')";
                         }
                     }
                     if (!string.IsNullOrWhiteSpace(param.ProjectCode))

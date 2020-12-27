@@ -19,14 +19,14 @@
             <div class="layui-inline">
                 <label class="layui-form-label">目录类别</label>
                 <div class="layui-input-inline">
-                    <select name="PairCodeProjectCodeType">
+                    <select name="ProjectCodeType" id="ProjectCodeTypeData">
                         <option value="">请选择类别</option>
                         <option value="0">中药</option>
                         <option value="1">西药</option>
                         <option value="2">诊疗</option>
                         <option value="3">耗材</option>
                     </select>
-                    </div>
+                </div>
             </div>
             <div class="layui-inline">
                 <label class="layui-form-label">医保编码</label>
@@ -49,7 +49,7 @@
             <div class="layui-inline">
                 <label class="layui-form-label">国药准字号</label>
                 <div class="layui-input-inline">
-                    <input type="text" id="QuasiFontSize" name="QuasiFontSize"  placeholder="国药准字号" autocomplete="off" class="layui-input">
+                    <input type="text" id="QuasiFontSize" name="QuasiFontSize" placeholder="国药准字号" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-inline">
@@ -57,7 +57,7 @@
             </div>
             <input type="hidden" id="empid" value="@ViewBag.empid" />
             <input type="hidden" id="DirectoryCode" value="@ViewBag.DirectoryCode" />
-            @*<input type="hidden" id="DirectoryCategoryCode" value="@ViewBag.DirectoryCategoryCode" />*@
+            <input type="hidden" id="DirectoryCategoryCode" value="@ViewBag.DirectoryCategoryCode" />
         </div>
     </div>
     <table class="layui-hide" id="dataTable" lay-filter="dataTable"></table>
@@ -70,7 +70,16 @@
             , table = layui.table
             , form = layui.form;
         form.render(null, 'data-form');
-      
+
+        function iniDirectoryCategoryCode() {
+            var directoryCategoryCodeValue = $("#DirectoryCategoryCode").val();
+            if ($("directoryCategoryCodeValue") !== null && $("directoryCategoryCodeValue") !== "") {
+                $("#ProjectCodeTypeData").val(directoryCategoryCodeValue);
+                form.render();
+            }
+        }
+
+        iniDirectoryCategoryCode(); 
         //方法级渲染
         table.render({
             elem: '#dataTable'
@@ -78,7 +87,7 @@
             , where: {
                 UserId: $("#empid").val() //必传参数
                 , ProjectName: $("#ProjectName").val()
-                , ProjectCodeType: $("#PairCodeProjectCodeType").val()
+                , ProjectCodeType: $("#ProjectCodeType").val()
                 , ProjectCode: $("#ProjectCode").val()
                 , QuasiFontSize: $("#QuasiFontSize").val()
                 , Manufacturer: $("#Manufacturer").val()

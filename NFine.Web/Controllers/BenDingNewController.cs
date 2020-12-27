@@ -359,6 +359,10 @@ namespace NFine.Web.Controllers
                 resultData.Operator = cancelSettlementData.CancelOperator;
                 resultData.PatientName = queryData.PatientName;
                 resultData.OutpatientNumber = queryData.OutpatientNumber;
+              
+                string[] arr = queryData.OutpatientNumber.Split('M');
+                string mz = arr[1];
+                resultData.OutpatientNumber = mz;
                 resultData.VisitDate = queryData.VisitDate;
                 //医保门诊结算查询
                 var queryOutpatientData = _outpatientDepartmentService.QueryOutpatientDepartmentCost(param);
@@ -424,7 +428,7 @@ namespace NFine.Web.Controllers
 
         }
         /// <summary>
-        /// 获取门诊电子卡参数
+        /// 获取门诊电子凭参数
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
@@ -439,9 +443,9 @@ namespace NFine.Web.Controllers
             });
 
         }
-        
+
         /// <summary>
-        /// 门诊电子支付
+        /// 门诊电子凭支付
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
@@ -473,7 +477,7 @@ namespace NFine.Web.Controllers
 
         }
         /// <summary>
-        /// 获取门诊居民参数
+        /// 获取门诊居民电子凭证参数
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
@@ -495,7 +499,7 @@ namespace NFine.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         public ApiJsonResultData OutpatientNationEcTransResident([FromBody]OutpatientNationEcTransUiParam param)
-        {
+       {
             return new ApiJsonResultData(ModelState).RunWithTry(y =>
             {
                 var data = _outpatientDepartmentNewService.OutpatientNationEcTransResident(param);
@@ -612,6 +616,21 @@ namespace NFine.Web.Controllers
             });
 
         }
+        /// <summary>
+        /// 门诊居民确认结算
+        /// </summary>
+        /// <param name="param"></param> 
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData OutpatientResidentConfirmSettlement([FromBody]OutpatientResidentConfirmSettlementUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+               _outpatientDepartmentNewService.OutpatientResidentConfirmSettlement(param);
+            });
+
+        }
+        
         #endregion
         #region 公共信息
         /// <summary>
