@@ -920,7 +920,22 @@ namespace NFine.Web.Controllers
         [HttpGet]
         public void TestSqlSugar()
         {
-           var ddd= CommonHelp.GetValue("WebServiceUrl");
+            //var ddd= CommonHelp.GetValue("WebServiceUrl");
+            StringBuilder ctrXml = new StringBuilder();
+            ctrXml.Append("<?xml version=\"1.0\" encoding=\"GBK\" standalone=\"yes\" ?>");
+            ctrXml.Append(@"<ROW>
+                        <PO_AKC600>1013441659</PO_AKC600>
+	                    <PO_AAE241>216.91</PO_AAE241>
+	                    <PO_AAE240>219.7</PO_AAE240>
+	                    <PO_XJZF>0.0</PO_XJZF>
+	                    <PO_YAZ725>2.31</PO_YAZ725>
+	                    <PO_YEZF>0.99</PO_YEZF>
+	                    <PO_FHZ>1</PO_FHZ>
+	                    <PO_MSG></PO_MSG>
+	                    <PO_BXJE>3.30</PO_BXJE>
+	                    <PO_BXBL>0.7</PO_BXBL>
+                    </ROW>");
+              var iniData = XmlSerializeHelper.DESerializer<ResidentOutpatientPreSettlementXmlDto>(ctrXml.ToString());
             //var dataList = _hospitalLogMap.GetList();
             //var ccc= _hospitalLogMap._db.Ado.GetDataTable("select * from table");
             //_hospitalLogMap.CurrentDb.DeleteById(1);

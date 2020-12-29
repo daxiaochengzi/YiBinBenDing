@@ -226,7 +226,7 @@ namespace BenDing.Service.Providers
             }//居民
             else if (residentData.InsuranceType == "342")
             {//电子凭证结算
-                if (residentData.SettlementType == "3")
+                if (residentData.SettlementType == "3"|| residentData.SettlementType == "2")
                 {
                     StringBuilder ctrXml = new StringBuilder();
                     ctrXml.Append("<?xml version=\"1.0\" encoding=\"GBK\" standalone=\"yes\" ?>");
@@ -1000,14 +1000,18 @@ namespace BenDing.Service.Providers
             var resultData=new GetResidentOutpatientSettlementParam();
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
             userBase.TransKey = param.TransKey;
-
+            var id = Guid.NewGuid();
             var outpatientParam = new GetOutpatientPersonParam()
             {
                 User = userBase,
                 UiParam = param,
                 IsSave = true,
-                Id = Guid.NewGuid(),
+                Id= id,
             };
+            //报销类别
+            var reimbursementType = "2";
+            //如果卡号不为空测为刷卡报销
+            if (!string.IsNullOrWhiteSpace(param.InsuranceNo)) reimbursementType = "1";
             var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
             if (outpatientPerson == null) throw new Exception("his中未获取到当前病人!!!");
             var outpatientDetailPerson = _serviceBasicService.GetOutpatientDetailPerson(new OutpatientDetailParam()
@@ -1059,13 +1063,15 @@ namespace BenDing.Service.Providers
             resultData.PatientName = outpatientPerson.PatientName;
             resultData.VisitDate = Convert.ToDateTime(outpatientPerson.VisitDate).ToString("yyyyMMddHHmmss");
             resultData.RowDataList = rowDataList;
-            resultData.SerialNumber = CommonHelp.GuidToStr(param.BusinessId);
+            resultData.SerialNumber = CommonHelp.GuidToStr(id.ToString());
             var diagnosisData = outpatientPerson.DiagnosisList.FirstOrDefault(c => c.IsMainDiagnosis == "是");
             if (diagnosisData == null) throw new Exception("诊断:不能为空!!!");
             if (!string.IsNullOrWhiteSpace(diagnosisData.ProjectCode) == false) throw new Exception("诊断:" + diagnosisData.DiseaseName + "未医保对码!!!");
             resultData.MainDiagnosisIcd10 = diagnosisData.ProjectCode;
             resultData.MainDiagnosis = diagnosisData.DiseaseName;
             resultData.Pwd =param.Pwd;
+            resultData.ReimbursementType = reimbursementType;
+            resultData.InsuranceNo = param.InsuranceNo;
             resultData.TotalAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost);
             return XmlSerializeHelper.HisXmlSerialize(resultData);
         }
@@ -1076,12 +1082,10 @@ namespace BenDing.Service.Providers
         /// <returns></returns>
         public OutpatientNationEcTransResidentBackDto ResidentOutpatientPreSettlement(GetResidentOutpatientSettlementUiParam param)
         {
-           
-            var iniData = JsonConvert.DeserializeObject<OutpatientNationEcTransResidentJsonDto>(param.SettlementJson);
+            var iniData = XmlSerializeHelper.DESerializer<ResidentOutpatientPreSettlementXmlDto>(param.SettlementJson);
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
             userBase.TransKey = param.TransKey;
-            var resultData = new OutpatientNationEcTransResidentBackDto();
-             resultData = AutoMapper.Mapper.Map<OutpatientNationEcTransResidentBackDto>(iniData);
+            var resultData = AutoMapper.Mapper.Map<OutpatientNationEcTransResidentBackDto>(iniData);
             //门诊病人信息存储
             var id = Guid.NewGuid();
             var outpatientParam = new GetOutpatientPersonParam()
@@ -1121,12 +1125,44 @@ namespace BenDing.Service.Providers
                 MedicalInsuranceAllAmount = outpatientPerson.MedicalTreatmentTotalCost,
                 SettlementTransactionId = userBase.UserId,
                 MedicalInsuranceState = MedicalInsuranceState.MedicalInsuranceSettlement,
-                SettlementType = "1",
+                SettlementType = "2",
 
             };
             //存入中间层
             _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateData);
-         
+            // 回参构建
+            var xmlData = new OutpatientDepartmentCostXml()
+            {
+                AccountBalance = iniData.BalanceAmount,
+                MedicalInsuranceOutpatientNo = iniData.SettlementNo,
+                CashPayment = iniData.CashPaymentAmount,
+                SettlementNo = iniData.SettlementNo,
+                AllAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost),
+                PatientName = outpatientPerson.PatientName,
+                AccountAmountPay = iniData.BalancePaymentAmount,
+                MedicalInsuranceType = "342",
+            };
+            var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
+            var saveXml = new SaveXmlDataParam()
+            {
+                User = userBase,
+                MedicalInsuranceBackNum = "zydj",
+                MedicalInsuranceCode = "48",
+                BusinessId = param.BusinessId,
+                BackParam = strXmlBackParam
+            };
+            ////存基层
+            _webBasicRepository.SaveXmlData(saveXml);
+            var updateParamData = new UpdateMedicalInsuranceResidentSettlementParam()
+            {
+                UserId = param.UserId,
+                Id = residentData.Id,
+                MedicalInsuranceState = MedicalInsuranceState.HisSettlement,
+                IsHisUpdateState = true,
+
+            };
+            //  更新中间层
+            _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateParamData);
             return resultData;
         }
         /// <summary>
@@ -1214,7 +1250,11 @@ namespace BenDing.Service.Providers
             paramIni.IsSave = false;
             paramIni.UiParam = param;
             var outpatient = _serviceBasicService.GetOutpatientPerson(paramIni);
-            var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
+            //报销类别
+            var reimbursementType = "2";
+            //如果卡号不为空测为刷卡报销
+            if (!string.IsNullOrWhiteSpace(param.InsuranceNo)) reimbursementType = "1";
+             var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
             {
                 BusinessId = param.BusinessId,
             };
@@ -1229,12 +1269,12 @@ namespace BenDing.Service.Providers
             StringBuilder ctrXml = new StringBuilder();
             ctrXml.Append("<?xml version=\"1.0\" encoding=\"GBK\" standalone=\"yes\" ?>");
             ctrXml.Append("<ROW>");
-            ctrXml.Append($"<PI_JSLB>{""}</PI_JSLB>");//结算类别
+            ctrXml.Append($"<PI_JSLB>1</PI_JSLB>");//结算类别住院
             ctrXml.Append($"<PI_AAZ216>{residentData.SettlementNo}</PI_AAZ216>");//住院或门诊统筹结算流水号
             ctrXml.Append($"<PI_AAC002>{outpatient.IdCardNo}</PI_AAC002>");//支付门诊对象的身份证号码
             ctrXml.Append($"<PI_AAC003>{outpatient.PatientName}</PI_AAC003>");//支付门诊对象的姓名
             ctrXml.Append($"<PI_BKC042>{downAmount}</PI_BKC042>");//门诊余额下账金额
-            ctrXml.Append($"<PI_AKA131>{"1"}</PI_AKA131>");//报销方式
+            ctrXml.Append($"<PI_AKA131>{reimbursementType}</PI_AKA131>");//报销方式
             ctrXml.Append($"<PI_CARDID>{param.InsuranceNo}</PI_CARDID>");//社保卡号
             ctrXml.Append($"<PI_PSW>{param.Pwd}</PI_PSW>");//密码
             ctrXml.Append("</ROW>");

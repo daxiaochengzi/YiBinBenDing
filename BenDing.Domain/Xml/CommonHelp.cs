@@ -318,13 +318,11 @@ namespace BenDing.Domain.Xml
                 if (num == 2)
                 {
                     resultData.DiagnosisIcd10Two = item.ProjectCode;
-
                 }
 
                 if (num == 3)
                 {
                     resultData.DiagnosisIcd10Three = item.ProjectCode;
-
                 }
 
                 num++;

@@ -177,10 +177,10 @@
         }
         params["timestamp"] = (new Date()).valueOf();
         //插件检查
-        //var verification = DetectActiveX();
-        //if (verification === false) {
-        //    return false;
-        //}
+        var verification = DetectActiveX();
+        if (verification === false) {
+            return false;
+        }
         //数据初始化
         $.ajax({
             type: 'get',
@@ -234,9 +234,9 @@
                         //普通门诊取消结算
                         var activeData;
                         var activeJsonData;
-                        debugger;
+                     
                         //刷卡
-                        if (settlementType === "2") {
+                        if (settlementType === "2" && insuranceType === "310") {
                             activeData = activeX.HospitalizationMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"WorkerCancelSettlementCard");
                            
                             activeJsonData = JSON.parse(activeData);
@@ -257,16 +257,18 @@
                                 CancelOutpatientDepartmentCost();
                             }
                         }
-                        //电子凭证
-                        else if (settlementType === "3" && insuranceType==="342") {
-                            //activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "CancelResidentSettlement");
-
-                            activeJsonData = JSON.parse(activeData);
-                            if (activeJsonData.Success === false) {
-                                msgError(activeJsonData.Message);
-                            } else {
-                                CancelOutpatientDepartmentCost();
+                        //
+                        else if (insuranceType === "342") {
+                            if (settlementType === "2" || settlementType === "3") {
+                                activeData = activeX.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "CancelResidentSettlement");
+                                activeJsonData = JSON.parse(activeData);
+                                if (activeJsonData.Success === false) {
+                                    msgError(activeJsonData.Message);
+                                } else {
+                                    CancelOutpatientDepartmentCost();
+                                }
                             }
+                           
                            
                         }//计划生育
                         else if (settlementType ===null) {
