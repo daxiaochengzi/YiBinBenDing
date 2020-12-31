@@ -21,6 +21,7 @@
 <div class="layui-tab layui-tab-card layui-tab-brief" lay-filter="tabProjectDirectory">
     <ul class="layui-tab-title">
         <li data-status="0" id="tabProjectDirectoryOne">医院目录</li>
+        <li data-status="3" id="tabOutpatientExclusion">门诊目录</li>
         <li data-status="1">医保目录</li>
         <li data-status="2" id="tabProjectDirectoryThere">对码管理</li>
     </ul>
@@ -30,9 +31,9 @@
     <input type="hidden" id="pairCodeProjectName" value="@ViewBag.InIDirectoryName" />
     <input type="hidden" id="pairCodeManufacturer">
     
-    <div class="layui-tab-content" >
+    <div class="layui-tab-content">
         <div class="layui-tab-item" id="tabProjectDirectoryClassOne">
-            <div class="layui-form layui-card-header layui-card-header-auto"  lay-filter="LAY-app-content-list">
+            <div class="layui-form layui-card-header layui-card-header-auto" lay-filter="LAY-app-content-list">
                 <div class="layui-form-item">
                     <div class="layui-inline">
                         <label class="layui-form-label-nw">目录类别</label>
@@ -75,7 +76,26 @@
             <table id="LAY-app-content-list" lay-filter="LAY-app-content-list"></table>
         </div>
         <div class="layui-tab-item">
-            <div class="layui-form layui-card-header layui-card-header-auto"  style="padding-bottom:5px" lay-filter="yibao-content-list">
+            <div class="layui-form layui-card-header layui-card-header-auto" style="padding-bottom:5px" lay-filter="yibao-content-list">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label-nw">目录名称</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="ExclusionName" placeholder="目录名称" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <button class="layui-btn" id="ExclusionBut">查询</button>
+
+                    </div>
+                </div>
+
+            </div>
+            <table id="OutpatientExclusionTable" lay-filter="OutpatientExclusionTable"></table>
+        </div>
+        <div class="layui-tab-item">
+            <div class="layui-form layui-card-header layui-card-header-auto" style="padding-bottom:5px" lay-filter="yibao-content-list">
                 <div class="layui-form-item">
                     <div class="layui-inline">
                         <label class="layui-form-label-nw">目录类别</label>
@@ -172,55 +192,9 @@
                 <table class="layui-hide" id="LAY-pair-content-list" lay-filter="LAY-pair-content-list"></table>
             </div>
 
-            @*<div class="layui-form layui-card-header layui-card-header-auto">
-                    <input type="hidden" id="pairCodeDirectoryCode"  value="@ViewBag.InIDirectoryCode"/>
-                    <input type="hidden" id="InIProjectCodeType"  value="@ViewBag.InIProjectCodeType"/>
-                    <div class="layui-form-item">
-
-                        <div class="layui-inline">
-                            <label class="layui-form-label-nw">目录类别</label>
-                            <div class="layui-input-inline">
-                                <select id="pairCodeProjectCodeType" name="pairCodeProjectCodeType">
-                                    <option value="" selected="selected">请选择类别</option>
-                                    <option value="0">中药</option>
-                                    <option value="1">西药</option>
-                                    <option value="2">诊疗</option>
-                                    <option value="3">耗材</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="layui-inline">
-                            <label class="layui-form-label-nw">医保项目编码</label>
-                            <div class="layui-input-inline">
-                                <input type="text" id="pairCodeProjectCode" placeholder="医保项目编码" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-inline">
-                            <label class="layui-form-label-nw">医保项目名称</label>
-                            <div class="layui-input-inline">
-                                <input type="text" id="pairCodeProjectName" value="@ViewBag.InIDirectoryName" placeholder="医保项目名称" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-inline">
-                            <label class="layui-form-label-nw">生产厂家</label>
-                            <div class="layui-input-inline">
-                                <input type="text" id="pairCodeManufacturer" placeholder="生产厂家" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-inline">
-                            <label class="layui-form-label-nw">国药准字号</label>
-                            <div class="layui-input-inline">
-                                <input type="text" id="pairCodeQuasiFontSize" placeholder="国药准字号" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-inline">
-                            <button class="layui-btn" id="pairDateQuery" data-type="dataSearch">查询</button>
-
-                        </div>
-                    </div>
-                    <table class="layui-hide" id="LAY-pairDate-content-list"  lay-filter="LAY-pairDate-content-list"></table>
-                </div>*@
+           
         </div>
+    
     </div>
 </div>
 
@@ -254,11 +228,9 @@
                         $("#pairCodeProjectCodeType").val("3");
                         break;
                     }
-                   
 
                 }
 
-           
                 var inIProjectCodeType = $("#pairCodeProjectCodeType").val();
                 if (inIProjectCodeType !== "" && inIProjectCodeType !== undefined) {
 
@@ -297,6 +269,10 @@
                             //对码数据表格
                             pairCodeDataTable();
                             break;
+                        case '3':
+                            //门诊目录
+                            outpatientExclusionTable();
+                            break;
                     }
                     form.render();
                 }
@@ -323,19 +299,19 @@
                             [//表头
                                 { type: 'numbers', fixed: 'left' }, { field: 'DirectoryCode', title: '医院目录编码(商品ID)', width: 310 },
                                 { field: 'DirectoryName', title: '目录名称', width: 300, sort: true },
-                                { field: 'MnemonicCode', title: '助记码', width: 300 },
                                 { field: 'DirectoryCategoryName', title: '目录类别', width: 100, sort: true },
                                 { field: 'Unit', title: '单位', width: 90 },
                                 { field: 'Specification', title: '规格', width: 100 },
                                 //{ field: 'Formulation', title: '剂型', width: 160 },
                                 { field: 'ManufacturerName', title: '生产厂家', width: 300, sort: true },
+                              
+                                { field: 'ID', title: '门诊不传', toolbar: '#tableBaseCodeBtn', width: 100, align: 'center' },
                                 { field: 'DirectoryCreateTime', title: '创建时间', sort: true, width: 120 },
                                 { field: 'Remark', title: '备注' }
                             ]
                         ]
                     });
                 }
-
                 function medicalInsuranceTableData(tableWhere) {
                     tableWhere["UserId"] = $("#empid").val();
                     //医保目录
@@ -483,7 +459,7 @@
 
                 //}
                 function pairCodeDataModelTable() {
-                    debugger;
+                   
                     var directoryName = $("#pairCodeProjectName").val();
                     var directoryCode = $("#pairCodeDirectoryCode").val();
                     var manufacturerName = $("#pairCodeManufacturer").val();
@@ -519,6 +495,44 @@
                         }
                     });
                 }
+                //
+                function outpatientExclusionTable() {
+                    var tableWhere =
+                    {
+                        UserId: $("#empid").val(),
+                        DirectoryName: $("#ExclusionName").val()
+                    };
+                  
+                    //医保目录
+                    table.render({
+                        elem: '#OutpatientExclusionTable',
+                        height: $(window).height() - 128,
+                        url: hostNew + '/OutpatientExclusionQuery' //数据接口
+                        , where: tableWhere,
+                        parseData: function (res) { //res 即为原始返回的数据
+                            return {
+                                "code": res.Code, //解析接口状态
+                                "msg": res.Message, //解析提示文本
+                                "count": res.Data.count, //解析数据长度
+                                "data": res.Data.data //解析数据列表
+                            };
+                        },
+                        page: true,
+                        cols: [
+                            [
+                                { type: 'numbers', fixed: 'left' },
+                                { field: 'ID', title: '删除', toolbar: '#tableBaseDeleteCodeBtn', width: 180, align: 'center' },
+                                { field: 'DirectoryCode', title: '项目编码', width: 160 },
+                                { field: 'DirectoryName', title: '项目名称', width: 160, sort: true }
+                                , { field: 'DirectoryCategoryName', title: '项目类别', width: 160, sort: true}
+                                , { field: 'CreateUserName', title: '操作人员', width: 100 },
+                                { field: 'CreateTime', title: '操作时间', width: 160 }
+                              
+                            ]
+                        ]
+                        //,skin: 'line'
+                    });
+                }
                 //监听搜索
                 form.on('submit(LAY-app-content-list)',
                     function (data) {
@@ -539,6 +553,11 @@
                     function (data) {
                         pairCodeDataTable();
                     });
+                //查询
+                $('#ExclusionBut').on('click', function () {
+
+                    outpatientExclusionTable();
+                });
 
                 $('#updateSearch').on('click',
                     function () {
@@ -607,7 +626,7 @@
                 //监听工具条
                 table.on('tool(LAY-pair-content-list)',
                     function (obj) {
-                        debugger;
+                     
                         var data = obj.data;
                         var directoryName = data.DirectoryName;
                         var pairCodeManufacturer = data.ManufacturerName;
@@ -655,15 +674,93 @@
                             cancelPairCode(cancelParam);
                         }
                     });
+                table.on('tool(LAY-app-content-list)',
+                    function (obj) {
 
-              
+                        var data = obj.data;
+                       
+                        var sendData =
+                        {
+                            "DirectoryName": data.DirectoryName,
+                            "DirectoryCode": data.DirectoryCode,
+                            "DirectoryCategoryName": data.DirectoryCategoryName,
+                            "UserId": $("#empid").val()
+                        }
+                     
+                        if (obj.event === 'baseAdd') {
+                            $.ajax({
+                                url: hostNew + '/OutpatientExclusionAdd',
+                                type: 'POST',
+                                data: JSON.stringify(sendData),
+                                dataType: "json",
+                                contentType: 'application/json',
+                                success: function (data) {
+                                    if (data.Success === false) {
+                                        var errData = data.Message;
+                                        layer.msg('操作失败' + errData, { time: 2000, icon: 5 });
+                                    } else {
+                                   
+                                        pairCodeDataTable();
+                                        layer.alert('操作成功', { icon: 6, title: '温馨提示', shade: 0.1, skin: 'layui-layer-molv' });
+                                    }
+                                },
+                                complete: function () {
+                                    layer.close(this.layerIndex);
+                                }
+                            });
+                        }
+                       
+                    });
+                table.on('tool(OutpatientExclusionTable)',
+                    function (obj) {
+
+                        var data = obj.data;
+                       
+                        var sendData =
+                        {
+                            "id": data.Id,
+                            "UserId": $("#empid").val()
+                        }
+                     
+                        if (obj.event === 'baseDelete') {
+                            $.ajax({
+                                url: hostNew + '/OutpatientExclusionCancel',
+                                type: 'POST',
+                                data: JSON.stringify(sendData),
+                                dataType: "json",
+                                contentType: 'application/json',
+                                success: function (data) {
+                                    if (data.Success === false) {
+                                        var errData = data.Message;
+                                        layer.msg('操作失败' + errData, { time: 2000, icon: 5 });
+                                    } else {
+                                   
+                                        outpatientExclusionTable();
+                                        layer.alert('操作成功', { icon: 6, title: '温馨提示', shade: 0.1, skin: 'layui-layer-molv' });
+                                    }
+                                },
+                                complete: function () {
+                                    layer.close(this.layerIndex);
+                                }
+                            });
+                        }
+                       
+                    });
+                //
                 table.on('row(LAY-pair-content-list)',
                     function (obj) {
                         //获取当前行的所有兄弟姐妹元素，把他们的background-color样式清除，然后再给当前行设置颜色。
                         $(obj.tr).siblings().css("background-color", "");
                         obj.tr.css("background-color", "#FFFFCC");
                     });
-                table.on('tool(LAY-pairDate-content-list)', function (obj) {
+                table.on('row(LAY-pair-content-list)',
+                    function (obj) {
+                        //获取当前行的所有兄弟姐妹元素，把他们的background-color样式清除，然后再给当前行设置颜色。
+                        $(obj.tr).siblings().css("background-color", "");
+                        obj.tr.css("background-color", "#FFFFCC");
+                    });
+                table.on('tool(LAY-pairDate-content-list)',
+                    function (obj) {
                    
                     var data = obj.data;
                     var userId = $("#empid").val();
@@ -731,6 +828,12 @@
 
 <script type="text/html" id="tableCodeBtn">
     <a class="layui-btn layui-btn-xs" lay-event="pairCodeTo">对码</a>
+</script>
+<script type="text/html" id="tableBaseCodeBtn">
+    <a class="layui-btn layui-btn-xs" lay-event="baseAdd">标记</a>
+</script>
+<script type="text/html" id="tableBaseDeleteCodeBtn">
+    <a class="layui-btn layui-btn-xs" lay-event="baseDelete">删除</a>
 </script>
 <script type="text/html" id="tableBtn">
     {{#  if(d.Id == null){ }}

@@ -825,10 +825,12 @@
                 }
               
             }
-            if (settlementRadio === "5"&& pwd === "") {
+            if (settlementRadio === "5") {
+                if (pwd === "") {
+                    msgError("消费密码不能为空!!!");
+                    return false;
+                }
                 cardParam["Pwd"] = pwd;
-                msgError("消费密码不能为空!!!");
-                return false;
                 }
             buttonStatus("ResidentSettlementCard", false);
             $.ajax({

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
+using BenDing.Domain.Models.Entitys;
 using BenDing.Domain.Models.Enums;
 using BenDing.Domain.Models.Params;
 using BenDing.Domain.Models.Params.Base;
@@ -1355,6 +1356,110 @@ namespace BenDing.Repository.Providers.Web
                     _log.Debug(strSql);
                     throw new Exception(e.Message);
                 }
+            }
+        }
+        /// <summary>
+        /// 门诊不传医保查询
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public Dictionary<int, List<OutpatientExclusion>> OutpatientExclusionQuery(OutpatientExclusionQueryParam param)
+        {
+            List<OutpatientExclusion> dataList;
+            var resultData = new Dictionary<int, List<OutpatientExclusion>>();
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                string querySql = null;
+                try
+                {
+                    sqlConnection.Open();
+                    querySql = $@"select * from [dbo].[OutpatientExclusion] where IsDelete=0 and OrganizationCode='{param.OrganizationCode}'";
+                    string countSql = $@"select count(*) from [dbo].[OutpatientExclusion] where IsDelete=0 and OrganizationCode='{param.OrganizationCode}'";
+                    string whereSql = "";
+                   
+                    if (!string.IsNullOrWhiteSpace(param.DirectoryName))
+                    {
+                        whereSql += $"  and DirectoryName like '%{param.DirectoryName}%'";
+                    }
+                   
+                    if (param.Limit != 0 && param.Page > 0)
+                    {
+                        var skipCount = param.Limit * (param.Page - 1);
+                        querySql += whereSql + " order by CreateTime desc OFFSET " + skipCount + " ROWS FETCH NEXT " + param.Limit + " ROWS ONLY;";
+                    }
+                    string executeSql = countSql + whereSql + ";" + querySql;
+
+                    var result = sqlConnection.QueryMultiple(executeSql);
+
+                    int totalPageCount = result.Read<int>().FirstOrDefault();
+                    dataList = (from t in result.Read<OutpatientExclusion>()
+
+                                select t).ToList();
+
+                    resultData.Add(totalPageCount, dataList);
+                    sqlConnection.Close();
+                    return resultData;
+
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(querySql);
+                    throw new Exception(e.Message);
+                }
+
+
+            }
+        }
+        //取消门诊不传医保
+        public int OutpatientExclusionCancel(OutpatientExclusionCancelParam param)
+        {
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                string strSql = null;
+                try
+                {
+                    sqlConnection.Open();
+                    strSql = $@" update [dbo].[OutpatientExclusion] set IsDelete=1 ,DeleteUserId='{param.UserId}',DeleteTime=getDate() 
+                               where Id='{param.Id}'";
+                    var data = sqlConnection.Execute(strSql);
+
+                    sqlConnection.Close();
+                    return data;
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(strSql);
+                    throw new Exception(e.Message);
+                }
+
+            }
+        }
+        //添加门诊不传医保
+        public int OutpatientExclusionAdd(OutpatientExclusionAddParam param)
+        {
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                string strSql = null;
+                try
+                {
+                    sqlConnection.Open();
+                     strSql = $@"
+                                        insert into [dbo].[OutpatientExclusion]([id],[DirectoryCode],[DirectoryName],[DirectoryCategoryName],
+                                        [OrganizationCode],[OrganizationName],CreateTime,CreateUserId,IsDelete,CreateUserName)
+                                        values('{Guid.NewGuid()}','{param.DirectoryCode}','{param.DirectoryName}','{param.DirectoryCategoryName}',
+                                        '{param.User.OrganizationCode}','{param.User.OrganizationName}',getDate(),'{param.User.UserId}',0,'{param.User.UserName}');";
+                    
+                    var data = sqlConnection.Execute(strSql);
+
+                    sqlConnection.Close();
+                    return data;
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(strSql);
+                    throw new Exception(e.Message);
+                }
+
             }
         }
         public int DeleteDatabase(DeleteDatabaseParam param)

@@ -6,6 +6,7 @@ using System.Text;
 using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
+using BenDing.Domain.Models.Entitys;
 using BenDing.Domain.Models.Enums;
 using BenDing.Domain.Models.Params;
 using BenDing.Domain.Models.Params.Base;
@@ -206,10 +207,28 @@ namespace BenDing.Repository.Interfaces.Web
         /// <returns></returns>
          Dictionary<int, List<QueryPatientInfoDto>> QueryPatientInfo(QueryPatientInfoParam param);
         /// <summary>
+        /// 门诊不传医保查询
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        Dictionary<int, List<OutpatientExclusion>> OutpatientExclusionQuery(OutpatientExclusionQueryParam param);
+        /// <summary>
+        /// 取消门诊不传医保
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        int OutpatientExclusionCancel(OutpatientExclusionCancelParam param);
+        /// <summary>
+        /// 添加门诊不传医保
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        int OutpatientExclusionAdd(OutpatientExclusionAddParam param);
+        /// <summary>
         /// 对码数据导出
         /// </summary>
         /// <param name="organizationCode"></param>
         /// <returns></returns>
-         DataTable MedicalInsurancePairCodeTableData(string organizationCode);
+        DataTable MedicalInsurancePairCodeTableData(string organizationCode);
     }
 }

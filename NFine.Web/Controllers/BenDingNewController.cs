@@ -630,7 +630,6 @@ namespace NFine.Web.Controllers
             });
 
         }
-        
         #endregion
         #region 公共信息
         /// <summary>
@@ -670,7 +669,76 @@ namespace NFine.Web.Controllers
             });
 
         }
-       
+        /// <summary>
+        /// 门诊不传医保查询
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiJsonResultData OutpatientExclusionQuery([FromUri]OutpatientExclusionQueryUiParam param)
+        {
+            return new ApiJsonResultData(ModelState, new QueryICD10InfoDto()).RunWithTry(y =>
+            {
+                var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+
+                var queryData = _hisSqlRepository.OutpatientExclusionQuery(new OutpatientExclusionQueryParam()
+                {
+                    Page = param.Page,
+                    DirectoryName = param.DirectoryName,
+                    Limit = param.Limit,
+                    OrganizationCode = userBase.OrganizationCode
+                });
+                var data = new
+                {
+                    data = queryData.Values.FirstOrDefault(),
+                    count = queryData.Keys.FirstOrDefault()
+                };
+                y.Data = data;
+            });
+        }
+        /// <summary>
+        /// 添加门诊不出医保
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData OutpatientExclusionAdd([FromBody]OutpatientExclusionAddUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+                var data = _hisSqlRepository.OutpatientExclusionAdd(new OutpatientExclusionAddParam()
+                {
+                    DirectoryName = param.DirectoryName,
+                    DirectoryCode = param.DirectoryCode,
+                    DirectoryCategoryName= param.DirectoryCategoryName,
+                    User = userBase
+                });
+               
+            });
+
+        }
+
+        /// <summary>
+        /// 取消门诊不传医保
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData OutpatientExclusionCancel([FromBody]OutpatientExclusionCancelUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+              
+                var data = _hisSqlRepository.OutpatientExclusionCancel(new OutpatientExclusionCancelParam()
+                {
+                  
+                    UserId = param.UserId,
+                    Id = param.Id
+                });
+
+            });
+
+        }
         #endregion
         #region 医保
         /// <summary>
