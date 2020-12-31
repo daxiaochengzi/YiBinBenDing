@@ -422,7 +422,8 @@
         }
         ////*处方明细查询*/
         $('#QueryInHospital').on('click',
-            function() {
+            function () {
+               
                 inHospitalContentsTable();
               
               
@@ -724,17 +725,9 @@
             var data = obj.data;
             var dataIds = [];
             if (obj.event === 'PairCode'){
-                var directoryName = data.DirectoryName;
+                var directoryName = ReplaceChar(data.DirectoryName);
                 var directoryCode = data.DirectoryCode;
                 var directoryCategoryCode = null;
-                //var directoryCategoryName = data.DirectoryCategoryCode;
-                //if (directoryCategoryName !== null && directoryCategoryName !== "")
-                //{
-                //    directoryCategoryCode= getDirectoryCategoryTypeCode(directoryCategoryName);
-                //}
-                //        //layer.open关闭刷新
-                //        //location.reload();
-
                 var manufacturerName = data.ManufacturerName;
                 var params =
                     "?UserId=" +

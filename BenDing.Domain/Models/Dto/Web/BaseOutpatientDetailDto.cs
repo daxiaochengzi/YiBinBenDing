@@ -191,9 +191,12 @@ namespace BenDing.Domain.Models.Dto.Web
         /// </summary>
       
         public string OrganizationName { get; set; }
+        /// <summary>
+        /// 不传标记
+        /// </summary>
+        public int? NotUploadMark { get; set; }
 
-       
-      
 
-    }
+
+}
 }

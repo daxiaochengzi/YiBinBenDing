@@ -24,5 +24,9 @@ namespace BenDing.Domain.Models.Params.Web
         /// 业务id
         /// </summary>
         public string BusinessId { get; set; }
-    }
+        /// <summary>
+        /// 不传标记
+        /// </summary>
+        public int? NotUploadMark { get; set; }
+}
 }

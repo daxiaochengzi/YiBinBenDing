@@ -219,6 +219,16 @@ function getInpatientInfo(getInpatientInfoBack)
             getInpatientInfoBack();
         }
 }
+//替换特殊字符
+function ReplaceChar(objVal) {
+    
+    var patternStr = '!,@,#,$,%,^,&,*,(,),-,+,_,=,:';
+    iniJs.each(patternStr.split(','), function (key, val) {
+        
+         objVal= objVal.replace(val, '');
+    });
+    return objVal;
+}
 //读卡获取患者基本信息
 function getReadCardInpatientInfo(getInpatientInfoBack) {
 

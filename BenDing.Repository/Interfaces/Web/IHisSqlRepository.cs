@@ -213,6 +213,12 @@ namespace BenDing.Repository.Interfaces.Web
         /// <returns></returns>
         Dictionary<int, List<OutpatientExclusion>> OutpatientExclusionQuery(OutpatientExclusionQueryParam param);
         /// <summary>
+        /// 门诊不传医保查询
+        /// </summary>
+        /// <param name="organizationCode"></param>
+        /// <returns></returns>
+        List<OutpatientExclusion> OutpatientExclusionListQuery(string organizationCode);
+        /// <summary>
         /// 取消门诊不传医保
         /// </summary>
         /// <param name="param"></param>

@@ -810,14 +810,14 @@ namespace BenDing.Repository.Providers.Web
 			                   ,[BillDepartmentId] ,[BillDoctorName],[BillDoctorId] ,[BillTime] ,[OperateDepartmentName],[OperateDepartmentId]
                                ,[OperateDoctorName] ,[OperateDoctorId],[OperateTime] ,[PrescriptionDoctor] ,[Operators],[PracticeDoctorNumber]
                                ,[CostWriteOffId],[OrganizationCode],[OrganizationName] ,[CreateTime] ,[IsDelete],[DeleteTime],CreateUserId
-                               ,DataSort,UploadMark,RecipeCodeFixedEncoding,BillDoctorIdFixedEncoding,BusinessTime,MedicalInsuranceProjectCode)
+                               ,DataSort,UploadMark,RecipeCodeFixedEncoding,BillDoctorIdFixedEncoding,BusinessTime,MedicalInsuranceProjectCode,NotUploadMark)
                            VALUES('{Guid.NewGuid()}','{item.OutpatientNo}','{item.DetailId}','{item.DirectoryName}','{item.DirectoryCode}','{item.DirectoryCategoryName}','{item.DirectoryCategoryCode}'
                                  ,'{item.Unit}','{item.Formulation}','{item.Specification}',{item.UnitPrice},{item.Quantity},{CommonHelp.ValueToDouble(item.Amount)},'{item.Dosage}','{item.Usage}','{item.MedicateDays}',
                                  '{item.HospitalPricingUnit}','{item.IsImportedDrugs}','{item.DrugProducingArea}','{item.RecipeCode}','{item.CostDocumentType}','{item.BillDepartment}'
                                  ,'{item.BillDepartmentId}','{item.BillDoctorName}','{item.BillDoctorId}','{item.BillTime}','{item.OperateDepartmentName}','{item.OperateDepartmentId}'
                                  ,'{item.OperateDoctorName}','{item.OperateDoctorId}','{item.OperateTime}','{item.PrescriptionDoctor}','{item.Operators}','{item.PracticeDoctorNumber}'
                                  ,'{item.CostWriteOffId}','{item.OrganizationCode}','{item.OrganizationName}',getDate(),0,null,'{user.UserId}'
-                                 ,{sort},0,'null','{item.BillDoctorId}','{businessTime}','{item.MedicalInsuranceProjectCode}'
+                                 ,{sort},0,'null','{item.BillDoctorId}','{businessTime}','{item.MedicalInsuranceProjectCode}',{item.NotUploadMark}
                                  );";
                                 insertSql += str;
                             }
@@ -1399,6 +1399,36 @@ namespace BenDing.Repository.Providers.Web
                     resultData.Add(totalPageCount, dataList);
                     sqlConnection.Close();
                     return resultData;
+
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(querySql);
+                    throw new Exception(e.Message);
+                }
+
+
+            }
+        }
+        /// <summary>
+        /// 门诊不传医保查询
+        /// </summary>
+        /// <param name="organizationCode">组织机构编号</param>
+        /// <returns></returns>
+        public List<OutpatientExclusion> OutpatientExclusionListQuery(string organizationCode)
+        {
+          
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                string querySql = null;
+                try
+                {
+                    sqlConnection.Open();
+                    querySql = $@"select * from [dbo].[OutpatientExclusion] where IsDelete=0 and OrganizationCode='{organizationCode}'";
+                    var result = sqlConnection.Query<OutpatientExclusion>(querySql).ToList();
+
+                    sqlConnection.Close();
+                    return result;
 
                 }
                 catch (Exception e)

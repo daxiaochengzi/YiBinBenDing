@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BenDing.Domain.Models.Dto.JsonEntity;
 using BenDing.Domain.Models.Dto.Web;
 using BenDing.Domain.Models.Dto.Workers;
+using BenDing.Domain.Models.Entitys;
 using BenDing.Domain.Models.Enums;
 using BenDing.Domain.Models.HisXml;
 using BenDing.Domain.Models.Params;
@@ -354,12 +355,24 @@ namespace BenDing.Service.Providers
             var data = _webServiceBasic.HIS_Interface("39", jsonParam);
             OutpatientPersonJsonDto dataValue = JsonConvert.DeserializeObject<OutpatientPersonJsonDto>(data.Msg);
             var detailInfo = dataValue.DetailInfo;
+            var exclusionList = new List<OutpatientExclusion>();
+            if (param.NotUploadMark == 1)
+            {
+                exclusionList = _hisSqlRepository.OutpatientExclusionListQuery(param.User.OrganizationCode);
+            }
+
             foreach (var item in detailInfo)
             {
                 var detail = AutoMapper.Mapper.Map<BaseOutpatientDetailDto>(item);
                 detail.OrganizationCode = param.User.OrganizationCode;
                 detail.OrganizationName = param.User.OrganizationName;
                 detail.OutpatientNo = dataValue.OutpatientPersonBase.OutpatientNumber;
+                detail.Amount = CommonHelp.ValueToDouble(item.Amount);
+                if (param.NotUploadMark == 1)
+                {
+                    var exclusionData = exclusionList.FirstOrDefault(c => c.DirectoryCode == item.DirectoryCode);
+                    if (exclusionData != null && exclusionData.IsDelete==false) detail.NotUploadMark = 1;
+                }
                 resultData.Add(detail);
 
             }
