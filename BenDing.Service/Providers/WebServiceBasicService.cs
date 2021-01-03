@@ -368,11 +368,13 @@ namespace BenDing.Service.Providers
                 detail.OrganizationName = param.User.OrganizationName;
                 detail.OutpatientNo = dataValue.OutpatientPersonBase.OutpatientNumber;
                 detail.Amount = CommonHelp.ValueToDouble(item.Amount);
+                detail.NotUploadMark = 0;
                 if (param.NotUploadMark == 1)
                 {
                     var exclusionData = exclusionList.FirstOrDefault(c => c.DirectoryCode == item.DirectoryCode);
                     if (exclusionData != null && exclusionData.IsDelete==false) detail.NotUploadMark = 1;
                 }
+      
                 resultData.Add(detail);
 
             }
