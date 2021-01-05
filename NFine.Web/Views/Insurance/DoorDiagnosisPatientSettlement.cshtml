@@ -299,7 +299,7 @@
                 buttonStatus("ResidentSettlementCard", true);
                 isPassKey();
             }
-            //居民刷卡结算
+            //居民无卡结算
             if ( settlementVal === "5" && baseInfo.Inpatient.InsuranceType === "342") {
                 buttonStatus("ResidentSettlementCard", true);
                 $("#passwordDiv").show();
@@ -734,13 +734,69 @@
 
             });
         }
-      
+        //居民划卡结算
+        function residentSettlementCard() {
+            var cardParam = $.extend({}, params);
+            var pwd = $("#CardPwd").val();
+            if (settlementRadio === "4") {
+                if (passWordKey === "0") {
+                    if (verifyPassword() === false) return false;
+                    cardParam["Pwd"] = pwd;
+                    workerReadCardInfo(pwd);
+                    cardParam["InsuranceNo"] = insuranceNo;
+                } else {
+                    workerReadCardInfo("");
+                    cardParam["InsuranceNo"] = insuranceNo;
+                }
+
+            }
+            if (settlementRadio === "5") {
+                if (pwd === "") {
+                    msgError("消费密码不能为空!!!");
+                    return false;
+                }
+                cardParam["Pwd"] = pwd;
+            }
+            buttonStatus("ResidentSettlementCard", false);
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/GetResidentOutpatientPreSettlementParam',
+                data: cardParam,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                    } else {
+                        // var activeX = document.getElementById("CSharpActiveX");
+
+                        //门诊居民结算
+                        var activeData = activeXNew.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "ResidentSettlement");
+                        var activeJsonData = JSON.parse(activeData);
+                        if (activeJsonData.Success === false) {
+                            msgError(activeJsonData.Message);
+                        } else {
+                            residentOutpatientPreSettlement(activeJsonData.Data);
+                        }
+                    }
+                }
+
+            });
+        }
      
 
         $('#CardPwd').bind('keypress', function (event) {
-          
-            if (event.keyCode === 13) {
+            var settlementVal = $('input[name="Settlement"]:checked').val();
+
+            if (event.keyCode === 13 && settlementVal==="2") {
                 workerSettlementCard();
+            }//居民有卡报账
+            if (event.keyCode === 13 && settlementVal==="4") {
+                residentSettlementCard();
+            }//居民无卡报账
+            if (event.keyCode === 13 && settlementVal==="5") {
+                residentSettlementCard();
             }
         });
         //门诊预结算
@@ -811,54 +867,8 @@
         });
         //门诊居民结算
         $('#ResidentSettlementCard').on('click', function () {
-            var cardParam = $.extend({}, params);
-            var pwd = $("#CardPwd").val();
-            if (settlementRadio === "4") {
-                if (passWordKey === "0") {
-                    if (verifyPassword() === false) return false;
-                    cardParam["Pwd"] = pwd;
-                    workerReadCardInfo(pwd);
-                    cardParam["InsuranceNo"] = insuranceNo;
-                } else {
-                    workerReadCardInfo("");
-                    cardParam["InsuranceNo"] = insuranceNo;
-                }
-              
-            }
-            if (settlementRadio === "5") {
-                if (pwd === "") {
-                    msgError("消费密码不能为空!!!");
-                    return false;
-                }
-                cardParam["Pwd"] = pwd;
-                }
-            buttonStatus("ResidentSettlementCard", false);
-            $.ajax({
-                type: 'POST',
-                url: hostNew + '/GetResidentOutpatientPreSettlementParam',
-                data: cardParam,
-                dataType: "json",
-                async: false,
-                success: function (data) {
-                    if (data.Success === false) {
-                        var errData = data.Message;
-                        layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
-                    } else {
-                       // var activeX = document.getElementById("CSharpActiveX");
-                       
-                        //门诊居民结算
-                        var activeData = activeXNew.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"ResidentSettlement");
-                        var activeJsonData = JSON.parse(activeData);
-                        if (activeJsonData.Success === false) {
-                            msgError(activeJsonData.Message);
-                        } else {
-                            residentOutpatientPreSettlement(activeJsonData.Data);
-                        }
-                    }
-                }
 
-            });
-
+            residentSettlementCard();
         });
 
         $.ajax({
