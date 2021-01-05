@@ -300,7 +300,6 @@ namespace BenDing.Repository.Providers.Web
 
             return totalNum;
         }
-
         //300行一次保存医保ICD10
         private void SaveMedicalInsuranceICD10(List<ICD10InfoDto> param, string userId)
         {
@@ -1473,11 +1472,12 @@ namespace BenDing.Repository.Providers.Web
                 try
                 {
                     sqlConnection.Open();
-                     strSql = $@"
-                                        insert into [dbo].[OutpatientExclusion]([id],[DirectoryCode],[DirectoryName],[DirectoryCategoryName],
-                                        [OrganizationCode],[OrganizationName],CreateTime,CreateUserId,IsDelete,CreateUserName)
-                                        values('{Guid.NewGuid()}','{param.DirectoryCode}','{param.DirectoryName}','{param.DirectoryCategoryName}',
-                                        '{param.User.OrganizationCode}','{param.User.OrganizationName}',getDate(),'{param.User.UserId}',0,'{param.User.UserName}');";
+                     strSql = $@" update [dbo].[OutpatientExclusion] set IsDelete=1 ,DeleteUserId='{param.User.UserId}',DeleteTime=getDate() 
+                                  where OrganizationCode='{param.User.OrganizationCode}' and IsDelete=0 and DirectoryCode='{param.DirectoryCode}';
+                                 insert into [dbo].[OutpatientExclusion]([id],[DirectoryCode],[DirectoryName],[DirectoryCategoryName],
+                                 [OrganizationCode],[OrganizationName],CreateTime,CreateUserId,IsDelete,CreateUserName)
+                                 values('{Guid.NewGuid()}','{param.DirectoryCode}','{param.DirectoryName}','{param.DirectoryCategoryName}',
+                                 '{param.User.OrganizationCode}','{param.User.OrganizationName}',getDate(),'{param.User.UserId}',0,'{param.User.UserName}');";
                     
                     var data = sqlConnection.Execute(strSql);
 

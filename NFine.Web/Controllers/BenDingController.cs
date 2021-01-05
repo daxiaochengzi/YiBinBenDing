@@ -928,6 +928,29 @@ namespace NFine.Web.Controllers
         }
 
         /// <summary>
+        /// 全机构对码回写
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData OrganizationCodePairCode([FromBody]UiInIParam param)
+        {
+            return new ApiJsonResultData(ModelState, new MedicalInsurancePairCodesUiParam()).RunWithTry(y =>
+            {
+                var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+                var data = _webServiceBasicService.ThreeCataloguePairCodeUpload(
+                    new UpdateThreeCataloguePairCodeUploadParam()
+                    {
+                        User = userBase,
+                        ProjectCodeList = new List<string>()
+                    }
+                );
+                y.Data = data;
+            });
+
+        }
+
+        /// <summary>
         /// 取消对码
         /// </summary>
         /// <param name="param"></param>
