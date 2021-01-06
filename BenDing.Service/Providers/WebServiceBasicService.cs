@@ -299,6 +299,7 @@ namespace BenDing.Service.Providers
             var data = _webServiceBasic.HIS_Interface("39", jsonParam);
             OutpatientPersonJsonDto dataValue = JsonConvert.DeserializeObject<OutpatientPersonJsonDto>(data.Msg);
             var dataValueFirst = dataValue.OutpatientPersonBase;
+            var dataValueList = dataValue.DetailInfo;
             if (dataValueFirst != null)
             {
                 resultData = AutoMapper.Mapper.Map<BaseOutpatientInfoDto>(dataValueFirst);
@@ -307,6 +308,20 @@ namespace BenDing.Service.Providers
                 resultData.DiagnosticJson = JsonConvert.SerializeObject(dataValue.DiagnosisList);
                 resultData.DiagnosisList = dataValue.DiagnosisList;
                 resultData.MedicalTreatmentTotalCost = CommonHelp.ValueToDouble(resultData.MedicalTreatmentTotalCost);
+                var detailList = new List<BaseOutpatientDetailDto>();
+                foreach (var item in dataValueList)
+                {
+                    var detail = AutoMapper.Mapper.Map<BaseOutpatientDetailDto>(item);
+                    detail.OrganizationCode = param.User.OrganizationCode;
+                    detail.OrganizationName = param.User.OrganizationName;
+                    detail.OutpatientNo = dataValue.OutpatientPersonBase.OutpatientNumber;
+                    detail.Amount = CommonHelp.ValueToDouble(item.Amount);
+                    detail.NotUploadMark = 0;
+                    detailList.Add(detail);
+
+                }
+
+                resultData.MedicalTreatmentTotalCost = detailList.Sum(c => c.Amount);
                 if (param.IsSave)
                 {
                     _hisSqlRepository.SaveOutpatient(param.User, resultData);
