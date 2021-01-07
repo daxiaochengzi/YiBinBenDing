@@ -33,9 +33,9 @@ namespace NFine.Web.Areas.SystemManage.Controllers
         [HttpPost]
         public ActionResult ImportExcel()
         {
-            var loginInfo = OperatorProvider.Provider.GetCurrent();
-            var user = userApp.GetForm(loginInfo.UserId);
-            if (user.F_IsHisAccount == false) throw new Exception("非基层认证人员不能下载icd10");
+            //var loginInfo = OperatorProvider.Provider.GetCurrent();
+            //var user = userApp.GetForm(loginInfo.UserId);
+            //if (user.F_IsHisAccount == false) throw new Exception("非基层认证人员不能下载icd10");
             string name = Request.Form["sheetName"];
             HttpPostedFileBase file = Request.Files["file"];
             string content = "";
@@ -62,7 +62,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
                     }
                     else
                     {
-                        var count = _webServiceBasicService.MedicalInsuranceDownloadIcd10(dataExcel, user.F_HisUserId);
+                        var count = _webServiceBasicService.MedicalInsuranceDownloadIcd10(dataExcel, "4518252ED380446D9D5090E003F6EBFB");
                         content = "<script>alert('+" + count + "数据上传成功!!!')</script>";
                     }
 

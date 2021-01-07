@@ -279,9 +279,9 @@ namespace BenDing.Repository.Providers.Web
             {
                 var item = new ICD10InfoDto
                 {
-                    DiseaseCoding = dr["AAZ164"].ToString(),
-                    DiseaseName = dr["AKA121"].ToString(),
-                    MnemonicCode = dr["AKA020"].ToString(),
+                    DiseaseCoding = dr["编码"].ToString(),
+                    DiseaseName = dr["名称"].ToString(),
+                 
                 };
                 addIcd10Data.Add(item);
                 if (addIcd10Data.Count() >= 300)

@@ -481,6 +481,7 @@ namespace NFine.Web.Controllers
               {
                   User = baseUser,
                   BusinessId = param.BusinessId,
+               
 
               };
               var data = _webServiceBasicService.GetOutpatientDetailPerson(outpatientDetailParam);

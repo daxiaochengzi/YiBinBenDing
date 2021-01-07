@@ -83,7 +83,7 @@ namespace BenDing.Service.Interfaces
         /// <summary>
         /// 获取门诊病人明细
         /// </summary>
-        /// <param name="user"></param>
+     
         /// <param name="param"></param>
         /// <returns></returns>
         List<BaseOutpatientDetailDto> GetOutpatientDetailPerson(OutpatientDetailParam param);
