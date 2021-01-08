@@ -221,11 +221,11 @@ function getInpatientInfo(getInpatientInfoBack)
 }
 //替换特殊字符
 function ReplaceChar(objVal) {
-    
+
     var patternStr = '!,@,#,$,%,^,&,*,(,),-,+,_,=,:';
     iniJs.each(patternStr.split(','), function (key, val) {
-        
-         objVal= objVal.replace(val, '');
+
+        objVal = objVal.replace(val, '');
     });
     return objVal;
 }

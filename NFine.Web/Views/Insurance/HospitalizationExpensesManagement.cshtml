@@ -139,6 +139,16 @@
         //是否初始化加载数据
         var isLoad = true;
         $("#batchExamineData").hide();
+        //替换特殊字符
+        function replaceValueChar(objVal) {
+    
+            var patternStr = '!,#,$,%,^,&,*,(,),-,+,_,=,:';
+            iniJs.each(patternStr.split(','), function (key, val) {
+        
+                objVal= objVal.replace(val, '');
+            });
+            return objVal;
+        }
         //---------------------
         //初始查询
         getList('0');
@@ -724,7 +734,8 @@
             var data = obj.data;
             var dataIds = [];
             if (obj.event === 'PairCode'){
-                var directoryName = ReplaceChar(data.DirectoryName);
+               var directoryName = replaceValueChar(data.DirectoryName);
+                //var directoryName =data.DirectoryName;
                 var directoryCode = data.DirectoryCode;
                 var directoryCategoryCode = null;
                 var manufacturerName = data.ManufacturerName;
