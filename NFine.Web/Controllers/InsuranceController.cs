@@ -132,6 +132,18 @@ namespace NFine.Web.Controllers
             ViewBag.title = "医保目录对码";
             return View();
         }
+        /// <summary>
+        /// 门诊医保目录对码
+        /// </summary>
+        /// <returns></returns>
+
+        public ActionResult OutpatientDirectoryCode(GetHisBaseParam param)
+        {
+            ViewBag.empid = param.EmpId;
+            ViewBag.bid = param.BId;
+            ViewBag.transkey = param.TransKey;
+            return View();
+        }
 
         /// <summary>
         /// 住院清单上传,2.2.4.	处方项目传输

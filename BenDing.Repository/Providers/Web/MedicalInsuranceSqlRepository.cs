@@ -670,6 +670,9 @@ namespace BenDing.Repository.Providers.Web
 
             }
         }
+    
+      
+
         /// <summary>
         /// 目录对照中心
         /// </summary>
@@ -847,7 +850,7 @@ namespace BenDing.Repository.Providers.Web
         }
 
         /// <summary>
-        /// 
+        /// 添加对码还未上传基层
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>

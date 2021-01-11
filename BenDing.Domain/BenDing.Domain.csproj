@@ -73,6 +73,7 @@
     <Compile Include="Models\Dto\JsonEntity\InpatientInfoJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\LeaveHospitalDiagnosisDataJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\HisHospitalizationSettlementJsonDto.cs" />
+    <Compile Include="Models\Dto\JsonEntity\MedicalInsurancePairCodeDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\MonthlyHospitalizationJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\NationEcTransJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\OutpatientDetailJsonDto.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Models\Dto\JsonEntity\WorkerHospitalizationPreSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\GetOutpatientSettlementCancelDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\NationEcTransDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\OutpatientPairCodeQueryDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\QueryHospitalizationFeeNewDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\ResidentOutpatientPreSettlementXmlDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\WorkerBirthSettlementDto.cs" />
@@ -294,6 +296,7 @@
     <Compile Include="Models\Params\UI\MonthlyHospitalizationUiParam.cs" />
     <Compile Include="Models\Params\UI\OutpatientExclusionUiParam.cs" />
     <Compile Include="Models\Params\UI\OutpatientNationEcTransUiParam.cs" />
+    <Compile Include="Models\Params\UI\OutpatientPairCodeUiParam.cs" />
     <Compile Include="Models\Params\UI\OutpatientPlanBirthPreSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\GetOutpatientPlanBirthSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\OutpatientPlanBirthSettlementUiParam.cs" />

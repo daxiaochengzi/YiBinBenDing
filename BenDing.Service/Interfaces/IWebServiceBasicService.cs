@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using BenDing.Domain.Models.Dto.JsonEntity;
+using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Params.Base;
 using BenDing.Domain.Models.Params.Resident;
 using BenDing.Domain.Models.Params.SystemManage;
@@ -123,6 +124,13 @@ namespace BenDing.Service.Interfaces
         /// <param name="param"></param>
         /// <returns></returns>
         int ThreeCataloguePairCodeUpload(UpdateThreeCataloguePairCodeUploadParam param);
+        /// <summary>
+        /// 门诊对码
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+         Dictionary<int, List<OutpatientPairCodeQueryDto>> OutpatientPairCodeQuery(
+            OutpatientPairCodeUiParam param);
         /// <summary>
         /// 住院医保查询
         /// </summary>

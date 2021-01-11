@@ -108,6 +108,13 @@ namespace BenDing.Repository.Interfaces.Web
         /// <returns></returns>
         Dictionary<int, List<QueryCatalogDto>> QueryCatalog(QueryCatalogUiParam param);
         /// <summary>
+        /// 三大目录列表查询
+        /// </summary>
+        /// <param name="directoryCodeList"></param>
+        /// <param name="organizationCode"></param>
+        /// <returns></returns>
+        List<QueryCatalogDto> QueryCatalogList(List<string> directoryCodeList, string organizationCode);
+        /// <summary>
         /// 添加三大目录
         /// </summary>
         /// <param name="param"></param>

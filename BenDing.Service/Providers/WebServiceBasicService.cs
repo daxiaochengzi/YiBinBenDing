@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BenDing.Domain.Models.Dto.JsonEntity;
+using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Dto.Web;
 using BenDing.Domain.Models.Dto.Workers;
 using BenDing.Domain.Models.Entitys;
@@ -397,6 +398,90 @@ namespace BenDing.Service.Providers
             {
                   _hisSqlRepository.SaveOutpatientDetail(param.User, resultData);
             }
+            return resultData;
+        }
+        /// <summary>
+        /// 门诊对码查询
+        /// </summary>
+        public Dictionary<int, List<OutpatientPairCodeQueryDto>> OutpatientPairCodeQuery(OutpatientPairCodeUiParam param)
+        {
+           var dataList=new  List<OutpatientPairCodeQueryDto>();
+            var dataListNew = new List<OutpatientPairCodeQueryDto>();
+            var resultData = new Dictionary<int, List<OutpatientPairCodeQueryDto>>();
+            var baseUser = GetUserBaseInfo(param.UserId);
+            baseUser.TransKey = param.TransKey;
+            var detailData=  GetOutpatientDetailPerson(new OutpatientDetailParam()
+            {
+                NotUploadMark = 1,
+                User = baseUser,
+                BusinessId = param.BusinessId,
+                IsSave = false
+            });
+            var detailDataNew = detailData.Where(c => c.NotUploadMark ==0).ToList();
+            
+            var pairCodeData =
+                _medicalInsuranceSqlRepository.QueryMedicalInsurancePairCode(new QueryMedicalInsurancePairCodeParam()
+                {
+                    OrganizationCode = baseUser.OrganizationCode,
+                    DirectoryCodeList = detailDataNew.Select(d=>d.DirectoryCode).ToList()
+                });
+     
+            if (pairCodeData != null && pairCodeData.Any())
+            {
+                foreach (var item in detailDataNew)
+                {
+                    var pairCodeValue = pairCodeData.FirstOrDefault(c => c.DirectoryCode == item.DirectoryCode);
+                    var itemData = new OutpatientPairCodeQueryDto
+                    {
+                        DirectoryName = item.DirectoryName,
+                        DirectoryCode = item.DirectoryCode,
+                        Specification = item.Specification,
+                        Amount = item.Amount,
+                        PairCodeState = pairCodeValue!=null? 1:0
+                    };
+                    dataList.Add(itemData); 
+
+                }
+            }
+
+          
+            if (!string.IsNullOrWhiteSpace(param.DirectoryName))
+            {
+                dataList = dataList.Where(c => c.DirectoryName.Contains(param.DirectoryName)).ToList();
+            }
+            if (param.PairCodeState=="0")
+            {
+                dataList = dataList.Where(c => c.PairCodeState==1).ToList();
+            }
+            
+            var pageList= dataList.Skip(param.Limit * (param.Page - 1)).Take(param.Limit).ToList();
+         
+            if (dataList.Count > 0)
+            {
+                var directoryCodeList = pageList.Select(d => d.DirectoryCode).ToList();
+                var catalogList = _hisSqlRepository.QueryCatalogList(directoryCodeList, baseUser.OrganizationCode);
+
+                foreach (var item in pageList)
+                {
+                    var catalogData = catalogList.FirstOrDefault(c => c.DirectoryCode == item.DirectoryCode);
+                    var itemValue = new OutpatientPairCodeQueryDto
+                    {
+                        DirectoryCode = item.DirectoryCode,
+                        Amount = item.Amount,
+                        DirectoryName = item.DirectoryName,
+                        Specification = item.Specification,
+                        PairCodeState = item.PairCodeState,
+                        ManufacturerName = catalogData!=null? catalogData.ManufacturerName:""
+                    };
+                    dataListNew.Add(itemValue);
+                }
+            }
+            else
+            {
+                dataListNew = pageList;
+            }
+
+            resultData.Add(dataList.Count, dataListNew);
             return resultData;
         }
 

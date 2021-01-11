@@ -1,0 +1,192 @@
+﻿@{
+    ViewBag.Title = "门诊目录对码";
+    Layout = "~/Views/Shared/_Base.cshtml";
+}
+<link href="~/Content/js/layui/css/modules/layuiAutocomplete.css" rel="stylesheet" />
+<div id="card-container" style="overflow: hidden !important;">
+    <input type="hidden" id="bid" name="BusinessId" value="@ViewBag.bid" placeholder="业务ID" />
+    <input type="hidden" id="empid" name="UserId" value="@ViewBag.empid" placeholder="用户ID" />
+    <input type="hidden" id="transkey" name="TransKey" value="@ViewBag.transkey" placeholder="医保交易id" />
+
+    <form class="layui-form" id="LAY-form" lay-filter="LAY-form-render">
+        <!--搜索部分-->
+        <div class="layui-form-item" style="padding-top: 10px">
+
+            <div class="layui-inline">
+                <label class="layui-form-label">项目名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="DirectoryName" placeholder="项目名称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">对码状态</label>
+                <div class="layui-input-inline">
+                    <select id="PairCodeState" name="PairCodeState">
+                        <option value="" selected="selected">请选择对码状态</option>
+                        <option value="0">未对吗</option>
+
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <button type="button" Id="OutpatientTableQuery" class="layui-btn layui-btn-radius">查询</button>
+              
+            </div>
+            <table class="layui-hide" id="OutpatientTable" lay-filter="OutpatientTable"></table>
+
+        </div>
+    </form>
+</div>
+<script>
+    layui.config({
+        base: '/Content/js/layui/plugin/'
+    }).extend({
+        autocomplete: 'layAutoComplete'
+    });
+
+    layui.use(['form', 'laypage', 'layer', 'table', 'element'],
+        function() {
+            var $ = layui.$,
+                element = layui.element,
+                form = layui.form,
+                layer = layui.layer,
+                table = layui.table;
+            form.render();
+            function outpatientTableQuery() {
+               
+                var tableWhere = {
+                    UserId: $("#empid").val(),
+                    DirectoryName: $("#DirectoryName").val(),
+                    State: $("#PairCodeState").val(),
+                    BusinessId: $("#bid").val(),
+                    TransKey: $("#transkey").val(),
+                    timestamp: (new Date()).valueOf()
+                };
+                //医院目录
+                table.render({
+                    elem: '#OutpatientTable',
+                    height: $(window).height() - 128,
+                    url: host + '/OutpatientPairCodeQuery' //数据接口
+                    , where: tableWhere,
+                    parseData: function (res) { //res 即为原始返回的数据
+                        return {
+                            "code": res.Code, //解析接口状态
+                            "msg": res.Message, //解析提示文本
+                            "count": res.Data.count, //解析数据长度
+                            "data": res.Data.data //解析数据列表
+                        };
+                    },
+                    page: true,//开启分页
+                    limits: [10, 20, 50],
+                    limit: 10, //每页默认显示的数量
+                    cols: [
+                        [//表头
+                            { type: 'numbers', fixed: 'left' },
+                            { field: 'PairCodeState', title: '对码', toolbar: '#OutpatientTableBtn', width: 100, align: 'center' },
+                            { field: 'DirectoryName', title: '目录名称', width: 200, sort: true },
+                            { field: 'Specification', title: '规格', width: 100 },
+                            { field: 'Amount', title: '金额', width: 100 },
+                            { field: 'ManufacturerName', title: '生产厂家', width: 200  },  
+                            { field: 'DirectoryCode', title: '医院目录编码(商品ID)', width: 310 }
+                        ]
+                    ]
+                });
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可
+            }
+
+            outpatientTableQuery();
+            $('#OutpatientTableQuery').on('click',
+                function() {
+                    outpatientTableQuery();
+                });
+            //监听工具条
+            table.on('tool(OutpatientTable)',
+                function (obj) {
+
+                    var data = obj.data;
+                    var directoryName = data.DirectoryName;
+                    var pairCodeManufacturer = data.ManufacturerName;
+                    var directoryCode = data.DirectoryCode;
+                    var params =
+                        "?UserId=" +
+                            $("#empid").val() +
+                            "&ProjectName=" +
+                            directoryName +
+                            "&ProjectCode=" +
+                            directoryCode +
+                            "&Manufacturer=" +
+                            pairCodeManufacturer;
+                    if (obj.event === 'pairCode') {
+                      
+
+                        layer.open({
+                            id: 'medicalDirectoryPairCode',
+                            type: 2,
+                            title: '对码信息',
+                            shadeClose: true, //点击遮罩关闭层
+                            area: ['800px', '440px'],
+                            fixed: false, //不固定
+                            maxmin: true,
+                            content: hostPage + '/MedicalDirectoryPairCode' + params,
+                            end: function () { //无论是确认还是取消，只要层被销毁了，end都会执行，不携带任何参数。layer.open关闭事件
+                                //layer.open关闭刷新
+                                //location.reload();
+                                outpatientTableQuery();
+                            }
+                        });
+                    }
+                    else if (obj.event === 'updatePairCode') {
+
+                        layer.confirm('是否重新对码?',
+                            {
+                                title: false,
+                                btn: ['是', '否'] //按钮
+                            },
+                            function (ind) {
+                              
+                                layer.open({
+                                        id: 'medicalDirectoryPairCode',
+                                        type: 2,
+                                        title: '对码信息',
+                                        shadeClose: true, //点击遮罩关闭层
+                                        area: ['1080px', '540px'],
+                                        fixed: false, //不固定
+                                        maxmin: true,
+                                        content: hostPage + '/MedicalDirectoryPairCode' + params,
+                                        end: function () { //无论是确认还是取消，只要层被销毁了，end都会执行，不携带任何参数。layer.open关闭事件
+                                            //layer.open关闭刷新
+                                            //location.reload();
+                                            outpatientTableQuery();
+                                        }
+
+
+                            },
+                            function (inds) {
+                                layer.close(inds);
+
+                            });
+                          });
+                        }
+                    //if (obj.event === 'CancelPairCode') {
+
+                    //    var projectName = data.ProjectName;
+                    //    var cancelParam = {
+                    //        "ProjectName": projectName,
+                    //        "DirectoryCode": data.DirectoryCode,
+                    //        "UserId": $("#empid").val()
+                    //    }
+                    //    cancelPairCode(cancelParam);
+                    //}
+                });
+        });
+
+
+</script>
+<script type="text/html" id="OutpatientTableBtn">
+    {{#  if(d.PairCodeState === 0){ }}
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="pairCode">对码</a>
+    {{#  } else { }}
+    <a class="layui-btn layui-btn-xs" lay-event="updatePairCode">重新对码</a>
+  
+    {{#  }}}
+</script>

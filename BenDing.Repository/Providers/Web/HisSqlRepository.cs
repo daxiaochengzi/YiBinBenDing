@@ -220,6 +220,52 @@ namespace BenDing.Repository.Providers.Web
 
         }
         /// <summary>
+        /// 三大目录列表查询
+        /// </summary>
+        /// <param name="directoryCodeList"></param>
+        /// <param name="organizationCode"></param>
+        /// <returns></returns>
+        public List<QueryCatalogDto> QueryCatalogList(List<string> directoryCodeList,string organizationCode)
+        {
+            List<QueryCatalogDto> dataList;
+          
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                string querySql = null;
+                try
+                {
+                    sqlConnection.Open();
+                    querySql = $@"
+                             select Id, DirectoryCode ,DirectoryName,MnemonicCode,DirectoryCategoryName,Unit,Specification
+                             ,Formulation,ManufacturerName,Remark,DirectoryCreateTime from [dbo].[HospitalThreeCatalogue] 
+                          where IsDelete=0 and OrganizationCode='{organizationCode}'";
+
+                    var result = sqlConnection.QueryMultiple(querySql);
+
+                 
+                    dataList = (from t in result.Read<QueryCatalogDto>()
+
+                                select t).ToList();
+
+                    if (directoryCodeList.Any())
+                    {
+                        querySql += $" and DirectoryCode in ({CommonHelp.ListToStr(directoryCodeList)})";
+                    }
+                    sqlConnection.Close();
+                    return dataList;
+
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(querySql);
+                    throw new Exception(e.Message);
+                }
+
+
+            }
+        }
+
+        /// <summary>
         /// 删除三大目录
         /// </summary>
         /// <param name="user"></param>

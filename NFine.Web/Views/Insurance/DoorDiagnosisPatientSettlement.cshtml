@@ -146,9 +146,10 @@
             </div>
             <div class="layui-form-item" id="queryDataDiv" style="text-align: center; margin-top: 20px;">
                 <button type="button" Id="queryData" class="layui-btn layui-btn-radius">查询</button>
-
+                <button type="button" Id="CatalogPairCode" class="layui-btn layui-btn-radius">项目对码</button>
             </div>
             <div class="layui-form-item" id="DoorDiagnosisPreSettlementDiv" style="text-align: center; margin-top: 20px;">
+              
                 <button type="button" Id="SettlementCard" class="layui-btn layui-btn-disabled layui-btn-radius">职工刷卡结算</button>
                 <button type="button" Id="ResidentSettlementCard" class="layui-btn layui-btn-disabled layui-btn-radius">居民结算</button>
 
@@ -157,7 +158,6 @@
             </div>
             <div class="layui-form-item" style="text-align: center; margin-top: 20px;" id="DoorDiagnosisSettlementDiv">
                 <button type="button" Id="DoorDiagnosisSettlement" class="layui-btn layui-btn-disabled layui-btn-radius">职工计划生结算</button>
-
             </div>
          
             <div class="layui-card-body" lay-size="sm">
@@ -201,10 +201,10 @@
         //新插件对象
         var activeXNew = document.getElementById("CSharpActiveX"); 
        // 插件检查
-        var verification = DetectActiveX();
-        if (verification === false) {
-            return false;
-        }
+        //var verification = DetectActiveX();
+        //if (verification === false) {
+        //    return false;
+        //}
         //是否使用加密键盘
         function isPassKey() {
             //var activeX = document.getElementById("CSharpActiveX");
@@ -870,7 +870,41 @@
 
             residentSettlementCard();
         });
+        //项目对码
+        $('#CatalogPairCode').on('click', function () {
+            var params =
+                "?EmpId=" +
+                    $("#empid").val() +
+                    "&BId=" +
+                $("#bid").val() +
+                    "&TransKey=" +
+                $("#transkey").val();
+            layer.open({
+                id: 'OutpatientDirectoryCode',
+                type: 2,
+                title: '对码信息',
+                shadeClose: true, //点击遮罩关闭层
+                area: ['1100px', '650px'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: hostPage + '/OutpatientDirectoryCode' + params,
+                end: function() { //无论是确认还是取消，只要层被销毁了，end都会执行，不携带任何参数。layer.open关闭事件
+                   
+                   
+                }
+            });
+        });
+        $('.layui-btn.layui-btn-list').on('click',
+            function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+        var active = {
+            cleanSearch: function () {
+                layer.alert('已删除', { icon: 5, title: '错误提示', skin: 'layui-layer-molv' });
 
+            }
+        }
         $.ajax({
             type: 'get',
             url: host + '/GetOutpatient',

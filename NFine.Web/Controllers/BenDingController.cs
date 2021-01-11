@@ -830,6 +830,27 @@ namespace NFine.Web.Controllers
                 }
             });
         }
+        /// <summary>
+        /// 门诊对码查询
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiJsonResultData OutpatientPairCodeQuery([FromUri]OutpatientPairCodeUiParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                var queryData = _webServiceBasicService.OutpatientPairCodeQuery(param);
+                var data = new
+                {
+                    data = queryData.Values.FirstOrDefault(),
+                    count = queryData.Keys.FirstOrDefault()
+                };
+                y.Data = data;
+
+            });
+        }
+        //
         #endregion
         #region 医保对码
         /// <summary>

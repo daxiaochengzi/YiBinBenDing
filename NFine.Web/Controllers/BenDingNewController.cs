@@ -696,7 +696,7 @@ namespace NFine.Web.Controllers
             });
         }
         /// <summary>
-        /// 添加门诊不出医保
+        /// 添加门诊不传医保
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
