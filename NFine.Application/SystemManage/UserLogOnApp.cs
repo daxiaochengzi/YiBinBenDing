@@ -29,7 +29,10 @@ namespace NFine.Application.SystemManage
             userLogOnEntity.F_Id = keyValue;
             userLogOnEntity.F_UserSecretkey = Md5.md5(Common.CreateNo(), 16).ToLower();
             userLogOnEntity.F_UserPassword = Md5.md5(DESEncrypt.Encrypt(Md5.md5(userPassword, 32).ToLower(), userLogOnEntity.F_UserSecretkey).ToLower(), 32).ToLower();
-            service.Update(userLogOnEntity);
+            string sqlStr = $@"update [dbo].[Sys_UserLogOn] set [F_UserPassword]='{userLogOnEntity.F_UserPassword}',
+                                 [F_UserSecretkey]='{userLogOnEntity.F_UserSecretkey}' where F_id='{keyValue}'";
+            service.ExecuteSqlCommand(sqlStr);
+            //service.Insert(userLogOnEntity);
         }
     }
 }
