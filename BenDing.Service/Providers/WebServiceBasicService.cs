@@ -451,7 +451,7 @@ namespace BenDing.Service.Providers
             }
             if (param.PairCodeState=="0")
             {
-                dataList = dataList.Where(c => c.PairCodeState==1).ToList();
+                dataList = dataList.Where(c => c.PairCodeState==0).ToList();
             }
             
             var pageList= dataList.Skip(param.Limit * (param.Page - 1)).Take(param.Limit).ToList();

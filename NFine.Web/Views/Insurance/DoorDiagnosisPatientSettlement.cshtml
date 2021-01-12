@@ -146,13 +146,12 @@
             </div>
             <div class="layui-form-item" id="queryDataDiv" style="text-align: center; margin-top: 20px;">
                 <button type="button" Id="queryData" class="layui-btn layui-btn-radius">查询</button>
-                <button type="button" Id="CatalogPairCode" class="layui-btn layui-btn-radius">项目对码</button>
+               
             </div>
             <div class="layui-form-item" id="DoorDiagnosisPreSettlementDiv" style="text-align: center; margin-top: 20px;">
-              
+                <button type="button" Id="CatalogPairCode" class="layui-btn layui-btn-radius">项目对码</button>
                 <button type="button" Id="SettlementCard" class="layui-btn layui-btn-disabled layui-btn-radius">职工刷卡结算</button>
                 <button type="button" Id="ResidentSettlementCard" class="layui-btn layui-btn-disabled layui-btn-radius">居民结算</button>
-
                 <button type="button" Id="DoorDiagnosisPreSettlement" class="layui-btn layui-btn-disabled layui-btn-radius">职工计划生育预结算</button>
                 <button type="button" Id="OutpatientNationEcTrans" class="layui-btn layui-btn-disabled layui-btn-radius">医保电子凭证结算</button>
             </div>
@@ -201,10 +200,10 @@
         //新插件对象
         var activeXNew = document.getElementById("CSharpActiveX"); 
        // 插件检查
-        //var verification = DetectActiveX();
-        //if (verification === false) {
-        //    return false;
-        //}
+        var verification = DetectActiveX();
+        if (verification === false) {
+            return false;
+        }
         //是否使用加密键盘
         function isPassKey() {
             //var activeX = document.getElementById("CSharpActiveX");
@@ -420,6 +419,7 @@
                     if (data.Success === false) {
                         var errData = data.Message;
                         layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                        return false;
                     } else {
                        // var activeX = document.getElementById("CSharpActiveX");
                        
@@ -554,7 +554,9 @@
                     if (data.Success === false) {
                         var errData = data.Message;
                         layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                        return false;
                     } else {
+                        buttonStatus("OutpatientNationEcTrans", false);
                        // var activeX = document.getElementById("CSharpActiveX");
                         var activeData;
                         var activeJsonData; 
@@ -626,7 +628,9 @@
                     if (data.Success === false) {
                         var errData = data.Message;
                         layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                        return false;
                     } else {
+                        buttonStatus("SettlementCard", false);
                         //var activeX = document.getElementById("CSharpActiveX");
                         //划卡支付
                       
@@ -692,14 +696,14 @@
                         return false;
                     } else
                     {
-                        buttonStatus("SettlementCard", false);
+                       
                         workerOutpatientSettlementCardParam();
                     }
                 }
 
             }
             else {
-                buttonStatus("SettlementCard", false);
+               
                 workerOutpatientSettlementCardParam();
             }
         }
@@ -757,7 +761,7 @@
                 }
                 cardParam["Pwd"] = pwd;
             }
-            buttonStatus("ResidentSettlementCard", false);
+           
             $.ajax({
                 type: 'POST',
                 url: hostNew + '/GetResidentOutpatientPreSettlementParam',
@@ -768,7 +772,10 @@
                     if (data.Success === false) {
                         var errData = data.Message;
                         layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                       
+                        return false;
                     } else {
+                        buttonStatus("ResidentSettlementCard", false);
                         // var activeX = document.getElementById("CSharpActiveX");
 
                         //门诊居民结算
@@ -843,7 +850,7 @@
         });
         //医保电子支付
         $('#OutpatientNationEcTrans').on('click', function () {
-            buttonStatus("OutpatientNationEcTrans", false);
+           
             outpatientNationEcTransParam();
         });
         //划卡支付
@@ -884,7 +891,7 @@
                 type: 2,
                 title: '对码信息',
                 shadeClose: true, //点击遮罩关闭层
-                area: ['1100px', '650px'],
+                area: ['980px', '650px'],
                 fixed: false, //不固定
                 maxmin: true,
                 content: hostPage + '/OutpatientDirectoryCode' + params,
