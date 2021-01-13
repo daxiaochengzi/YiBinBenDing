@@ -737,7 +737,7 @@
                var directoryName = replaceValueChar(data.DirectoryName);
                 //var directoryName =data.DirectoryName;
                 var directoryCode = data.DirectoryCode;
-                var directoryCategoryCode = null;
+              
                 var manufacturerName = data.ManufacturerName;
                 var params =
                     "?UserId=" +
@@ -746,8 +746,6 @@
                         directoryName +
                         "&ProjectCode=" +
                         directoryCode +
-                        "&ProjectCodeType=" +
-                        directoryCategoryCode+
                         "&Manufacturer=" +
                         manufacturerName;
 
@@ -874,7 +872,7 @@
         //医保费用上传
         form.on('submit(allUpload)', function (data) {
             getPrescriptionUploadParam(null);
-
+          
         });
        
      
@@ -908,11 +906,12 @@
 </script>
 
 <script type="text/html" id="tableBtn">
-    {{#  if(d.UploadMark == 0){ }}
-    <a class="layui-btn layui-btn-warm layui-btn-xs" >未上传</a>
-    {{#  } else { }}
+   
+    {{# if(d.UploadMark == 0){ }}
+    <a class="layui-btn layui-btn-warm layui-btn-xs">未上传</a>
+    {{# } else { }}
     <a class="layui-btn layui-btn-xs">已上传</a>
-    {{#  }}}
+    {{# }}}
 </script>
 
 <script type="text/html" id="tableApprovalMarkBtn">

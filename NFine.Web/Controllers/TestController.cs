@@ -470,10 +470,11 @@ namespace NFine.Web.Controllers
         public ApiJsonResultData TestXml([FromUri] MedicalInsuranceXmlUiParam param)
         {
             return new ApiJsonResultData(ModelState, new UiInIParam()).RunWithTry(y =>
-                {
+            {
+               
 
                 var settlementJson = "{\"SerialNumber\": \"101080551392\", 	\"AccountPayment\": 0.03, 	\"CashPayment\": 0.0, 	\"AccountBalance\": 386.7 }";
-            var iniData = JsonConvert.DeserializeObject<WorkerHospitalSettlementCardBackDataDto>(settlementJson);
+             var iniData = JsonConvert.DeserializeObject<WorkerHospitalSettlementCardBackDataDto>(settlementJson);
             //var data = XmlHelp.DeSerializerModel(new BenDing.Domain.Models.Dto.OutpatientDepartment.QueryOutpatientDepartmentCostDto(), true);
             //if (data == null) throw new Exception("门诊费用查询出错");
             //var cc = AutoMapper.Mapper.Map<QueryOutpatientDepartmentCostjsonDto>(data);
@@ -701,8 +702,8 @@ namespace NFine.Web.Controllers
                 var dataList = new List<Icd10PairCodeDateXml>();
 
                 //基层
-                var queryData = _sqlSugarRepository.QueryICD10PairCode();
-
+                var queryDataNew = _sqlSugarRepository.QueryICD10PairCode();
+                var queryData = queryDataNew.Where(c => c.IsDelete == false && c.State==0).ToList();
                 if (queryData.Any())
                 {
                     dataList = queryData.Select(d => new Icd10PairCodeDateXml
@@ -920,8 +921,9 @@ namespace NFine.Web.Controllers
         [HttpGet]
         public void TestSqlSugar()
         {
-            //var ddd= CommonHelp.GetValue("WebServiceUrl");
-            StringBuilder ctrXml = new StringBuilder();
+          
+               //var ddd= CommonHelp.GetValue("WebServiceUrl");
+               StringBuilder ctrXml = new StringBuilder();
             ctrXml.Append("<?xml version=\"1.0\" encoding=\"GBK\" standalone=\"yes\" ?>");
             ctrXml.Append(@"<ROW>
                         <PO_AKC600>1013441659</PO_AKC600>
@@ -995,5 +997,6 @@ namespace NFine.Web.Controllers
             };
             webServiceBasic.HIS_Interface("35", JsonConvert.SerializeObject(uploadData));
         }
+       
     }
 }

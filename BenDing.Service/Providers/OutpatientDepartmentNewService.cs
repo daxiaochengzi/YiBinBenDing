@@ -735,6 +735,8 @@ namespace BenDing.Service.Providers
         {
             var iniData = JsonConvert.DeserializeObject<NationEcTransDto>(param.SettlementJson);
             var dataJson = new NationEcTransJsonDto();
+            //检查病人是否结算
+            InspectInpatientIsSettlement(param.BusinessId);
             dataJson.AccountPayAmount = iniData.AccountPayAmount;
             dataJson.BalanceAmount= iniData.BalanceAmount;
             dataJson.SelfPayAmount= iniData.SelfPayAmount;
@@ -830,6 +832,8 @@ namespace BenDing.Service.Providers
             var resultData = new NationEcTransResidentParam();
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
             userBase.TransKey = param.TransKey;
+            //检查病人是否结算
+            InspectInpatientIsSettlement(param.BusinessId);
             var id = Guid.NewGuid();
             var outpatientParam = new GetOutpatientPersonParam()
             {
@@ -907,6 +911,26 @@ namespace BenDing.Service.Providers
             resultData.TotalAmount = CommonHelp.ValueToDouble(rowDataList.Select(d=>d.TotalAmount).Sum()); 
             return XmlSerializeHelper.HisXmlSerialize(resultData);
         }
+        /// <summary>
+        /// 检查当前病人是否已经结算
+        /// </summary>
+        /// <param name="businessId"></param>
+        private void InspectInpatientIsSettlement(string businessId)
+        {
+            var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
+            {
+                BusinessId = businessId,
+            };
+            //获取医保病人信息
+            var residentData = _medicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(queryResidentParam);
+
+            if (residentData != null)
+            {
+                if ((int) residentData.MedicalInsuranceState == 6) throw new Exception("当前病人已经结算,不能重复结算!!!");
+
+            }
+        }
+
         /// <summary>
         /// 门诊居民电子凭证
         /// </summary>
@@ -1013,6 +1037,8 @@ namespace BenDing.Service.Providers
             var resultData=new GetResidentOutpatientSettlementParam();
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
             userBase.TransKey = param.TransKey;
+            //检查病人是否结算
+            InspectInpatientIsSettlement(param.BusinessId);
             var id = Guid.NewGuid();
             var outpatientParam = new GetOutpatientPersonParam()
             {
@@ -1264,6 +1290,8 @@ namespace BenDing.Service.Providers
         {
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
             userBase.TransKey = param.TransKey;
+            //检查病人是否结算
+            InspectInpatientIsSettlement(param.BusinessId);
             var paramIni = new GetOutpatientPersonParam();
             paramIni.User = userBase;
             paramIni.IsSave = false;

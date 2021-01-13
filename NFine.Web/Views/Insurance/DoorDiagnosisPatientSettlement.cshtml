@@ -408,10 +408,12 @@
         function getOutpatientPlanBirthPreSettlementParam() {
             //隐藏预结算按钮
             $("#DoorDiagnosisPreSettlementDiv").hide();
+            var preParam = $.extend({}, params);
+            preParam["InsuranceType"] = "342";
             $.ajax({
                 type: 'POST',
                 url: hostNew + '/GetOutpatientPlanBirthPreSettlementParam',
-                data: params,
+                data: preParam,
                 dataType: "json",
                 async: false,
                 success: function (data) {
@@ -439,7 +441,8 @@
         //门诊计划生育预结算
         function outpatientPlanBirthPreSettlement(settlementJsonData) {
            
-            var preParam = $.extend({}, params);;
+            var preParam = $.extend({}, params);
+            preParam["InsuranceType"] = "342";
             preParam["SettlementJson"] = settlementJsonData;
             $.ajax({
                 type: 'post',
@@ -543,10 +546,12 @@
         function outpatientNationEcTransParam() {
             var url = "/OutpatientNationEcTransParam";
             if (baseInfo.Inpatient.InsuranceType !== "310") url = "/GetOutpatientNationEcTransResidentParam";
+            var ecTransParam = $.extend({}, params);
+            ecTransParam["InsuranceType"] = "310";
             $.ajax({
                 type: 'POST',
                 url: hostNew + url,
-                data: params,
+                data: ecTransParam,
                 dataType: "json",
                 async: false,
                 success: function (data) {
@@ -590,6 +595,8 @@
             var url = "/outpatientNationEcTrans";
             if (baseInfo.Inpatient.InsuranceType !== "310") url = "/OutpatientNationEcTransResident";
             ecTransParam["SettlementJson"] = settlementDataInfo;
+            var preParam = $.extend({}, params);
+            preParam["InsuranceType"] = "310";
             $.ajax({
                 type: 'POST',
                 url: hostNew + url,
@@ -616,6 +623,7 @@
         //获取门诊划卡参数
         function workerOutpatientSettlementCardParam() {
             var getCardParam = $.extend({}, params);
+            getCardParam["InsuranceType"] = "310";
             if (passWordKey === "0") getCardParam["CardPwd"] = $("#CardPwd").val();
             $.ajax({
                 type: 'POST',
@@ -650,6 +658,7 @@
         //门诊划卡
         function workerOutpatientSettlementCard(settlementDataInfo) {
             var cardParam = $.extend({}, params);
+            cardParam["InsuranceType"] = "310";
             cardParam["SettlementJson"] = settlementDataInfo;
             $.ajax({
                 type: 'POST',
@@ -708,7 +717,8 @@
         }
         //门诊居民结算
         function residentOutpatientPreSettlement(settlementJsonData) {
-            var preParam = $.extend({}, params);;
+            var preParam = $.extend({}, params);
+            preParam["InsuranceType"] = "342";
             preParam["SettlementJson"] = settlementJsonData;
             $.ajax({
                 type: 'post',
@@ -740,6 +750,7 @@
         //居民划卡结算
         function residentSettlementCard() {
             var cardParam = $.extend({}, params);
+            cardParam["InsuranceType"] = "342";
             var pwd = $("#CardPwd").val();
             if (settlementRadio === "4") {
                 if (passWordKey === "0") {
