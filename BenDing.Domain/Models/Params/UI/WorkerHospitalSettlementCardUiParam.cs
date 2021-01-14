@@ -21,6 +21,10 @@ namespace BenDing.Domain.Models.Params.UI
         /// </summary>
         public string IdentityMark { get; set; }
         /// <summary>
+        /// 下账金额
+        /// </summary>
+        public  decimal DownAmount { get; set; }
+        /// <summary>
         /// 社保类型
         /// </summary>
         public string InsuranceType { get; set; }

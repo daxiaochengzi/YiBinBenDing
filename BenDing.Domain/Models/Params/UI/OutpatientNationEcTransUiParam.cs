@@ -38,5 +38,9 @@ namespace BenDing.Domain.Models.Params.UI
         /// 账户余额
         /// </summary>
         public string AccountBalance { get; set; }
+        /// <summary>
+        /// 参保地
+        /// </summary>
+        public string CommunityName { get; set; }
     }
 }

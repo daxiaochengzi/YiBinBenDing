@@ -443,6 +443,17 @@ namespace BenDing.Service.Providers
 
                 }
             }
+            else
+            {
+                dataList = detailDataNew.Select(c => new OutpatientPairCodeQueryDto
+                {
+                    DirectoryName = c.DirectoryName,
+                    DirectoryCode = c.DirectoryCode,
+                    Specification = c.Specification,
+                    Amount = c.Amount,
+                    PairCodeState =  0
+                }).ToList();
+            }
 
           
             if (!string.IsNullOrWhiteSpace(param.DirectoryName))

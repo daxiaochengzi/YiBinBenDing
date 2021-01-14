@@ -57,7 +57,10 @@ namespace BenDing.Domain.Models.Dto.Web
           /// 传入标志
           /// </summary>
           public  string AfferentSign { get; set; }
-
+          /// <summary>
+          /// 参保地
+          /// </summary>
+            public  string CommunityName { get; set; }
 
     }
 }

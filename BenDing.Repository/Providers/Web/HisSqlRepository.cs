@@ -1057,9 +1057,9 @@ namespace BenDing.Repository.Providers.Web
                     {
                         var idlist = CommonHelp.ListToStr(param.DataIdList);
                         strSql += $" and Id in({idlist}) ";
-                        var data = sqlConnection.Execute(strSql);
+                       
                     }
-                  
+                    var data = sqlConnection.Execute(strSql);
                     sqlConnection.Close();
                   
                 }

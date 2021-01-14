@@ -861,6 +861,7 @@ namespace BenDing.Service.Providers
                 MedicalInsuranceState = MedicalInsuranceState.MedicalInsurancePreSettlement,
                 AfferentSign = param.AfferentSign,
                 IdentityMark = param.IdentityMark,
+                CommunityName = param.CommunityName
             };
             _medicalInsuranceSqlRepository.SaveMedicalInsurance(userBase, saveData);
            
@@ -1070,6 +1071,7 @@ namespace BenDing.Service.Providers
                 MedicalInsuranceState = MedicalInsuranceState.MedicalInsurancePreSettlement,
                 AfferentSign = param.AfferentSign,
                 IdentityMark = param.IdentityMark,
+                CommunityName = param.CommunityName
             };
             _medicalInsuranceSqlRepository.SaveMedicalInsurance(userBase, saveData);
             var rowDataList = new List<GetResidentOutpatientSettlementRowParam>();
@@ -1423,7 +1425,7 @@ namespace BenDing.Service.Providers
             var hospitalData = _systemManageRepository.QueryHospitalOrganizationGrade(userBase.OrganizationCode);
 
             resultData.OperatorName = outpatientPerson.Operator;
-            resultData.TotalAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost).ToString(CultureInfo.InvariantCulture);
+            resultData.TotalAmount = CommonHelp.ValueToDouble(param.DownAmount).ToString(CultureInfo.InvariantCulture);
             resultData.UseCardType = "1";
             resultData.CardPwd = param.CardPwd;
             resultData.HospitalLogNo = hospitalData.MedicalInsuranceHandleNo;
@@ -1491,7 +1493,7 @@ namespace BenDing.Service.Providers
             var updateData = new UpdateMedicalInsuranceResidentSettlementParam()
             {
                 UserId = userBase.UserId,
-                SelfPayFeeAmount = iniData.CashPayment,
+                SelfPayFeeAmount =CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost - iniData.AccountPayment),
                 OtherInfo = JsonConvert.SerializeObject(resultData),
                 Id = residentData.Id,
                 SettlementNo = iniData.SerialNumber,

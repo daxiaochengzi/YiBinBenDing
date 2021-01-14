@@ -164,10 +164,10 @@ namespace BenDing.Repository.Providers.Web
                     {
                         strSql = $@"INSERT INTO [dbo].[MedicalInsurance]([Id],[BusinessId],[InsuranceNo],[MedicalInsuranceAllAmount],[IdentityMark],[AfferentSign]
                                ,[AdmissionInfoJson],[ReimbursementExpensesAmount] ,[SelfPayFeeAmount],[OtherInfo],[MedicalInsuranceHospitalizationNo],[IsBirthHospital]
-		                       ,[CreateTime],[IsDelete] ,OrganizationCode,CreateUserId,OrganizationName,InsuranceType,MedicalInsuranceState)
+		                       ,[CreateTime],[IsDelete] ,OrganizationCode,CreateUserId,OrganizationName,InsuranceType,MedicalInsuranceState,SettlementUserName,CommunityName)
                            VALUES('{param.Id}','{param.BusinessId}','{param.InsuranceNo}', 0,'{param.IdentityMark}','{param.AfferentSign}',
                                  '{param.AdmissionInfoJson}',0,0,NULL,'{param.MedicalInsuranceHospitalizationNo}',{param.IsBirthHospital},
-                                 GETDATE(),0,'{user.OrganizationCode}','{user.UserId}','{user.OrganizationName }',{param.InsuranceType},{(int)param.MedicalInsuranceState});";
+                                 GETDATE(),0,'{user.OrganizationCode}','{user.UserId}','{user.OrganizationName }',{param.InsuranceType},{(int)param.MedicalInsuranceState},'{user.UserName}','{param.CommunityName}');";
                         strSql = $"update [dbo].[MedicalInsurance] set [IsDelete]=1,DeleteUserId='{user.UserId}',DeleteTime=GETDATE() where [BusinessId]='{param.BusinessId}';" + strSql;
 
                     }

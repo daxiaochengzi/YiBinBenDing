@@ -1020,26 +1020,13 @@ namespace BenDing.Service.Providers
                     //是否现在使用药品
                     if (pairCodeData.RestrictionSign == "1")
                     {
-                        if (isOrganizationCodeUpload==false)
+                        if (!string.IsNullOrWhiteSpace(item.ApprovalTime))
                         {
-                            if (item.ApprovalMark == 0)
-                            {
-                                throw new Exception(item.DirectoryName + "为限制性药品未审核");
-                            }
                             rowData.LimitApprovalDate = Convert.ToDateTime(item.ApprovalTime).ToString("yyyyMMddHHmmss");
                             rowData.LimitApprovalUser = item.ApprovalUserName;
                             rowData.LimitApprovalMark = item.ApprovalMark.ToString();
+                            rowDataList.Add(rowData);
                         }
-
-                       
-
-                    }
-
-                    if (isOrganizationCodeUpload == true &&
-                        pairCodeData.RestrictionSign == "1"
-                        && item.ApprovalMark == 0)
-                    {
-                        //不做处理
                     }
                     else
                     {
@@ -1047,14 +1034,16 @@ namespace BenDing.Service.Providers
                     }
 
                    
+
+
                 }
-                else
-                {
-                    if (isDataIdList)
-                    {
-                       throw new Exception("商品id:"+item.DetailId+"项目名称:"+ item.DirectoryName+"未医保对码!!!");
-                    }
-                }
+                //else
+                //{
+                //    if (isDataIdList)
+                //    {
+                //       throw new Exception("商品id:"+item.DetailId+"项目名称:"+ item.DirectoryName+"未医保对码!!!");
+                //    }
+                //}
 
 
             }

@@ -32,6 +32,13 @@ namespace BenDing.Domain.Models.Params.UI
         /// 保险类别
         /// </summary>
         public  string InsuranceType { get; set; }
+        /// <summary>
+        /// 结算json
+        /// </summary>
         public  string SettlementJson { get; set; }
+        /// <summary>
+        /// 参保地
+        /// </summary>
+        public  string CommunityName { get; set; }
     }
 }
