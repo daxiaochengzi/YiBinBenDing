@@ -971,6 +971,7 @@
                     var errData = data.Message;
                     //样式类名:墨绿深蓝风
                     layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                    return false;
 
                 } else {
                     jsonToForm(data.Data, "LAY-form-render"); 

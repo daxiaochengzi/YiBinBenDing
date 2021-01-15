@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Http;
 using BenDing.Domain.Models.Dto.JsonEntity;
@@ -455,6 +456,9 @@ namespace NFine.Web.Controllers
                     paramIni.IsSave = false;
                     paramIni.UiParam = param;
                     var data = _webServiceBasicService.GetOutpatientPerson(paramIni);
+                    if (!string.IsNullOrWhiteSpace(data.IdCardNo)==false) throw new Exception("病人的身份证号码不能为空!!!");
+                    var checkData = Regex.IsMatch(data.IdCardNo, @"^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$", RegexOptions.IgnoreCase);
+                    if (checkData==false) throw new Exception("身份证号格式验证失败,请输入正确的身份证号!!!");
                     var outpatientNumber = data.OutpatientNumber;
                     //拆分门诊号
                     string[] arr = outpatientNumber.Split('M');

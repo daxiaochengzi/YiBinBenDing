@@ -975,7 +975,6 @@ namespace BenDing.Service.Providers
             if (residentData.MedicalInsuranceState != MedicalInsuranceState.MedicalInsurancePreSettlement) throw new Exception("当前病人未办理预结算,不能办理结算!!!");
             //存中间库
             //现金支付
-
             var selfPayFeeAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost - iniData.ReimbursementAmount);
             var updateData = new UpdateMedicalInsuranceResidentSettlementParam()
             {
@@ -988,6 +987,7 @@ namespace BenDing.Service.Providers
                 SettlementTransactionId = userBase.UserId,
                 MedicalInsuranceState = MedicalInsuranceState.MedicalInsuranceSettlement,
                 SettlementType = "3",
+               
 
             };
             //存入中间层
@@ -1445,6 +1445,7 @@ namespace BenDing.Service.Providers
             
             return resultData;
         }
+
         /// <summary>
         /// 门诊划卡
         /// </summary>
@@ -1510,7 +1511,7 @@ namespace BenDing.Service.Providers
             {
                 AccountBalance = iniData.AccountBalance,
                 MedicalInsuranceOutpatientNo = iniData.SerialNumber,
-                CashPayment = iniData.CashPayment,
+                CashPayment = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost - iniData.AccountPayment),
                 SettlementNo = iniData.SerialNumber,
                 AllAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost),
                 PatientName = outpatientPerson.PatientName,

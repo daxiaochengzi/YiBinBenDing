@@ -60,7 +60,9 @@ namespace BenDing.Domain.Models.Dto.Web
           /// <summary>
           /// 参保地
           /// </summary>
-            public  string CommunityName { get; set; }
+          public  string CommunityName { get; set; }
 
-    }
+           
+
+        }
 }
