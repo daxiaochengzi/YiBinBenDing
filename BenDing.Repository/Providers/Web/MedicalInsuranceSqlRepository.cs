@@ -76,7 +76,7 @@ namespace BenDing.Repository.Providers.Web
                         else if (!string.IsNullOrWhiteSpace(param.SettlementTransactionId))
                         {
                             strSql = $@" update MedicalInsurance set SettlementUserId='{param.UserId}',SettlementTime=GETDATE(),MedicalInsuranceState={(int)param.MedicalInsuranceState},
-                                    OtherInfo='{param.OtherInfo}',MedicalInsuranceAllAmount={param.MedicalInsuranceAllAmount},
+                                    OtherInfo='{param.OtherInfo}',MedicalInsuranceAllAmount={param.MedicalInsuranceAllAmount},CarryOver={param.CarryOver},
                                     SelfPayFeeAmount= {param.SelfPayFeeAmount},ReimbursementExpensesAmount={param.ReimbursementExpensesAmount},
                                     SettlementNo='{param.SettlementNo}',SettlementTransactionId='{param.SettlementTransactionId}',SettlementType='{param.SettlementType}'
                                     where Id='{param.Id}' ";
@@ -164,10 +164,11 @@ namespace BenDing.Repository.Providers.Web
                     {
                         strSql = $@"INSERT INTO [dbo].[MedicalInsurance]([Id],[BusinessId],[InsuranceNo],[MedicalInsuranceAllAmount],[IdentityMark],[AfferentSign]
                                ,[AdmissionInfoJson],[ReimbursementExpensesAmount] ,[SelfPayFeeAmount],[OtherInfo],[MedicalInsuranceHospitalizationNo],[IsBirthHospital]
-		                       ,[CreateTime],[IsDelete] ,OrganizationCode,CreateUserId,OrganizationName,InsuranceType,MedicalInsuranceState,SettlementUserName,CommunityName)
+		                       ,[CreateTime],[IsDelete] ,OrganizationCode,CreateUserId,OrganizationName,InsuranceType,MedicalInsuranceState,SettlementUserName,CommunityName,ContactPhone,ContactAddress)
                            VALUES('{param.Id}','{param.BusinessId}','{param.InsuranceNo}', 0,'{param.IdentityMark}','{param.AfferentSign}',
                                  '{param.AdmissionInfoJson}',0,0,NULL,'{param.MedicalInsuranceHospitalizationNo}',{param.IsBirthHospital},
-                                 GETDATE(),0,'{user.OrganizationCode}','{user.UserId}','{user.OrganizationName }',{param.InsuranceType},{(int)param.MedicalInsuranceState},'{user.UserName}','{param.CommunityName}');";
+                                 GETDATE(),0,'{user.OrganizationCode}','{user.UserId}','{user.OrganizationName }',{param.InsuranceType},
+                                  {(int)param.MedicalInsuranceState},'{user.UserName}','{param.CommunityName}','{param.ContactPhone}','{param.ContactAddress}');";
                         strSql = $"update [dbo].[MedicalInsurance] set [IsDelete]=1,DeleteUserId='{user.UserId}',DeleteTime=GETDATE() where [BusinessId]='{param.BusinessId}';" + strSql;
 
                     }

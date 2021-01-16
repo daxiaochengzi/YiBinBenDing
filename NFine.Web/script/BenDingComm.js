@@ -24,7 +24,9 @@ HospitalInfo:{
         "WorkersInsuranceBalance": null,//职工医保账户余额
         "MentorBalance": null, //门特余额
         "CommunityName":null,//参保地
-        "OverallPaymentBalance": null //统筹支付余额
+        "OverallPaymentBalance": null, //统筹支付余额
+        "ContactPhone": null,
+        "ContactAddress": null
     }
 };
 //判断插件是否存在
@@ -215,6 +217,8 @@ function getInpatientInfo(getInpatientInfoBack)
             baseInfo.Inpatient["WorkersInsuranceBalance"] = activeJsonInfo.WorkersInsuranceBalance;
             baseInfo.Inpatient["MentorBalance"] = activeJsonInfo.MentorBalance;
             baseInfo.Inpatient["CommunityName"] = activeJsonInfo.CommunityName;
+            baseInfo.Inpatient["ContactPhone"] = activeJsonInfo.ContactPhone;
+            baseInfo.Inpatient["ContactAddress"] = activeJsonInfo.ContactAddress;
             baseInfo.Inpatient["OverallPaymentBalance"] = activeJsonInfo.OverallPaymentBalance;
             baseInfo.HospitalInfo.AfferentSign = "2";
             baseInfo.HospitalInfo.IdentityMark = activeJsonInfo.PersonalCoding;

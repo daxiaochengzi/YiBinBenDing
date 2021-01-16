@@ -699,18 +699,18 @@ namespace NFine.Web.Controllers
             {
                 var userBase = webServiceBasicService.GetUserBaseInfo(param.UserId);
                 userBase.TransKey = param.TransKey;
-                var dataList = new List<Icd10PairCodeDateXml>();
+                var dataList = new List<Icd10PairCodeDataParam>();
 
                 //基层
                 var queryDataNew = _sqlSugarRepository.QueryICD10PairCode();
                 var queryData = queryDataNew.Where(c => c.IsDelete == false && c.State==0).ToList();
                 if (queryData.Any())
                 {
-                    dataList = queryData.Select(d => new Icd10PairCodeDateXml
+                    dataList = queryData.Select(d => new Icd10PairCodeDataParam
                     {
                         DiseaseId = d.DiseaseId,
-                        DiseaseName = d.ProjectName,
-                        DiseaseCoding = d.ProjectCode
+                        ProjectName = d.ProjectName,
+                        ProjectCode = d.ProjectCode
                     }).ToList();
                 }
 
@@ -730,9 +730,18 @@ namespace NFine.Web.Controllers
                         var sendList = rowDataListAll.Take(limit).ToList();
 
 
+                        //回参构建
+                        var icd10List = new List<Icd10PairCodeDateXml>();
+                        icd10List.AddRange(sendList.Select(c => new Icd10PairCodeDateXml()
+                        {
+                            DiseaseId = c.DiseaseId,
+                            DiseaseName = c.ProjectName,
+                            DiseaseCoding = c.ProjectCode
+                        }));
+
                         var xmlData = new Icd10PairCodeXml()
                         {
-                            row = sendList
+                            row = icd10List
                         };
                         var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
                         var saveXml = new SaveXmlDataParam()
@@ -745,8 +754,12 @@ namespace NFine.Web.Controllers
                         };
                         //存基层
                         webServiceBasic.SaveXmlData(saveXml);
+                        idList.AddRange(sendList.Select(c=>c.DiseaseId));
                         a++;
                     }
+
+
+                    hisSqlRepository.ExecuteSql(" update [dbo].[ICD10PairCode] set [IsDelete]=0 ,state=0 where  [PairCodeUserName]='医保接口对码'");
                 }
 
 

@@ -861,7 +861,9 @@ namespace BenDing.Service.Providers
                 MedicalInsuranceState = MedicalInsuranceState.MedicalInsurancePreSettlement,
                 AfferentSign = param.AfferentSign,
                 IdentityMark = param.IdentityMark,
-                CommunityName = param.CommunityName
+                CommunityName = param.CommunityName,
+                ContactPhone = param.ContactPhone,
+                ContactAddress = param.ContactAddress
             };
             _medicalInsuranceSqlRepository.SaveMedicalInsurance(userBase, saveData);
            
@@ -968,7 +970,7 @@ namespace BenDing.Service.Providers
                 ReturnOrNewJson = JsonConvert.SerializeObject(iniData),
                 RelationId = outpatientParam.Id,
                 BusinessId = param.BusinessId,
-                Remark = iniData.SettlementNo + "电子记录好"
+                Remark = iniData.SettlementNo + "电子凭证"
             });
             //获取医保病人信息
             var residentData = _medicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(queryResidentParam);
@@ -987,7 +989,7 @@ namespace BenDing.Service.Providers
                 SettlementTransactionId = userBase.UserId,
                 MedicalInsuranceState = MedicalInsuranceState.MedicalInsuranceSettlement,
                 SettlementType = "3",
-               
+                CarryOver= iniData.TurnSettlementBalanceAmount
 
             };
             //存入中间层
@@ -1071,7 +1073,9 @@ namespace BenDing.Service.Providers
                 MedicalInsuranceState = MedicalInsuranceState.MedicalInsurancePreSettlement,
                 AfferentSign = param.AfferentSign,
                 IdentityMark = param.IdentityMark,
-                CommunityName = param.CommunityName
+                CommunityName = param.CommunityName,
+                ContactPhone = param.ContactPhone,
+                ContactAddress = param.ContactAddress,
             };
             _medicalInsuranceSqlRepository.SaveMedicalInsurance(userBase, saveData);
             var rowDataList = new List<GetResidentOutpatientSettlementRowParam>();
@@ -1173,7 +1177,7 @@ namespace BenDing.Service.Providers
                 SettlementTransactionId = userBase.UserId,
                 MedicalInsuranceState = MedicalInsuranceState.MedicalInsuranceSettlement,
                 SettlementType = "2",
-
+                CarryOver = iniData.TurnSettlementBalanceAmount
             };
             //存入中间层
             _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateData);

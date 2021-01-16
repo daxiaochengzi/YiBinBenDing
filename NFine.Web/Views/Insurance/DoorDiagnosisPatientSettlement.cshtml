@@ -559,13 +559,15 @@
         //获取电子社保支付参数
         function outpatientNationEcTransParam() {
             var ecTransParam = $.extend({}, params);
-            var url = "/OutpatientNationEcTransParam";
-            if (baseInfo.Inpatient.InsuranceType !== "310") {
-                url = "/GetOutpatientNationEcTransResidentParam";
+            var url = "/GetOutpatientNationEcTransResidentParam";
+            if (baseInfo.Inpatient.InsuranceType === "310") {
+                url = "/OutpatientNationEcTransParam";
                 ecTransParam["InsuranceType"] = "310";
             } else {
                 ecTransParam["InsuranceType"] = "342";
                 ecTransParam["CommunityName"] = baseInfo.Inpatient.CommunityName;
+                ecTransParam["ContactPhone"] = baseInfo.Inpatient.ContactPhone;
+                ecTransParam["ContactAddress"] = baseInfo.Inpatient.ContactAddress;
             }
             $.ajax({
                 type: 'POST',
@@ -774,7 +776,8 @@
             var cardParam = $.extend({}, params);
             cardParam["InsuranceType"] = "342";
             cardParam["CommunityName"] = baseInfo.Inpatient.CommunityName;
-         
+            cardParam["ContactPhone"] = baseInfo.Inpatient.ContactPhone;
+            cardParam["ContactAddress"] = baseInfo.Inpatient.ContactAddress;
             var pwd = $("#CardPwd").val();
             if (settlementRadio === "4") {
                 if (passWordKey === "0") {

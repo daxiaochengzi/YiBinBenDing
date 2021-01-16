@@ -40,5 +40,13 @@ namespace BenDing.Domain.Models.Params.UI
         /// 参保地
         /// </summary>
         public  string CommunityName { get; set; }
+        /// <summary>
+        /// 联系电话
+        /// </summary>
+        public string ContactPhone { get; set; }
+        /// <summary>
+        /// 联系地址
+        /// </summary>
+        public string ContactAddress { get; set; }
     }
 }

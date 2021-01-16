@@ -178,6 +178,7 @@
     <Compile Include="Areas\SystemManage\Controllers\DoorDiagnosisMonthlySettlementController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\DutyController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\ItemsDataController.cs" />
+    <Compile Include="Areas\SystemManage\Controllers\MedicalExpenseReportController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\ModuleButtonController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\ModuleController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\OrganizeController.cs" />
@@ -807,6 +808,7 @@
     <Content Include="Areas\SystemManage\Views\DataImport\ImportExcelIcd.cshtml" />
     <Content Include="Areas\SystemManage\Views\DataImport\DrugCatalogExcel.cshtml" />
     <Content Include="Areas\SystemManage\Views\BaseDataMaintenance\Index.cshtml" />
+    <Content Include="Areas\SystemManage\Views\MedicalExpenseReport\Index.cshtml" />
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
     <Content Include="Views\Insurance\Card.cshtml" />

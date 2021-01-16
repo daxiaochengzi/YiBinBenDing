@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
+using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
 using BenDing.Domain.Models.Entitys;
@@ -1416,12 +1417,13 @@ namespace BenDing.Repository.Providers.Web
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
                 string querySql = null;
+                string whereSql = "";
                 try
                 {
                     sqlConnection.Open();
                     querySql = $@"select * from [dbo].[OutpatientExclusion] where IsDelete=0 and OrganizationCode='{param.OrganizationCode}'";
                     string countSql = $@"select count(*) from [dbo].[OutpatientExclusion] where IsDelete=0 and OrganizationCode='{param.OrganizationCode}'";
-                    string whereSql = "";
+                   
                    
                     if (!string.IsNullOrWhiteSpace(param.DirectoryName))
                     {
@@ -1562,7 +1564,70 @@ namespace BenDing.Repository.Providers.Web
 
             }
         }
-       /// <summary>
+        /// <summary>
+        /// 门诊居民挂号费报销
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public Dictionary<int, List<MedicalExpenseReportDto>> MedicalExpenseReport(MedicalExpenseReportParam param)
+        {
+            List<MedicalExpenseReportDto> dataList;
+            var resultData = new Dictionary<int, List<MedicalExpenseReportDto>>();
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                string querySql = null;
+                string whereSql = "";
+                try
+                {
+                    sqlConnection.Open();
+                    querySql = @"select a.BusinessId,a.[OrganizationName], a.[PatientName],a.[IdCardNo],a.[Operator],
+                             a.[VisitDate],b.CommunityName,b.SettlementUserName,b.[SettlementTime],b.[SelfPayFeeAmount],
+                             a.[MedicalTreatmentTotalCost],b.[ContactAddress],b.[CarryOver],b.ContactPhone from [dbo].[Outpatient] as a  JOIN [dbo].[MedicalInsurance]  as b 
+                             on  a.BusinessId=b.BusinessId where 
+                              a.IsDelete=0  and b.IsDelete=0 and b.[InsuranceType]=310 and b.[MedicalInsuranceState]=6";
+                    string countSql = @"select COUNT(*) from [dbo].[Outpatient] as a  JOIN [dbo].[MedicalInsurance]  as b 
+                             on  a.BusinessId=b.BusinessId where  a.IsDelete=0  and b.IsDelete=0 
+							 and b.[InsuranceType]=310 and b.[MedicalInsuranceState]=6";
+                    if (!string.IsNullOrWhiteSpace(param.OrganizationCode))
+                        whereSql += $"  and a.OrganizationCode='{param.OrganizationCode}'";
+                    if (!string.IsNullOrWhiteSpace(param.PatientName))
+                        whereSql += $"  and a.PatientName like '%{param.PatientName}%'";
+                    if (!string.IsNullOrWhiteSpace(param.IdCardNo))
+                        whereSql += $"  and a.IdCardNo='{param.IdCardNo}'";
+                    if (!string.IsNullOrWhiteSpace(param.StartTime) && !string.IsNullOrWhiteSpace(param.EndTime))
+                    {
+                        whereSql += $"  and a.VisitDate>='{param.StartTime}' and a.VisitDate<='{param.EndTime}'";
+                    }
+
+                    if (param.rows!= 0 && param.Page > 0)
+                    {
+                        var skipCount = param.rows * (param.Page - 1);
+                        querySql += whereSql + " order by a.CreateTime desc OFFSET " + skipCount + " ROWS FETCH NEXT " + param.rows + " ROWS ONLY;";
+                    }
+                    string executeSql = countSql + whereSql + ";" + querySql;
+
+                    var result = sqlConnection.QueryMultiple(executeSql);
+
+                    int totalPageCount = result.Read<int>().FirstOrDefault();
+                    dataList = (from t in result.Read<MedicalExpenseReportDto>()
+
+                        select t).ToList();
+
+                    resultData.Add(totalPageCount, dataList);
+                    sqlConnection.Close();
+                    return resultData;
+
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(querySql);
+                    throw new Exception(e.Message);
+                }
+
+            }
+        }
+
+        /// <summary>
        /// 执行sql
        /// </summary>
        /// <param name="param"></param>

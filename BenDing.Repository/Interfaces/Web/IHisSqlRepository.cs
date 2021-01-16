@@ -214,6 +214,12 @@ namespace BenDing.Repository.Interfaces.Web
         /// <returns></returns>
          Dictionary<int, List<QueryPatientInfoDto>> QueryPatientInfo(QueryPatientInfoParam param);
         /// <summary>
+        /// 门诊居民挂号费报销
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+         Dictionary<int, List<MedicalExpenseReportDto>> MedicalExpenseReport(MedicalExpenseReportParam param);
+        /// <summary>
         /// 门诊不传医保查询
         /// </summary>
         /// <param name="param"></param>
@@ -237,6 +243,7 @@ namespace BenDing.Repository.Interfaces.Web
         /// <param name="param"></param>
         /// <returns></returns>
         int OutpatientExclusionAdd(OutpatientExclusionAddParam param);
+
         /// <summary>
         /// 对码数据导出
         /// </summary>

@@ -77,6 +77,10 @@ namespace BenDing.Domain.Models.Params.Web
         /// 结算类别 2 刷卡 3 电子凭证
         /// </summary>
         public string SettlementType { get; set; }
+        /// <summary>
+        /// 转结
+        /// </summary>
+        public  decimal CarryOver { get; set; }
 
     }
 }
