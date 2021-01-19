@@ -46,7 +46,13 @@ namespace BenDing.Domain.Models.Dto.JsonEntity
         /// </summary>
         [JsonProperty(PropertyName = "科室名称")]
         public string DepartmentName { get; set; }
-
+        /// <summary>
+        /// 科室名称
+        /// </summary>
+        [JsonProperty(PropertyName = "联系电话")]
+        public string ContactPhone { get; set; }
+        
+        
         /// <summary>
         /// 门诊号
         /// </summary>

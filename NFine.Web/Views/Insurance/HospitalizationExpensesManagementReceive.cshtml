@@ -24,7 +24,7 @@
                 </div>
                 <div class="layui-inline">
                     <button class="layui-btn" lay-submit lay-filter="LAY-bill-data-list">查询</button>
-                 
+                    <button class="layui-btn"  id="DeleteCenterData">清除数据</button>
                     <button class="layui-btn" id="allUploadReceive" lay-submit lay-filter="allUploadReceive">全部撤销</button>
                 </div>
             </div>
@@ -177,6 +177,39 @@
         //获取医院基本信息回调方法
         window.getHospitalInfoBack = function () { };
         getHospitalInfo(getHospitalInfoBack);
+        //删除费用
+        $('#DeleteCenterData').on('click',
+            function () {
+
+                var deleteParam = {
+                    "BusinessId": $("#bid").val() /*业务ID*/
+                    , "UserId": $("#empid").val() /*授权操作人的ID*/
+                    , "TransKey": $("#transkey").val()
+
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: hostNew + '/DeleteCenterLibraryData',
+                    async: false,
+                    data: JSON.stringify(deleteParam),
+                    dataType: "json",
+                    contentType: 'application/json',
+                    success: function (data) {
+                        if (data.Success === false) {
+                            var errData = data.Message;
+                            msgError(errData);
+                            //样式类名:墨绿深蓝风
+                        } else {
+
+
+                            tableDataLoad(layTableId);
+
+                        }
+                        
+
+                    }
+                });
+            });
         //获取取消处方上传参数
         function deletePrescriptionUpload(uploadParam) {
 

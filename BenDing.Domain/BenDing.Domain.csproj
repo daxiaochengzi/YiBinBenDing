@@ -225,6 +225,7 @@
     <Compile Include="Models\Params\Resident\LeaveHospitalSettlementInfoParam.cs" />
     <Compile Include="Models\Params\Resident\LeaveHospitalSettlementParam.cs" />
     <Compile Include="Models\Params\Resident\LeaveHospitalSettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\BatchExamineDataUiParam.cs" />
     <Compile Include="Models\Params\UI\GetResidentOutpatientSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\NotUploadMarkUiParam.cs" />
     <Compile Include="Models\Params\Resident\PatientLeaveHospitalInfoDto.cs" />

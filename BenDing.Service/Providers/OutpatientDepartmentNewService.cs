@@ -862,7 +862,7 @@ namespace BenDing.Service.Providers
                 AfferentSign = param.AfferentSign,
                 IdentityMark = param.IdentityMark,
                 CommunityName = param.CommunityName,
-                ContactPhone = param.ContactPhone,
+                ContactPhone = outpatientPerson.ContactPhone,
                 ContactAddress = param.ContactAddress
             };
             _medicalInsuranceSqlRepository.SaveMedicalInsurance(userBase, saveData);
@@ -989,7 +989,8 @@ namespace BenDing.Service.Providers
                 SettlementTransactionId = userBase.UserId,
                 MedicalInsuranceState = MedicalInsuranceState.MedicalInsuranceSettlement,
                 SettlementType = "3",
-                CarryOver= iniData.TurnSettlementBalanceAmount
+                CarryOver= iniData.TurnSettlementBalanceAmount,
+                ReimbursementExpensesAmount = iniData.ReimbursementAmount
 
             };
             //存入中间层
@@ -1074,7 +1075,7 @@ namespace BenDing.Service.Providers
                 AfferentSign = param.AfferentSign,
                 IdentityMark = param.IdentityMark,
                 CommunityName = param.CommunityName,
-                ContactPhone = param.ContactPhone,
+                ContactPhone = outpatientPerson.ContactPhone,
                 ContactAddress = param.ContactAddress,
             };
             _medicalInsuranceSqlRepository.SaveMedicalInsurance(userBase, saveData);
@@ -1177,7 +1178,8 @@ namespace BenDing.Service.Providers
                 SettlementTransactionId = userBase.UserId,
                 MedicalInsuranceState = MedicalInsuranceState.MedicalInsuranceSettlement,
                 SettlementType = "2",
-                CarryOver = iniData.TurnSettlementBalanceAmount
+                CarryOver = iniData.TurnSettlementBalanceAmount,
+                ReimbursementExpensesAmount = iniData.ReimbursementAmount
             };
             //存入中间层
             _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateData);
@@ -1340,7 +1342,7 @@ namespace BenDing.Service.Providers
         public OutpatientNationEcTransResidentBackDto ResidentOutpatientSettlementCard(
             GetResidentOutpatientSettlementCardUiParam param)
         {
-         
+          
             var resultData = new OutpatientNationEcTransResidentBackDto();
             var iniData = JsonConvert.DeserializeObject<OutpatientNationEcTransResidentJsonDto>(param.SettlementJson);
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);

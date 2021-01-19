@@ -1017,8 +1017,8 @@ namespace BenDing.Service.Providers
                         LimitApprovalRemark = ""
                     };
                  
-                    //是否现在使用药品
-                    if (pairCodeData.RestrictionSign == "1")
+                    //是否是限制使用药品
+                    if (pairCodeData.RestrictionSign == "1" && isOrganizationCodeUpload==false)
                     {
                         if (!string.IsNullOrWhiteSpace(item.ApprovalTime))
                         {
@@ -1028,13 +1028,6 @@ namespace BenDing.Service.Providers
                             rowDataList.Add(rowData);
                         }
                     }
-                    else
-                    {
-                        rowDataList.Add(rowData);
-                    }
-
-                   
-
 
                 }
                 //else

@@ -20,6 +20,10 @@ namespace BenDing.Domain.Models.Params.Resident
 
         public string BusinessId { get; set; }
         /// <summary>
+        /// 审核标记
+        /// </summary>
+        public int BatchExamineSign { get; set; }
+        /// <summary>
         /// id
         /// </summary>
         public List<string> DataIdList { get; set; } = null;

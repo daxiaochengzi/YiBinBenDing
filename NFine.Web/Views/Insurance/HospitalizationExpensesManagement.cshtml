@@ -46,7 +46,7 @@
                 <div class="layui-inline">
                     <label class="layui-form-label">上传状态</label>
                     <div class="layui-input-inline">
-                        <select id="UploadMark" name="UploadMark" >
+                        <select id="UploadMark" name="UploadMark"  lay-filter="UploadMark" >
                             <option value="" selected="selected">请选择上传状态</option>
                             <option value="0">未上传</option>
                             @*<option value="1">已上传</option>*@
@@ -178,6 +178,7 @@
             }
             form.render();
         }
+
         //////插件检查
         //var verification = DetectActiveX();
         //if (verification === false) {
@@ -544,12 +545,13 @@
             getPrescriptionUploadParam(tableData);
 
         }
-        function batchExamineData(tableData) {
+        function batchExamineData(tableData, batchExamineSign) {
             var uploadParam = {
                 "BusinessId": $("#bid").val() /*当前住院记录的业务ID*/
                 , "UserId": $("#empid").val() /*授权操作人的ID*/
                 , "DataIdList": tableData
                 , "TransKey": $("#transkey").val()
+                , "BatchExamineSign": batchExamineSign
             }
             $.ajax({
                 type: 'POST',
@@ -666,6 +668,11 @@
                     break;
                 case "batchExamineData":
                     data = checkStatus.data; //选中行的数据
+                    if (data.length === 0)
+                    {
+                        msgError("请勾选具体选项!!!");
+                        return false;
+                    } 
                     //排除已经上传了的数据
                     for (var i in data) {
                         if (data.hasOwnProperty(i)) {
@@ -675,9 +682,27 @@
                         }
                     }
                     //layer.msg('选中了：' + dataIds.length + ' 个未上传的数据');
-                    batchExamineData(dataIds);
+                    batchExamineData(dataIds,1);
+                  
                     break;
-          
+                case "batchUnExamineData":
+                    data = checkStatus.data; //选中行的数据
+                    if (data.length === 0)
+                    {
+                        msgError("请勾选具体选项!!!");
+                        return false;
+                    } 
+                    //排除已经上传了的数据
+                    for (var i in data) {
+                        if (data.hasOwnProperty(i)) {
+                            if (data[i].UploadMark === 0) {
+                                dataIds.push(data[i].Id);
+                            }
+                        }
+                    }
+                    //layer.msg('选中了：' + dataIds.length + ' 个未上传的数据');
+                    batchExamineData(dataIds,2);
+                    break;
                     
                 case "UpdateFeeData": 
                     var dataValue = checkStatus.data; //选中行的数据
@@ -774,7 +799,11 @@
         //$(function () {
         //    tableDataLoad(layTableId);
         //});
+        //更新状态查询
+        form.on('select(UploadMark)', function(data){   
+            inHospitalContentsTable();
 
+        });
         //数据回写
         function prescriptionUploadDatas(uploadParam) {
 
@@ -886,7 +915,8 @@
 
     <div class="layui-btn-container">
         <button class="layui-btn layui-btn-sm" id="batchUpdateData" lay-event="batchUpdateData">批量上传</button>
-        <button class="layui-btn layui-btn-sm" id="batchExamineData" lay-event="batchExamineData">批量审核</button>
+        <button class="layui-btn layui-btn-sm" id="batchExamineData" lay-event="batchExamineData">批量审核通过</button>
+        <button class="layui-btn layui-btn-sm" id="batchUnExamineData" lay-event="batchUnExamineData">批量审核不通过</button>
         <button class="layui-btn layui-btn-sm" id="UpdateFeeData" lay-event="UpdateFeeData">调整费用</button>
         <button type="button" id="AllAmount" class="layui-btn layui-btn-primary layui-btn-sm" style="margin-left: 30%">费用合计:</button>
         <button type="button" id="UnUploadAllAmount" class="layui-btn layui-btn-primary layui-btn-sm">未传合计:</button>

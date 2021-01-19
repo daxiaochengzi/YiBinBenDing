@@ -88,7 +88,10 @@ namespace BenDing.Domain.Models.Dto.Web
         /// 诊断json
         /// </summary>
         public  string DiagnosticJson { get; set; }
-       
+        /// <summary>
+        /// 联系电话
+        /// </summary>
+        public string ContactPhone { get; set; }
 
         /// <summary>
         /// 诊断列表

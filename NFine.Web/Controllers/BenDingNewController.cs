@@ -1759,7 +1759,7 @@ namespace NFine.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public ApiJsonResultData BatchExamineData([FromBody]BaseUiBusinessIdDataParam param)
+        public ApiJsonResultData BatchExamineData([FromBody]BatchExamineDataUiParam param)
         {
             return new ApiJsonResultData(ModelState).RunWithTry(y =>
             {
@@ -1768,7 +1768,8 @@ namespace NFine.Web.Controllers
                 {
                     DataIdList = param.DataIdList,
                     User = userBase,
-                    BusinessId=param.BusinessId
+                    BusinessId=param.BusinessId,
+                    BatchExamineSign = param.BatchExamineSign
 
                 } );
                

@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
+using BenDing.Domain.Models.Dto.JsonEntity;
 using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
@@ -20,6 +21,8 @@ using BenDing.Domain.Models.Params.Web;
 using BenDing.Domain.Xml;
 using BenDing.Repository.Interfaces.Web;
 using Dapper;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using NFine.Code;
 
 namespace BenDing.Repository.Providers.Web
@@ -129,7 +132,7 @@ namespace BenDing.Repository.Providers.Web
                             string insterSql = $@"
                                     insert into [dbo].[HospitalThreeCatalogue]([id],[DirectoryCode],[DirectoryName],[MnemonicCode],[DirectoryCategoryCode],[DirectoryCategoryName],[Unit],[Specification],[formulation],
                                     [ManufacturerName],[remark],DirectoryCreateTime,CreateTime,IsDelete,CreateUserId,FixedEncoding,OrganizationCode,OrganizationName)
-                                    values('{Guid.NewGuid()}','{itmes.DirectoryCode}','{CommonHelp.FilterSqlStr(itmes.DirectoryName)}','{CommonHelp.FilterSqlStr(itmes.MnemonicCode)}',{Convert.ToInt16(type)},'{itmes.DirectoryCategoryName}','{itmes.Unit}','{itmes.Specification}','{itmes.Formulation}',
+                                    values('{Guid.NewGuid()}','{itmes.DirectoryCode}','{CommonHelp.FilterSqlStr(itmes.DirectoryName)}','{CommonHelp.FilterSqlStr(itmes.MnemonicCode)}',{Convert.ToInt16(type)},'{itmes.DirectoryCategoryName}','{itmes.Unit}','{CommonHelp.FilterSqlStr(itmes.Specification)}','{itmes.Formulation}',
                                    '{itmes.ManufacturerName}','{itmes.Remark}', '{itmes.DirectoryCreateTime}',getDate(),0,'{userInfo.UserId}','{ CommonHelp.GuidToStr(itmes.DirectoryCode)}','{userInfo.OrganizationCode}','{userInfo.OrganizationName}');";
                             insterCount += insterSql;
                         }
@@ -1053,15 +1056,15 @@ namespace BenDing.Repository.Providers.Web
                 try
                 {
                     sqlConnection.Open();
-                    strSql = $@"update [dbo].[HospitalizationFee] set ApprovalMark=1, [ApprovalUserName]='{param.User.UserName}',
+                    strSql = $@"update [dbo].[HospitalizationFee] set ApprovalMark={param.BatchExamineSign}, [ApprovalUserName]='{param.User.UserName}',
                        [ApprovalTime]=GETDATE(),[ApprovalUserId]='{param.User.UserId}' where IsDelete=0 and HospitalizationId='{param.BusinessId}'";
                     if (param.DataIdList != null && param.DataIdList.Any())
                     {
                         var idlist = CommonHelp.ListToStr(param.DataIdList);
                         strSql += $" and Id in({idlist}) ";
-                       
+                        var data = sqlConnection.Execute(strSql);
                     }
-                    var data = sqlConnection.Execute(strSql);
+                  
                     sqlConnection.Close();
                   
                 }
@@ -1572,6 +1575,7 @@ namespace BenDing.Repository.Providers.Web
         public Dictionary<int, List<MedicalExpenseReportDto>> MedicalExpenseReport(MedicalExpenseReportParam param)
         {
             List<MedicalExpenseReportDto> dataList;
+            var dataListNew = new List<MedicalExpenseReportDto>();
             var resultData = new Dictionary<int, List<MedicalExpenseReportDto>>();
             using (var sqlConnection = new SqlConnection(_connectionString))
             {
@@ -1580,14 +1584,14 @@ namespace BenDing.Repository.Providers.Web
                 try
                 {
                     sqlConnection.Open();
-                    querySql = @"select a.BusinessId,a.[OrganizationName], a.[PatientName],a.[IdCardNo],a.[Operator],
+                    querySql = @"select a.id,a.BusinessId,a.OrganizationCode,a.DiagnosticJson,a.[OrganizationName], a.[PatientName],a.[IdCardNo],a.[Operator],
                              a.[VisitDate],b.CommunityName,b.SettlementUserName,b.[SettlementTime],b.[SelfPayFeeAmount],
-                             a.[MedicalTreatmentTotalCost],b.[ContactAddress],b.[CarryOver],b.ContactPhone from [dbo].[Outpatient] as a  JOIN [dbo].[MedicalInsurance]  as b 
+                             a.[MedicalTreatmentTotalCost],b.[ContactAddress],b.ReimbursementExpensesAmount,b.[CarryOver],b.ContactPhone from [dbo].[Outpatient] as a  JOIN [dbo].[MedicalInsurance]  as b 
                              on  a.BusinessId=b.BusinessId where 
-                              a.IsDelete=0  and b.IsDelete=0 and b.[InsuranceType]=310 and b.[MedicalInsuranceState]=6";
+                              a.IsDelete=0  and b.IsDelete=0 and b.[InsuranceType]=342 and b.[MedicalInsuranceState]=6";
                     string countSql = @"select COUNT(*) from [dbo].[Outpatient] as a  JOIN [dbo].[MedicalInsurance]  as b 
                              on  a.BusinessId=b.BusinessId where  a.IsDelete=0  and b.IsDelete=0 
-							 and b.[InsuranceType]=310 and b.[MedicalInsuranceState]=6";
+							 and b.[InsuranceType]=342 and b.[MedicalInsuranceState]=6";
                     if (!string.IsNullOrWhiteSpace(param.OrganizationCode))
                         whereSql += $"  and a.OrganizationCode='{param.OrganizationCode}'";
                     if (!string.IsNullOrWhiteSpace(param.PatientName))
@@ -1596,7 +1600,7 @@ namespace BenDing.Repository.Providers.Web
                         whereSql += $"  and a.IdCardNo='{param.IdCardNo}'";
                     if (!string.IsNullOrWhiteSpace(param.StartTime) && !string.IsNullOrWhiteSpace(param.EndTime))
                     {
-                        whereSql += $"  and a.VisitDate>='{param.StartTime}' and a.VisitDate<='{param.EndTime}'";
+                        whereSql += $"  and a.VisitDate>='{param.StartTime+ " 00:00:00.000"}' and a.VisitDate<='{param.EndTime+ " 23:59:59.000"}'";
                     }
 
                     if (param.rows!= 0 && param.Page > 0)
@@ -1612,8 +1616,42 @@ namespace BenDing.Repository.Providers.Web
                     dataList = (from t in result.Read<MedicalExpenseReportDto>()
 
                         select t).ToList();
+                    if (totalPageCount > 0)
+                    {
+                        var idCardNoList = dataList.GroupBy(g => g.IdCardNo).Where(s => s.Count() > 1).Select(c=>c.Key).ToList();
+                        var idList = dataList.Where(c => idCardNoList.Contains(c.IdCardNo)).ToList();
+                        var repeatData = MedicalExpenseRepeat(idList);
+                        
+                        foreach (var item in dataList)
+                        {
+                            var repeatValue = repeatData.FirstOrDefault(c => c.Id == item.Id);
+                            var itemData = new MedicalExpenseReportDto()
+                            {
+                                SettlementTime = item.SettlementTime,
+                                BusinessId = item.BusinessId,
+                                ContactAddress = item.ContactAddress,
+                                CarryOver = item.CarryOver,
+                                CommunityName = item.CommunityName,
+                                ContactPhone = item.ContactPhone,
+                                DiagnosticJson = GetDiagnosticContent(item.DiagnosticJson),
+                                Id = item.Id,
+                                IdCardNo = item.IdCardNo,
+                                MedicalTreatmentTotalCost = item.MedicalTreatmentTotalCost,
+                                ReimbursementExpensesAmount = item.ReimbursementExpensesAmount,
+                                SettlementUserName = item.SettlementUserName,
+                                PatientName = item.PatientName,
+                                VisitDate = item.VisitDate,
+                                OrganizationName = item.OrganizationName,
+                                OrganizationCode = item.OrganizationCode,
+                                Sign = repeatValue==null?1:0,
+                                Operator= item.Operator
+                            };
+                            dataListNew.Add(itemData);
+                        }
 
-                    resultData.Add(totalPageCount, dataList);
+                    }
+
+                    resultData.Add(totalPageCount, dataListNew.OrderByDescending(d=>d.VisitDate).ToList());
                     sqlConnection.Close();
                     return resultData;
 
@@ -1626,11 +1664,49 @@ namespace BenDing.Repository.Providers.Web
 
             }
         }
+        /// <summary>
+        ///获取门诊居民报账 重复数据
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        private List<MedicalExpenseReportDto> MedicalExpenseRepeat(List<MedicalExpenseReportDto> param)
+        {
+            var resultData = new List<MedicalExpenseReportDto>();
+
+            foreach (var item in param)
+            {//
+                var startTime = Convert.ToDateTime(item.VisitDate.ToString("yyyy-MM-dd") + " 00:00:00.000");
+                var startEnd = Convert.ToDateTime(item.VisitDate.ToString("yyyy-MM-dd") + " 23:59:59.000");
+                var idList = resultData.Select(d => d.Id).ToList();
+                var itemValueList = param.Where(c =>
+                        c.VisitDate > startTime && c.VisitDate < startEnd &&
+                        c.OrganizationCode == item.OrganizationCode && !idList.Contains(c.Id))
+                    .OrderBy(d=>d.VisitDate).ToList();
+
+                if (itemValueList.Count > 1)
+                {
+                    int i = 0;
+                    foreach (var itemValue in itemValueList)
+                    {   //排除第一个为1,其余为0
+                        if (i > 0)
+                        {
+                            resultData.Add(itemValue);
+                        }
+
+                        i++;
+
+                    }
+
+                }
+            }
+
+            return resultData;
+        }
 
         /// <summary>
-       /// 执行sql
-       /// </summary>
-       /// <param name="param"></param>
+        /// 执行sql
+        /// </summary>
+        /// <param name="param"></param>
         public void ExecuteSql(string param)
         {
             using (var sqlConnection = new SqlConnection(_connectionString))
@@ -1980,6 +2056,34 @@ namespace BenDing.Repository.Providers.Web
 
             }
         }
+        //private  string 
+        /// <summary>
+        /// 获取诊断内容
+        /// </summary>
+        /// <param name="jsonData"></param>
+        /// <returns></returns>
+        private string GetDiagnosticContent( string jsonData)
+        {
+            string resultData = "";
+            string jsonStr = "";
+
+            if (jsonData != "[]")
+            {
+                var data = JsonConvert.DeserializeObject<List<InpatientDiagnosisDataDto>>(jsonData);
+
+                foreach (var item in data)
+                {
+                    resultData += item.DiseaseName + ",";
+                }
+
+                resultData = resultData.Substring(0, resultData.Length - 1);
+            }
+
+           
+          
+            return resultData;
+        }
+
         private decimal GetBlockPrice(QueryMedicalInsurancePairCodeDto param, OrganizationGrade grade)
         {
             decimal resultData = 0;

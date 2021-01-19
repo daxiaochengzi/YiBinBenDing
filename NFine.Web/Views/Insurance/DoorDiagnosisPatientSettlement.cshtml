@@ -710,8 +710,16 @@
         function workerReadCardInfo(cardPwd) {
             var activeData = activeXNew.OutpatientMethods(cardPwd, JSON.stringify(baseInfo.HospitalInfo), "ReadCardInfo");
             var activeJsonData = JSON.parse(activeData);
-            var activeJsonInfo = JSON.parse(activeJsonData.Data);
-            insuranceNo = activeJsonInfo.WorkersCardNo;
+       
+            if (activeJsonData.Success === false) {
+                msgError(activeJsonData.Message);
+                return false;
+            } else {
+                var activeJsonInfo = JSON.parse(activeJsonData.Data);
+                insuranceNo = activeJsonInfo.WorkersCardNo;
+                return true;
+            }
+          
            
         }
         //职工划卡
@@ -783,13 +791,13 @@
                 if (passWordKey === "0") {
                     if (verifyPassword() === false) return false;
                     cardParam["Pwd"] = pwd;
-                    workerReadCardInfo(pwd);
-                    cardParam["InsuranceNo"] = insuranceNo;
-                } else {
-                    workerReadCardInfo("");
-                    cardParam["InsuranceNo"] = insuranceNo;
+                    if (workerReadCardInfo(pwd) === false) return false;
                 }
-
+                else
+                {
+                    if (workerReadCardInfo("")=== false) return false;
+                }
+                cardParam["InsuranceNo"] = insuranceNo;
             }
             if (settlementRadio === "5") {
                 if (pwd === "") {

@@ -934,9 +934,12 @@ namespace NFine.Web.Controllers
         [HttpGet]
         public void TestSqlSugar()
         {
-          
-               //var ddd= CommonHelp.GetValue("WebServiceUrl");
-               StringBuilder ctrXml = new StringBuilder();
+            string ddd =
+                "{\"ORGID\":\"10ADC4A48AB743A2B532AD8D08C4B927\",\"YBCODE\":\"3176\",\"INFID\":\"F9D46DBF812C4F308670693F6431F498\",\"结算编号\":null,\"病人姓名\":\"宋梅\",\"医生姓名\":\"王伟\",\"身份证\":null,\"科室名称\":\"门诊\",\"发票号\":\"202101170012\",\"门诊号\":\"555780231000M202101170012\",\"收费日期\":\"2021-01-19 23:21:23\",\"明细总额\":4,\"经办人\":\"医保接口\"}";
+            var dataValue = JsonConvert.DeserializeObject<OutpatientPersonBaseJsonDto>(ddd);
+
+            //var ddd= CommonHelp.GetValue("WebServiceUrl");
+            StringBuilder ctrXml = new StringBuilder();
             ctrXml.Append("<?xml version=\"1.0\" encoding=\"GBK\" standalone=\"yes\" ?>");
             ctrXml.Append(@"<ROW>
                         <PO_AKC600>1013441659</PO_AKC600>

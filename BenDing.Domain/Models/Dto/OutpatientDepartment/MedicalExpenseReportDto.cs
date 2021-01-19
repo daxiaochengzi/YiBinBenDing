@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 namespace BenDing.Domain.Models.Dto.OutpatientDepartment
 {
    public class MedicalExpenseReportDto
-    {/// <summary>
+    {
+        public Guid Id { get; set; }
+
+        /// <summary>
     /// 业务id
     /// </summary>
         public string BusinessId { get; set; }
@@ -15,6 +18,10 @@ namespace BenDing.Domain.Models.Dto.OutpatientDepartment
         /// 组织机构名称
         /// </summary>
         public  string OrganizationName { get; set; }
+        /// <summary>
+        /// 组织机构编码
+        /// </summary>
+        public string OrganizationCode { get; set; }
         /// <summary>
         /// 病人姓名
         /// </summary>
@@ -32,7 +39,7 @@ namespace BenDing.Domain.Models.Dto.OutpatientDepartment
         /// <summary>
         /// 就诊时间
         /// </summary>
-        public  string VisitDate { get; set; }
+        public  DateTime VisitDate { get; set; }
         /// <summary>
         /// 参保地
         /// </summary>
@@ -69,5 +76,13 @@ namespace BenDing.Domain.Models.Dto.OutpatientDepartment
         /// 报销金额
         /// </summary>
         public decimal ReimbursementExpensesAmount { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public  string DiagnosticJson { get; set; }
+        /// <summary>
+        /// 标记
+        /// </summary>
+        public int Sign { get; set; }
     }
 }
