@@ -8,7 +8,11 @@ using Newtonsoft.Json;
 namespace BenDing.Domain.Models.Dto.JsonEntity
 {
    public class OutpatientDetailJsonDto
-    {
+    {/// <summary>
+    /// 单据号
+    /// </summary>
+        [JsonProperty(PropertyName = "单据号")]
+        public string DocumentNumber { get; set; }
         /// <summary>
         /// 费用明细ID
         /// </summary>

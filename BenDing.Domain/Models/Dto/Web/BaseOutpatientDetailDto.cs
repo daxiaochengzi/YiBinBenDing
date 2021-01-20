@@ -13,9 +13,13 @@ namespace BenDing.Domain.Models.Dto.Web
        
         public string OutpatientNo { get; set; }
         /// <summary>
+        /// 单据号
+        /// </summary>
+        public string DocumentNumber { get; set; } 
+        /// <summary>
         /// 费用明细ID
         /// </summary>
-      
+
         public string DetailId { get; set; }
         /// <summary>
         /// 项目名称
@@ -196,6 +200,10 @@ namespace BenDing.Domain.Models.Dto.Web
         /// 不传标记
         /// </summary>
         public int? NotUploadMark { get; set; } = null;
+        /// <summary>
+        /// 病人id
+        /// </summary>
+        public  string PatientId { get; set; }
 
 
 

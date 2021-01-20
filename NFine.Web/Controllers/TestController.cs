@@ -246,7 +246,6 @@ namespace NFine.Web.Controllers
 
             });
         }
-
         #endregion
 
         /// <summary>
@@ -358,7 +357,7 @@ namespace NFine.Web.Controllers
                 //回参构建
                 var xmlData = new OutpatientDepartmentCostCancelXml()
                 {
-                    SettlementNo = ""
+                    SettlementNo = param.SettlementNo
                 };
                 var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
                 var saveXml = new SaveXmlDataParam()
@@ -759,7 +758,7 @@ namespace NFine.Web.Controllers
                     }
 
 
-                    hisSqlRepository.ExecuteSql(" update [dbo].[ICD10PairCode] set [IsDelete]=0 ,state=0 where  [PairCodeUserName]='医保接口对码'");
+                    hisSqlRepository.ExecuteSql("update [dbo].[ICD10PairCode] set state=1 where  [PairCodeUserName]='医保接口对码'");
                 }
 
 
@@ -861,12 +860,23 @@ namespace NFine.Web.Controllers
             {
                 var userBase = webServiceBasicService.GetUserBaseInfo(param.UserId);
                 userBase.TransKey = param.TransKey;
-                //回参构建
-                var xmlData = new OutpatientDepartmentCostCancelXml()
+                var xmlData = new MedicalInsuranceXmlDto();
+                xmlData.BusinessId = param.BusinessId;
+                xmlData.HealthInsuranceNo = "42";//42MZ
+                xmlData.TransactionId = param.TransKey;
+                xmlData.AuthCode = userBase.AuthCode;
+                xmlData.UserId = param.UserId;
+                xmlData.OrganizationCode = userBase.OrganizationCode;
+                var jsonParam = JsonConvert.SerializeObject(xmlData);
+                var data = webServiceBasic.HIS_Interface("39", jsonParam);
+                HisHospitalizationSettlementCancelJsonDto dataValue = JsonConvert.DeserializeObject<HisHospitalizationSettlementCancelJsonDto>(data.Msg);
+                //{\"基础信息\":{\"ORGID\":\"9F44A548B22A4F84BC59A59FF4796D53\",\"YBCODE\":\"123\",\"INFID\":\"6F63E04260974852B0F461D6108DB688\",\"结算编号\":\"34556\",\"就诊编号\":\"34556\",\"经办人\":\"医保接口\"}}
+                ////回参构建
+                var xmlDatas = new OutpatientDepartmentCostCancelXml()
                 {
-                    SettlementNo = "54901231"
+                    SettlementNo = dataValue.InfoData.SettlementNo
                 };
-                var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
+                var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlDatas);
                 var saveXml = new SaveXmlDataParam()
                 {
                     User = userBase,
@@ -878,6 +888,46 @@ namespace NFine.Web.Controllers
                 //存基层
                 webServiceBasic.SaveXmlData(saveXml);
                 //_outpatientDepartmentNewService.CancelOutpatientDepartmentCost(param);
+            });
+
+        }
+        /// <summary>
+        /// 门诊结算
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData OutpatientSettlement([FromBody] UiBaseDataParam param)
+        {
+            return new ApiJsonResultData(ModelState, new UiInIParam()).RunWithTry(y =>
+            {
+                var userBase = webServiceBasicService.GetUserBaseInfo(param.UserId);
+                userBase.TransKey = param.TransKey;
+                //回参构建88866
+                var xmlData = new OutpatientDepartmentCostXml()
+                {
+                    AccountBalance = 10,
+                    MedicalInsuranceOutpatientNo = "88866",
+                    CashPayment = 0,
+                    SettlementNo = "88866",
+                    AllAmount = Convert.ToDecimal(0.07),
+                    PatientName = "代美玲",
+                    AccountAmountPay = 0,
+                    MedicalInsuranceType = "342"
+                };
+
+                var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
+                var saveXml = new SaveXmlDataParam()
+                {
+                    User = userBase,
+                    MedicalInsuranceBackNum = "zydj",
+                    MedicalInsuranceCode = "48",
+                    BusinessId = param.BusinessId,
+                    BackParam = strXmlBackParam
+                };
+                //存基层
+                webServiceBasic.SaveXmlData(saveXml);
+
             });
 
         }
@@ -1013,6 +1063,7 @@ namespace NFine.Web.Controllers
             };
             webServiceBasic.HIS_Interface("35", JsonConvert.SerializeObject(uploadData));
         }
-       
+
+   
     }
 }

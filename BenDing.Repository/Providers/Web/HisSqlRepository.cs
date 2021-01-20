@@ -691,7 +691,7 @@ namespace BenDing.Repository.Providers.Web
                 try
                 {
                     sqlConnection.Open();
-                    strSql = $@"update [dbo].[outpatient] set  [IsDelete] =1 ,DeleteTime=getDate(),DeleteUserId='{user.UserId}' where [IsDelete]=0 and [BusinessId]='{param.BusinessId}';
+                    strSql = $@"
                    INSERT INTO [dbo].[outpatient](
                    Id,[PatientName],[IdCardNo],[PatientSex],[BusinessId],[OutpatientNumber],[VisitDate]
                    ,[DepartmentId],[DepartmentName],[DiagnosticDoctor],[DiagnosticJson]
@@ -859,14 +859,14 @@ namespace BenDing.Repository.Providers.Web
 			                   ,[BillDepartmentId] ,[BillDoctorName],[BillDoctorId] ,[BillTime] ,[OperateDepartmentName],[OperateDepartmentId]
                                ,[OperateDoctorName] ,[OperateDoctorId],[OperateTime] ,[PrescriptionDoctor] ,[Operators],[PracticeDoctorNumber]
                                ,[CostWriteOffId],[OrganizationCode],[OrganizationName] ,[CreateTime] ,[IsDelete],[DeleteTime],CreateUserId
-                               ,DataSort,UploadMark,RecipeCodeFixedEncoding,BillDoctorIdFixedEncoding,BusinessTime,MedicalInsuranceProjectCode,NotUploadMark)
+                               ,DataSort,UploadMark,RecipeCodeFixedEncoding,BillDoctorIdFixedEncoding,BusinessTime,MedicalInsuranceProjectCode,NotUploadMark,PatientId)
                            VALUES('{Guid.NewGuid()}','{item.OutpatientNo}','{item.DetailId}','{item.DirectoryName}','{item.DirectoryCode}','{item.DirectoryCategoryName}','{item.DirectoryCategoryCode}'
                                  ,'{item.Unit}','{item.Formulation}','{item.Specification}',{item.UnitPrice},{item.Quantity},{CommonHelp.ValueToDouble(item.Amount)},'{item.Dosage}','{item.Usage}','{item.MedicateDays}',
                                  '{item.HospitalPricingUnit}','{item.IsImportedDrugs}','{item.DrugProducingArea}','{item.RecipeCode}','{item.CostDocumentType}','{item.BillDepartment}'
                                  ,'{item.BillDepartmentId}','{item.BillDoctorName}','{item.BillDoctorId}','{item.BillTime}','{item.OperateDepartmentName}','{item.OperateDepartmentId}'
                                  ,'{item.OperateDoctorName}','{item.OperateDoctorId}','{item.OperateTime}','{item.PrescriptionDoctor}','{item.Operators}','{item.PracticeDoctorNumber}'
                                  ,'{item.CostWriteOffId}','{item.OrganizationCode}','{item.OrganizationName}',getDate(),0,null,'{user.UserId}'
-                                 ,{sort},0,'null','{item.BillDoctorId}','{businessTime}','{item.MedicalInsuranceProjectCode}',{item.NotUploadMark}
+                                 ,{sort},0,'null','{item.BillDoctorId}','{businessTime}','{item.MedicalInsuranceProjectCode}',{item.NotUploadMark},{item.PatientId}
                                  );";
                                 insertSql += str;
                             }

@@ -946,9 +946,11 @@
 
 <script type="text/html" id="tableApprovalMarkBtn">
     {{#  if(d.ApprovalMark == 0){ }}
-    <a class="layui-btn layui-btn-warm layui-btn-xs" >否</a>
-    {{#  } else { }}
-    <a class="layui-btn layui-btn-xs" >是</a>
-    {{#  }}}
+    <a class="layui-btn layui-btn-warm layui-btn-xs">否</a>
+    {{#  } else if(d.ApprovalMark == 1){ }}
+    <a class="layui-btn layui-btn-xs">通过</a>
+    {{#  } else if(d.ApprovalMark == 2){ }}
+    <a class="layui-btn layui-btn-xs">不通过</a>
+  
 </script>
 

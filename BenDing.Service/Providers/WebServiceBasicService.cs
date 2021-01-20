@@ -784,13 +784,33 @@ namespace BenDing.Service.Providers
             var data = _webServiceBasic.HIS_InterfaceList("39", JsonConvert.SerializeObject(param));
         }
 
+      
+        /// <summary>
+        /// 获取门诊病人结算单据号
+        /// </summary>
+        /// <returns></returns>
+
+        public string GetOutpatientSettlementNo(GetOutpatientSettlementNoParam param)
+        {
+            var userBase = param.User;
+          
+            var xmlData = new MedicalInsuranceXmlDto();
+            xmlData.BusinessId = param.BusinessId;
+            xmlData.HealthInsuranceNo = "42";//42MZ
+            xmlData.TransactionId = userBase.TransKey;
+            xmlData.AuthCode = userBase.AuthCode;
+            xmlData.UserId = userBase.UserId;
+            xmlData.OrganizationCode = userBase.OrganizationCode;
+            var jsonParam = JsonConvert.SerializeObject(xmlData);
+            var data = _webServiceBasic.HIS_Interface("39", jsonParam);
+            HisHospitalizationSettlementCancelJsonDto dataValue = JsonConvert.DeserializeObject<HisHospitalizationSettlementCancelJsonDto>(data.Msg);
+            return dataValue.InfoData.SettlementNo;
+        }
         /// <summary>
         /// 医保信息回写至基层系统
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-
-
 
         public UserInfoDto GetUserBaseInfo(string param)
         {

@@ -81,6 +81,10 @@ namespace BenDing.Domain.Models.Params.Web
         /// 转结
         /// </summary>
         public  decimal CarryOver { get; set; }
+        /// <summary>
+        /// 病人id
+        /// </summary>
+        public  string PatientId { get; set; }
 
     }
 }

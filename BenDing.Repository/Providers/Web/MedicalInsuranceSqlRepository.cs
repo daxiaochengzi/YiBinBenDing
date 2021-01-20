@@ -77,7 +77,7 @@ namespace BenDing.Repository.Providers.Web
                         {
                             strSql = $@" update MedicalInsurance set SettlementUserId='{param.UserId}',SettlementTime=GETDATE(),MedicalInsuranceState={(int)param.MedicalInsuranceState},
                                     OtherInfo='{param.OtherInfo}',MedicalInsuranceAllAmount={param.MedicalInsuranceAllAmount},CarryOver={param.CarryOver},
-                                    SelfPayFeeAmount= {param.SelfPayFeeAmount},ReimbursementExpensesAmount={param.ReimbursementExpensesAmount},
+                                    SelfPayFeeAmount= {param.SelfPayFeeAmount},ReimbursementExpensesAmount={param.ReimbursementExpensesAmount},PatientId='{param.PatientId}',
                                     SettlementNo='{param.SettlementNo}',SettlementTransactionId='{param.SettlementTransactionId}',SettlementType='{param.SettlementType}'
                                     where Id='{param.Id}' ";
                         }
@@ -217,6 +217,7 @@ namespace BenDing.Repository.Providers.Web
                               ,[IdentityMark]
                               ,[AfferentSign]
                               ,[SettlementType]
+                              ,[PatientId]
                             FROM [dbo].[MedicalInsurance]
                             where  IsDelete=0";
                     if (!string.IsNullOrWhiteSpace(param.DataId))
@@ -225,6 +226,8 @@ namespace BenDing.Repository.Providers.Web
                         strSql += $" and BusinessId='{param.BusinessId}'";
                     if (!string.IsNullOrWhiteSpace(param.OrganizationCode))
                         strSql += $" and OrganizationCode='{param.OrganizationCode}'";
+                    if (!string.IsNullOrWhiteSpace(param.SettlementNo))
+                        strSql += $" and SettlementNo='{param.SettlementNo}'";
                     var data = sqlConnection.QueryFirstOrDefault<MedicalInsuranceResidentInfoDto>(strSql);
                     sqlConnection.Close();
 

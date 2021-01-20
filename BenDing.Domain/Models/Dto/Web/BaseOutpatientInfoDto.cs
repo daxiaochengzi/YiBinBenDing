@@ -13,10 +13,11 @@ namespace BenDing.Domain.Models.Dto.Web
     /// id
     /// </summary>
         public Guid Id { get; set; }=Guid.Empty;
-          /// <summary>
-         /// 姓名
-         /// </summary>
-      
+  
+        /// <summary>
+        /// 姓名
+        /// </summary>
+
         public string PatientName { get; set; }
         /// <summary>
         /// 身份证号码

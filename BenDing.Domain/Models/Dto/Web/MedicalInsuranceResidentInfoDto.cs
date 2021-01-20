@@ -89,6 +89,11 @@ namespace BenDing.Domain.Models.Dto.Web
         /// 结算类别
         /// </summary>
         public string SettlementType { get; set; }
-        
+        /// <summary>
+        /// 门诊结算id
+        /// </summary>
+        public  string PatientId { get; set; }
+
+
     }
 }

@@ -6,6 +6,7 @@ using System.Data;
 using BenDing.Domain.Models.Dto.JsonEntity;
 using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Params.Base;
+using BenDing.Domain.Models.Params.OutpatientDepartment;
 using BenDing.Domain.Models.Params.Resident;
 using BenDing.Domain.Models.Params.SystemManage;
 using BenDing.Domain.Models.Params.UI;
@@ -88,6 +89,13 @@ namespace BenDing.Service.Interfaces
         /// <param name="param"></param>
         /// <returns></returns>
         List<BaseOutpatientDetailDto> GetOutpatientDetailPerson(OutpatientDetailParam param);
+
+        /// <summary>
+        /// 获取门诊病人结算单据号
+        /// </summary>
+        /// <returns></returns>
+
+         string GetOutpatientSettlementNo(GetOutpatientSettlementNoParam param);
         /// <summary>
         /// 获取住院病人明细
         /// </summary>

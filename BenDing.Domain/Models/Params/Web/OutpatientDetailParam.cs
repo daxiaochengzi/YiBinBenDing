@@ -28,5 +28,9 @@ namespace BenDing.Domain.Models.Params.Web
         /// 不传标记
         /// </summary>
         public int? NotUploadMark { get; set; }
-}
+        /// <summary>
+        /// 病人id
+        /// </summary>
+        public string PatientId { get; set; }
+    }
 }

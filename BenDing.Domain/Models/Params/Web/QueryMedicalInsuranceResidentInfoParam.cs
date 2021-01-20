@@ -19,6 +19,11 @@ namespace BenDing.Domain.Models.Params.Web
         /// 组织机构
         /// </summary>
         public string OrganizationCode { get; set; }
-        
+        /// <summary>
+        /// 结算单据号
+        /// </summary>
+        public  string SettlementNo { get; set; }
+
+
     }
 }

@@ -180,11 +180,19 @@ namespace BenDing.Service.Providers
             string resultData = null;
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
             userBase.TransKey = param.TransKey;
+            //结算单据号
+          var outpatientSettlementNo=  _serviceBasicService.GetOutpatientSettlementNo(new GetOutpatientSettlementNoParam()
+            {
+              User = userBase,
+                BusinessId = param.BusinessId
+          });
             //获取医保病人信息
             var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
             {
                 BusinessId = param.BusinessId,
-                OrganizationCode = userBase.OrganizationCode
+                OrganizationCode = userBase.OrganizationCode,
+                SettlementNo = outpatientSettlementNo
+
             };
             var residentData = _medicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(queryResidentParam);
             if (residentData == null) throw new Exception("当前病人未结算,不能取消结算!!!");
@@ -260,11 +268,19 @@ namespace BenDing.Service.Providers
         {
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
             userBase.TransKey = param.TransKey;
+            //结算单据号
+            var outpatientSettlementNo = _serviceBasicService.GetOutpatientSettlementNo(new GetOutpatientSettlementNoParam()
+            {
+                User = userBase,
+                BusinessId = param.BusinessId
+            });
             //获取医保病人信息
             var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
             {
                 BusinessId = param.BusinessId,
-                OrganizationCode = userBase.OrganizationCode
+                OrganizationCode = userBase.OrganizationCode,
+                SettlementNo = outpatientSettlementNo
+
             };
             var residentData = _medicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(queryResidentParam);
             if (residentData == null) throw new Exception("当前病人未结算,不能取消结算!!!");
@@ -308,7 +324,17 @@ namespace BenDing.Service.Providers
             };
             //更新中间层
             _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateParamData);
+            string sql = "";
+            if (!string.IsNullOrWhiteSpace(residentData.PatientId))
+            {
+                sql = $"update  [dbo].[Outpatient] set [IsDelete]=1 where id='{residentData.PatientId}'";
+            }
+            else
+            {
+                sql = $"update  [dbo].[Outpatient] set [IsDelete]=1 where BusinessId='{param.BusinessId}'";
+            }
 
+            _hisSqlRepository.ExecuteSql(sql);
         }
         /// <summary>
         /// 获取门诊计划生育预结算参数
@@ -662,7 +688,7 @@ namespace BenDing.Service.Providers
             {
                 User = userBase,
                 UiParam = param,
-                IsSave = true,
+                //IsSave = true,
                 Id = Guid.NewGuid(),
             };
             var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
@@ -671,7 +697,7 @@ namespace BenDing.Service.Providers
             {
                 User = userBase,
                 BusinessId = param.BusinessId,
-                IsSave = true
+                //IsSave = true
             });
             var Id = Guid.NewGuid();
             var saveData = new MedicalInsuranceDto
@@ -748,6 +774,7 @@ namespace BenDing.Service.Providers
             {
                 User = userBase,
                 UiParam = param,
+                IsSave = true,
                 Id = id,
             };
             var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
@@ -756,6 +783,14 @@ namespace BenDing.Service.Providers
             {
                 BusinessId = param.BusinessId,
             };
+            //职工保存
+            var outpatientDetailPerson = _serviceBasicService.GetOutpatientDetailPerson(new OutpatientDetailParam()
+            {
+                User = userBase,
+                BusinessId = param.BusinessId,
+                IsSave = true,
+                PatientId = id.ToString()
+            });
             //日志写入
             _systemManageRepository.AddHospitalLog(new AddHospitalLogParam()
             {
@@ -782,6 +817,7 @@ namespace BenDing.Service.Providers
                 SettlementTransactionId = userBase.UserId,
                 MedicalInsuranceState = MedicalInsuranceState.MedicalInsuranceSettlement,
                 SettlementType = "3",
+                PatientId = id.ToString()
 
             };
             //存入中间层
@@ -839,7 +875,7 @@ namespace BenDing.Service.Providers
             {
                 User = userBase,
                 UiParam = param,
-                IsSave = true,
+                //IsSave = true,
                 Id = id,
             };
             var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
@@ -848,7 +884,7 @@ namespace BenDing.Service.Providers
             {
                 User = userBase,
                 BusinessId = param.BusinessId,
-                IsSave = true,
+                //IsSave = true,
                 NotUploadMark = 1
             });
             var saveData = new MedicalInsuranceDto
@@ -955,9 +991,19 @@ namespace BenDing.Service.Providers
                 User = userBase,
                 UiParam = param,
                 Id = id,
+                IsSave = true,
             };
             var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
             if (outpatientPerson == null) throw new Exception("his中未获取到当前病人!!!");
+            //储存明细
+            var outpatientDetailPerson = _serviceBasicService.GetOutpatientDetailPerson(new OutpatientDetailParam()
+            {
+                User = userBase,
+                BusinessId = param.BusinessId,
+                IsSave = true,
+                NotUploadMark = 1,
+                PatientId = id.ToString()
+            });
             var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
             {
                 BusinessId = param.BusinessId,
@@ -1048,8 +1094,8 @@ namespace BenDing.Service.Providers
             {
                 User = userBase,
                 UiParam = param,
-                IsSave = true,
-                Id= id,
+                //IsSave = true,
+                Id = id,
             };
             //报销类别
             var reimbursementType = "2";
@@ -1061,7 +1107,7 @@ namespace BenDing.Service.Providers
             {
                 User = userBase,
                 BusinessId = param.BusinessId,
-                IsSave = true,
+                //IsSave = true,
                 NotUploadMark = 1
             });
             var saveData = new MedicalInsuranceDto
@@ -1144,9 +1190,20 @@ namespace BenDing.Service.Providers
                 User = userBase,
                 UiParam = param,
                 Id = id,
+                IsSave = true
             };
             var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
             if (outpatientPerson == null) throw new Exception("his中未获取到当前病人!!!");
+            //储存明细
+            var outpatientDetailPerson = _serviceBasicService.GetOutpatientDetailPerson(new OutpatientDetailParam()
+            {
+                User = userBase,
+                BusinessId = param.BusinessId,
+                IsSave = true,
+                NotUploadMark = 1,
+                PatientId = id.ToString()
+            });
+
             var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
             {
                 BusinessId = param.BusinessId,
@@ -1179,7 +1236,8 @@ namespace BenDing.Service.Providers
                 MedicalInsuranceState = MedicalInsuranceState.MedicalInsuranceSettlement,
                 SettlementType = "2",
                 CarryOver = iniData.TurnSettlementBalanceAmount,
-                ReimbursementExpensesAmount = iniData.ReimbursementAmount
+                ReimbursementExpensesAmount = iniData.ReimbursementAmount,
+                PatientId = id.ToString()
             };
             //存入中间层
             _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateData);
@@ -1423,7 +1481,6 @@ namespace BenDing.Service.Providers
             {
                 User = userBase,
                 UiParam = param,
-                IsSave = true,
                 Id = Guid.NewGuid(),
             };
             var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
@@ -1460,12 +1517,7 @@ namespace BenDing.Service.Providers
         {
             var iniData = JsonConvert.DeserializeObject<WorkerHospitalSettlementCardBackDataDto>(param.SettlementJson);
             var resultData= AutoMapper.Mapper.Map<WorkerHospitalSettlementCardBackDto>(iniData);
-            //var iniData = new WorkerHospitalSettlementCardBackDto()
-            //{
-            //    AccountPayment =Convert.ToDecimal(10.92),
-            //    AccountBalance = 500,
-            //    SerialNumber = "12312dqeqwe"
-            //};
+       
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
             userBase.TransKey = param.TransKey;
             //门诊病人信息存储
@@ -1475,9 +1527,21 @@ namespace BenDing.Service.Providers
                 User = userBase,
                 UiParam = param,
                 Id = id,
+                IsSave = true,
             };
             var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
             if (outpatientPerson == null) throw new Exception("his中未获取到当前病人!!!");
+            //储存明细
+            var outpatientDetailPerson = _serviceBasicService.GetOutpatientDetailPerson(new OutpatientDetailParam()
+            {
+                User = userBase,
+                BusinessId = param.BusinessId,
+                IsSave = true,
+               
+                PatientId = id.ToString()
+            });
+
+
             var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
             {
                 BusinessId = param.BusinessId,
@@ -1507,7 +1571,8 @@ namespace BenDing.Service.Providers
                 MedicalInsuranceAllAmount = outpatientPerson.MedicalTreatmentTotalCost,
                 SettlementTransactionId = userBase.UserId,
                 MedicalInsuranceState = MedicalInsuranceState.MedicalInsuranceSettlement,
-                SettlementType = "2"
+                SettlementType = "2",
+                PatientId = id.ToString()
             };
             //存入中间层
             _medicalInsuranceSqlRepository.UpdateMedicalInsuranceResidentSettlement(updateData);
