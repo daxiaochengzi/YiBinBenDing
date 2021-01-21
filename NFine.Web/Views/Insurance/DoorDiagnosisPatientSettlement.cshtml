@@ -112,6 +112,12 @@
                         <input type="text" id="InsuranceBalance" name="InsuranceBalance" autocomplete="off" disabled class="layui-input layui-disabled">
                     </div>
                 </div>
+                <div class="layui-inline" id="OverallPaymentBalanceDiv">
+                    <label class="layui-form-label">统筹余额</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="OverallPaymentBalance" name="OverallPaymentBalance" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>
                 <div class="layui-inline" id="AccountPaymentDiv" >
                     <label class="layui-form-label">下账金额</label>
                     <div class="layui-input-inline" >
@@ -134,7 +140,7 @@
                         <input type="text" name="DiagnosticDoctor" autocomplete="off" disabled class="layui-input layui-disabled">
                     </div>
                 </div>
-                <div class="layui-inline">
+                @*<div class="layui-inline">
                     <label class="layui-form-label">经办人</label>
                     <div class="layui-input-inline">
                         <input type="text" name="Operator" autocomplete="off" disabled class="layui-input layui-disabled">
@@ -144,6 +150,12 @@
                     <label class="layui-form-label">发票号</label>
                     <div class="layui-input-inline">
                         <input type="text" name="InvoiceNo" autocomplete="off" disabled class="layui-input layui-disabled">
+                    </div>
+                </div>*@
+                <div class="layui-inline" id="ContactPhoneDiv">
+                    <label class="layui-form-label">电话</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="ContactPhone" id="ContactPhone" autocomplete="off"  class="layui-input">
                     </div>
                 </div>
        
@@ -198,6 +210,7 @@
         $("#AccountPaymentDiv").hide();
         $("#DoorDiagnosisPreSettlementDiv").hide();
         $("#DoorDiagnosisSettlementDiv").hide();
+        $("#ContactPhoneDiv").hide();
         $("#queryDataDiv").hide();
         $("#passwordDiv").hide();
         
@@ -282,6 +295,9 @@
             // 居民
             if (baseInfo.Inpatient.InsuranceType === "342") {
                 $("#InsuranceBalance").val(baseInfo.Inpatient.ResidentInsuranceBalance);
+                $("#OverallPaymentBalance").val(baseInfo.Inpatient.OverallPaymentBalance);
+                $("#OverallPaymentBalanceDiv").show();
+                $("#ContactPhoneDiv").show();
                 //职工
             } else if (baseInfo.Inpatient.InsuranceType === "310") {
                 $("#InsuranceBalance").val(baseInfo.Inpatient.WorkersInsuranceBalance);
@@ -565,9 +581,14 @@
                 ecTransParam["InsuranceType"] = "310";
             } else {
                 ecTransParam["InsuranceType"] = "342";
+                if ($("#ContactPhone").val() === "") {
+                    layer.alert("居民报账联系电话不能为空", { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                    return false;
+                }
                 ecTransParam["CommunityName"] = baseInfo.Inpatient.CommunityName;
-                ecTransParam["ContactPhone"] = baseInfo.Inpatient.ContactPhone;
+                ecTransParam["ContactPhone"] = $("#ContactPhone").val();
                 ecTransParam["ContactAddress"] = baseInfo.Inpatient.ContactAddress;
+                 
             }
             $.ajax({
                 type: 'POST',
@@ -783,8 +804,12 @@
         function residentSettlementCard() {
             var cardParam = $.extend({}, params);
             cardParam["InsuranceType"] = "342";
+            if ($("#ContactPhone").val() === "") {
+                layer.alert("居民报账联系电话不能为空", { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                return false;
+            }
             cardParam["CommunityName"] = baseInfo.Inpatient.CommunityName;
-            cardParam["ContactPhone"] = baseInfo.Inpatient.ContactPhone;
+            cardParam["ContactPhone"] = $("#ContactPhone").val();
             cardParam["ContactAddress"] = baseInfo.Inpatient.ContactAddress;
             var pwd = $("#CardPwd").val();
             if (settlementRadio === "4") {

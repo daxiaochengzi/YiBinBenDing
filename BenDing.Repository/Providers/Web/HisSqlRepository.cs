@@ -795,6 +795,11 @@ namespace BenDing.Repository.Providers.Web
                 {
                     sqlConnection.Open();
                     strSql = $"select top 1 * from [dbo].[Outpatient] where IsDelete=0 and BusinessId='{param.BusinessId}'";
+                    if (!string.IsNullOrWhiteSpace(param.Id))
+                    {
+                        strSql += $" and id='{param.Id}'";
+                    }
+
                     var data = sqlConnection.QueryFirstOrDefault<QueryOutpatientDto>(strSql);
                     sqlConnection.Close();
                     return data;
@@ -866,7 +871,7 @@ namespace BenDing.Repository.Providers.Web
                                  ,'{item.BillDepartmentId}','{item.BillDoctorName}','{item.BillDoctorId}','{item.BillTime}','{item.OperateDepartmentName}','{item.OperateDepartmentId}'
                                  ,'{item.OperateDoctorName}','{item.OperateDoctorId}','{item.OperateTime}','{item.PrescriptionDoctor}','{item.Operators}','{item.PracticeDoctorNumber}'
                                  ,'{item.CostWriteOffId}','{item.OrganizationCode}','{item.OrganizationName}',getDate(),0,null,'{user.UserId}'
-                                 ,{sort},0,'null','{item.BillDoctorId}','{businessTime}','{item.MedicalInsuranceProjectCode}',{item.NotUploadMark},{item.PatientId}
+                                 ,{sort},0,'null','{item.BillDoctorId}','{businessTime}','{item.MedicalInsuranceProjectCode}',{item.NotUploadMark},'{item.PatientId}'
                                  );";
                                 insertSql += str;
                             }

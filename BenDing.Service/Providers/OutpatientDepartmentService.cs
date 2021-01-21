@@ -246,12 +246,18 @@ namespace BenDing.Service.Providers
 
             var resultData = new QueryOutpatientDepartmentCostjsonDto();
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
-
+            userBase.TransKey = param.TransKey;
+            var outpatientSettlementNo = _serviceBasicService.GetOutpatientSettlementNo(new GetOutpatientSettlementNoParam()
+            {
+                BusinessId = param.BusinessId,
+                User = userBase
+            });
             //获取医保病人信息
             var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
             {
                 BusinessId = param.BusinessId,
-                OrganizationCode = userBase.OrganizationCode
+                OrganizationCode = userBase.OrganizationCode,
+                SettlementNo = outpatientSettlementNo
             };
             var outpatient = _hisSqlRepository.QueryOutpatient(new QueryOutpatientParam() { BusinessId = param.BusinessId });
             if (outpatient == null) throw new Exception("当前病人查找失败!!!");

@@ -23,6 +23,10 @@ namespace BenDing.Domain.Models.Params.Web
         /// 结算单据号
         /// </summary>
         public  string SettlementNo { get; set; }
+        /// <summary>
+        /// 结算状态
+        /// </summary>
+        public  int MedicalInsuranceState { get; set; }
 
 
     }

@@ -344,14 +344,26 @@ namespace NFine.Web.Controllers
                     User = baseUser,
                     BusinessId = param.BusinessId
                 };
-                var cancelSettlementData = _webServiceBasicService.GetOutpatientSettlementCancel(paramIni);
-                var queryData = _hisSqlRepository.QueryOutpatient(new QueryOutpatientParam() { BusinessId = param.BusinessId });
-                if (queryData == null) throw new Exception("获取门诊结算病人失败!!!");
+             var outpatientSettlementNo=  _webServiceBasicService.GetOutpatientSettlementNo(new GetOutpatientSettlementNoParam()
+                {
+                    BusinessId = param.BusinessId,
+                    User = baseUser
+                });
                 //获取医保病人信息
                 var residentData = _medicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(new QueryMedicalInsuranceResidentInfoParam()
                 {
-                    BusinessId = param.BusinessId
+                    BusinessId = param.BusinessId,
+                    SettlementNo = outpatientSettlementNo,
+                    MedicalInsuranceState = 6
                 });
+                var cancelSettlementData = _webServiceBasicService.GetOutpatientSettlementCancel(paramIni);
+                var queryData = _hisSqlRepository.QueryOutpatient(new QueryOutpatientParam()
+                {
+                    BusinessId = param.BusinessId,
+                    Id = residentData.PatientId
+                });
+                if (queryData == null) throw new Exception("获取门诊结算病人失败!!!");
+
                 //获取门诊病人信息
                 resultData.DepartmentName = queryData.DepartmentName;
                 resultData.DiagnosticDoctor = queryData.DiagnosticDoctor;

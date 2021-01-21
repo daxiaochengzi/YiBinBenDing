@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.XPath;
 using BenDing.Domain.Models.Dto.Base;
+using BenDing.Domain.Models.Dto.JsonEntity;
 using BenDing.Domain.Models.Dto.Resident;
 using BenDing.Domain.Models.Dto.Web;
 
@@ -182,6 +183,33 @@ namespace BenDing.Domain.Xml
             }
 
             return result?.Substring(0, result.Length - 1);
+        }
+
+        /// <summary>
+        /// 获取门诊诊断
+        /// </summary>
+        /// <param name="param"></param>
+        public static InpatientDiagnosisDataDto GetOutpatientDiagnostic(List<InpatientDiagnosisDataDto> param)
+        {
+            InpatientDiagnosisDataDto resultData = null;
+            var diagnosisData = param.FirstOrDefault(c => c.IsMainDiagnosis == "是");
+            if (!string.IsNullOrWhiteSpace(diagnosisData.ProjectCode))
+            {
+                resultData = diagnosisData;
+            }
+
+            foreach (var item in param)
+            {
+                if  (!string.IsNullOrWhiteSpace(item.ProjectCode))
+                {
+                    if (resultData == null) resultData = item;
+                 
+                }
+            }
+
+            if (resultData == null) resultData = diagnosisData;
+
+            return resultData;
         }
 
         /// <summary>

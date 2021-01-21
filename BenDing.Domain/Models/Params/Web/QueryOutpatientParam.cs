@@ -11,5 +11,6 @@ namespace BenDing.Domain.Models.Params.Web
         /// 业务id
         /// </summary>
         public string BusinessId { get; set; }
+        public  string Id { get; set; }
     }
 }

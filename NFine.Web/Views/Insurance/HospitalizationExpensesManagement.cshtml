@@ -225,8 +225,8 @@
                 cols: [[
                     { type: 'checkbox', fixed: 'left' },
                     { title: '序号', type: 'numbers', align: 'center' }
-                    , { field: 'UploadMark', title: '上传状态', width: 80, toolbar: '#tableBtn', align: 'center' }
-                    , { field: 'ApprovalMark', title: '审核', width: 60, toolbar: '#tableApprovalMarkBtn', align: 'center' }
+                    , { field: 'UploadMark', title: '上传状态', width: 100, toolbar: '#tableBtn', align: 'center' }
+                    , { field: 'ApprovalMark', title: '审核状态', width:100, toolbar: '#tableApprovalMarkBtn', align: 'center' }
                     , { field: 'DirectoryCode', title: '医院目录编码(商品ID)', width: 320, hide: true }
                     , { field: 'DirectoryName', title: '项目名称', width: 280 }
                     , { field: 'DirectoryCategoryCode', title: '项目类别', width: 100 }
@@ -667,6 +667,7 @@
                     prescriptionUpload(dataIds);
                     break;
                 case "batchExamineData":
+                    
                     data = checkStatus.data; //选中行的数据
                     if (data.length === 0)
                     {
@@ -946,11 +947,14 @@
 
 <script type="text/html" id="tableApprovalMarkBtn">
     {{#  if(d.ApprovalMark == 0){ }}
-    <a class="layui-btn layui-btn-warm layui-btn-xs">否</a>
-    {{#  } else if(d.ApprovalMark == 1){ }}
+    <a class="layui-btn layui-btn-warm layui-btn-xs">未审核</a>
+    {{# }}}
+    {{#  if(d.ApprovalMark == 1){ }}
     <a class="layui-btn layui-btn-xs">通过</a>
-    {{#  } else if(d.ApprovalMark == 2){ }}
-    <a class="layui-btn layui-btn-xs">不通过</a>
-  
+    {{# }}}
+    {{#  if(d.ApprovalMark == 2){ }}
+    <a class="layui-btn layui-btn-danger layui-btn-xs">不通过</a>
+
+    {{# }}}
 </script>
 

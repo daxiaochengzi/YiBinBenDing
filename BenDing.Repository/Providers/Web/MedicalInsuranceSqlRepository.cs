@@ -169,7 +169,7 @@ namespace BenDing.Repository.Providers.Web
                                  '{param.AdmissionInfoJson}',0,0,NULL,'{param.MedicalInsuranceHospitalizationNo}',{param.IsBirthHospital},
                                  GETDATE(),0,'{user.OrganizationCode}','{user.UserId}','{user.OrganizationName }',{param.InsuranceType},
                                   {(int)param.MedicalInsuranceState},'{user.UserName}','{param.CommunityName}','{param.ContactPhone}','{param.ContactAddress}');";
-                        strSql = $"update [dbo].[MedicalInsurance] set [IsDelete]=1,DeleteUserId='{user.UserId}',DeleteTime=GETDATE() where [BusinessId]='{param.BusinessId}';" + strSql;
+                        strSql = $"update [dbo].[MedicalInsurance] set [IsDelete]=1,DeleteUserId='{user.UserId}',DeleteTime=GETDATE() where [BusinessId]='{param.BusinessId}' and [PatientId] is null;" + strSql;
 
                     }
 
@@ -228,6 +228,11 @@ namespace BenDing.Repository.Providers.Web
                         strSql += $" and OrganizationCode='{param.OrganizationCode}'";
                     if (!string.IsNullOrWhiteSpace(param.SettlementNo))
                         strSql += $" and SettlementNo='{param.SettlementNo}'";
+                    if (param.MedicalInsuranceState > 0)
+                    {
+                        strSql += $" and MedicalInsuranceState={param.MedicalInsuranceState}";
+                    }
+
                     var data = sqlConnection.QueryFirstOrDefault<MedicalInsuranceResidentInfoDto>(strSql);
                     sqlConnection.Close();
 
