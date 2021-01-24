@@ -2123,5 +2123,48 @@ namespace NFine.Web.Controllers
             return response;
 
         }
+
+
+
+        /// <summary>
+        /// 门诊居民报账
+        /// </summary>
+        [HttpGet]
+        public HttpResponseMessage MedicalExpenseReport([FromUri] MedicalExpenseReportUiParam param)
+        {
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+            string fileName = null;
+            if (!string.IsNullOrWhiteSpace(param.UserId))
+            {   var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+                 fileName = userBase.OrganizationName + ".xls";
+            }
+            string filePath = HttpContext.Current.Server.MapPath("~/") + "FileExcel\\" + fileName;
+            if (System.IO.File.Exists(filePath))
+            {
+
+                System.IO.File.Delete(filePath);//删除文件夹以及文件夹中的子目录，文件   
+            }
+            var tableData = _hisSqlRepository.MedicalExpenseReportExcel(param );
+
+            if (tableData.Rows.Count > 0)
+            {
+
+                ExcelHelper.Export(tableData, "医保对码表单", filePath);
+                FileStream stream = new FileStream(filePath, FileMode.Open);
+
+                response.Content = new StreamContent(stream);
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+                {
+                    FileName = HttpUtility.UrlEncode(fileName)
+                };
+                response.Headers.Add("Access-Control-Expose-Headers", "FileName");
+                response.Headers.Add("FileName", HttpUtility.UrlEncode(fileName));
+            }
+
+
+            return response;
+
+        }
     }
 }

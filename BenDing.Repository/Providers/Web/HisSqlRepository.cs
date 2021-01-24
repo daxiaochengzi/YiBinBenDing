@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using BenDing.Domain.Models.Dto.JsonEntity;
 using BenDing.Domain.Models.Dto.OutpatientDepartment;
@@ -1669,6 +1670,87 @@ namespace BenDing.Repository.Providers.Web
 
             }
         }
+
+        public DataTable MedicalExpenseReportExcel(MedicalExpenseReportUiParam param)
+        {
+            var resultData = new DataTable();
+            List<MedicalExpenseReportDto> dataList;
+            var dataListNew = new List<MedicalExpenseReportExcelDto>();
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                string querySql = null;
+                string whereSql = "";
+                try
+                {
+                    sqlConnection.Open();
+                    querySql = @"select a.id,a.BusinessId,a.OrganizationCode,a.DiagnosticJson,a.[OrganizationName], a.[PatientName],a.[IdCardNo],a.[Operator],
+                             a.[VisitDate],b.CommunityName,b.SettlementUserName,b.[SettlementTime],b.[SelfPayFeeAmount],
+                             a.[MedicalTreatmentTotalCost],b.[ContactAddress],b.ReimbursementExpensesAmount,b.[CarryOver],b.ContactPhone from [dbo].[Outpatient] as a  JOIN [dbo].[MedicalInsurance]  as b 
+                             on  a.BusinessId=b.BusinessId where 
+                              a.IsDelete=0  and b.IsDelete=0 and b.[InsuranceType]=342 and b.[MedicalInsuranceState]=6";
+                   
+                    if (!string.IsNullOrWhiteSpace(param.OrganizationCode))
+                        whereSql += $"  and a.OrganizationCode='{param.OrganizationCode}'";
+                    if (!string.IsNullOrWhiteSpace(param.PatientName))
+                        whereSql += $"  and a.PatientName like '%{param.PatientName}%'";
+                    if (!string.IsNullOrWhiteSpace(param.IdCardNo))
+                        whereSql += $"  and a.IdCardNo='{param.IdCardNo}'";
+                    if (!string.IsNullOrWhiteSpace(param.StartTime) && !string.IsNullOrWhiteSpace(param.EndTime))
+                    {
+                        whereSql += $"  and a.VisitDate>='{param.StartTime + " 00:00:00.000"}' and a.VisitDate<='{param.EndTime + " 23:59:59.000"}'";
+                    }
+
+                    string executeSql = querySql += querySql + whereSql;
+
+                     dataList = sqlConnection.Query<MedicalExpenseReportDto>(executeSql).ToList();
+
+                 
+                 
+                    if (dataList.Any())
+                    {
+                        var idCardNoList = dataList.GroupBy(g => g.IdCardNo).Where(s => s.Count() > 1).Select(c => c.Key).ToList();
+                        var idList = dataList.Where(c => idCardNoList.Contains(c.IdCardNo)).ToList();
+                        var repeatData = MedicalExpenseRepeat(idList);
+
+                        foreach (var item in dataList)
+                        {
+                            var repeatValue = repeatData.FirstOrDefault(c => c.Id == item.Id);
+                            var itemData = new MedicalExpenseReportExcelDto()
+                            {
+                                报销日期 = item.SettlementTime,
+                                历年结转 = item.CarryOver,
+                                参保地 = item.CommunityName,
+                                联系电话 = item.ContactPhone,
+                                诊断 = GetDiagnosticContent(item.DiagnosticJson),
+                                身份证号 = item.IdCardNo,
+                                合计金额 = item.MedicalTreatmentTotalCost,
+                                报销金额 = item.ReimbursementExpensesAmount,
+                                病人姓名 = item.PatientName,
+                                就诊日期 = item.VisitDate,
+                                机构 = item.OrganizationName,
+                                标记 = repeatValue == null ? 1 : 0,
+                                经办人 = item.Operator
+                            };
+                            dataListNew.Add(itemData);
+                        }
+
+                    }
+
+                    resultData = ListToDataTable(dataListNew);
+                    sqlConnection.Close();
+                    return resultData;
+
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(querySql);
+                    throw new Exception(e.Message);
+                }
+                
+            }
+          
+        }
+
         /// <summary>
         ///获取门诊居民报账 重复数据
         /// </summary>
@@ -2108,6 +2190,48 @@ namespace BenDing.Repository.Providers.Web
             //职工
             if (residentInfo.InsuranceType == "310") resultData = param.WorkersSelfPayProportion;
             return resultData;
+        }
+        /// <summary>
+        /// 将泛类型集合List类转换成DataTable
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entitys"></param>
+        /// <returns></returns>
+        private DataTable ListToDataTable<T>(List<T> entitys)
+        {
+            //检查实体集合不能为空
+            if (entitys == null || entitys.Count < 1)
+            {
+                throw new Exception("需转换的集合为空");
+            }
+            //取出第一个实体的所有Propertie
+            Type entityType = entitys[0].GetType();
+            PropertyInfo[] entityProperties = entityType.GetProperties();
+
+            //生成DataTable的structure
+            //生产代码中，应将生成的DataTable结构Cache起来，此处略
+            DataTable dt = new DataTable();
+            for (int i = 0; i < entityProperties.Length; i++)
+            {
+                //dt.Columns.Add(entityProperties[i].Name, entityProperties[i].PropertyType);
+                dt.Columns.Add(entityProperties[i].Name);
+            }
+            //将所有entity添加到DataTable中
+            foreach (object entity in entitys)
+            {
+                //检查所有的的实体都为同一类型
+                if (entity.GetType() != entityType)
+                {
+                    throw new Exception("要转换的集合元素类型不一致");
+                }
+                object[] entityValues = new object[entityProperties.Length];
+                for (int i = 0; i < entityProperties.Length; i++)
+                {
+                    entityValues[i] = entityProperties[i].GetValue(entity, null);
+                }
+                dt.Rows.Add(entityValues);
+            }
+            return dt;
         }
 
     }

@@ -383,8 +383,8 @@ namespace BenDing.Service.Providers
                 detail.OrganizationCode = param.User.OrganizationCode;
                 detail.OrganizationName = param.User.OrganizationName;
                 detail.OutpatientNo = dataValue.OutpatientPersonBase.OutpatientNumber;
-                detail.UnitPrice = CommonHelp.ValueToDouble(item.UnitPrice);
-                detail.Amount = CommonHelp.ValueToDouble(detail.UnitPrice * item.Quantity);
+                detail.UnitPrice = item.UnitPrice;
+                detail.Amount = CommonHelp.ValueToDouble(item.UnitPrice * item.Quantity);
                 detail.NotUploadMark = 0;
                 detail.PatientId = param.PatientId;
                 if (param.NotUploadMark == 1)

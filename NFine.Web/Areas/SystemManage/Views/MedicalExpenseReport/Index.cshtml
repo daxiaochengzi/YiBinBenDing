@@ -84,6 +84,32 @@
                 }).trigger('reloadGrid');
 
         });
+        $("#btn_MedicalExpenseReport").click(function () {
+            var params = {
+                "UserId": $("#UserId").val(),
+                "StartTime": $("#startTime").val(),
+                "EndTime": $("#endTime").val(),
+                "PatientName": $("#txt_PatientName").val(),
+                "IdCardNo": $("#txt_IdCardNo").val(),
+                "OrganizationCode": $("#OrganizationCode").val()
+                }
+            $.ajax({
+                type: 'get',
+                url: '/api/BenDing/MedicalExpenseReport',
+                data: params,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        $.modalAlert(errData, "error");
+                    } else {
+                  
+                    }
+                }
+            });
+
+        });
 
     }
 
@@ -93,7 +119,7 @@
 </script>
 <div class="topPanel">
     <div class="toolbar" style="float: left">
-   
+      
         @*<div class="btn-group" style="margin-left: 20px; width: 60px;height: 32px;">
                 <select id="PatientState" onchange="PatientStateChange();" class="form-control" style="padding: 0px;height: 32px;">
                     <option value="0">住院</option>
@@ -105,14 +131,14 @@
         </div>
         <div class="btn-group" style="height: 30px;">
 
-            <input id="txt_PatientName" type="text" class="form-control" placeholder="病人姓名" style="width: 200px; height: 20px">
+            <input id="txt_PatientName" type="text" class="form-control" placeholder="病人姓名" style="width: 80px; height: 20px">
         </div>
         <div class="btn-group" style="margin-left: 15px;">
             <span>身份证号:</span>
         </div>
         <div class="btn-group" style="height: 30px;">
 
-            <input id="txt_IdCardNo" type="text" class="form-control" placeholder="身份证号" style="width: 200px; height: 20px">
+            <input id="txt_IdCardNo" type="text" class="form-control" placeholder="身份证号" style="width: 120px; height: 20px">
         </div>
         <div class="btn-group" style="margin-left: 5px;">
             操作开始日期：
@@ -123,11 +149,21 @@
                    onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', minDate: '#F{$dp.$D(\'endTime\')}', maxDate: new Date(), readOnly: true });" style="width: 120px;"/>
         </div>
         <div class="btn-group" style="margin-left: 5px;">
+
             <a class="btn btn-primary" id="btn_search">查询</a>
-
-
+            @*<a class="btn btn-primary" id="btn_MedicalExpenseReport">导出</a>*@
+            @*<button id="btn_MedicalExpenseReport" type="button" class="btn  btn-primary">导出</button>*@
+        @*<input type="hidden" id="UserId" name="UserId" value="@ViewBag.empid" placeholder="用户ID" />
+        <input type="hidden" id="OrganizationCode" name="UserId" value="@ViewBag.OrganizationCode" placeholder="组织机构" />*@
         </div>
+        <div class="btn-group" style="margin-left: 5px;">
 
+       
+            <a class="btn btn-primary" id="btn_MedicalExpenseReport">导出</a>
+          
+            <input type="hidden" id="UserId" name="UserId" value="@ViewBag.empid" placeholder="用户ID" />
+        <input type="hidden" id="OrganizationCode" name="UserId" value="@ViewBag.OrganizationCode" placeholder="组织机构" />
+        </div>
     </div>
 </div>
 <div class="gridPanel">

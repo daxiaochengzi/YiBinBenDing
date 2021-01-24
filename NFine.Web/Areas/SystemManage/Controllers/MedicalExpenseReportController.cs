@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Mvc;
 using BenDing.Domain.Models.Params.OutpatientDepartment;
@@ -26,6 +30,21 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             _webServiceBasicService = Bootstrapper.UnityIOC.Resolve<IWebServiceBasicService>();
             _hisSqlRepository = Bootstrapper.UnityIOC.Resolve<IHisSqlRepository>();
         }
+        //重载
+        public override ActionResult Index()
+        {
+            var loginInfo = OperatorProvider.Provider.GetCurrent();
+            var user = userApp.GetForm(loginInfo.UserId);
+            if (!string.IsNullOrWhiteSpace(user.F_HisUserId))
+            {
+                var userBase = _webServiceBasicService.GetUserBaseInfo(user.F_HisUserId);
+                ViewBag.empid = user.F_HisUserId;
+                ViewBag.OrganizationCode = userBase.OrganizationCode;
+            }
+
+           
+            return View();
+        }
         [HttpGet]
         [HandlerAjaxOnly]
         public ActionResult GetGridJson(MedicalExpenseReportParam pagination)
@@ -49,5 +68,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             };
             return Content(data.ToJson());
         }
+
+        
     }
 }

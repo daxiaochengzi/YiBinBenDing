@@ -220,6 +220,12 @@ namespace BenDing.Repository.Interfaces.Web
         /// <returns></returns>
          Dictionary<int, List<MedicalExpenseReportDto>> MedicalExpenseReport(MedicalExpenseReportParam param);
         /// <summary>
+        /// 居民报账数据导出
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        DataTable MedicalExpenseReportExcel(MedicalExpenseReportUiParam param);
+        /// <summary>
         /// 门诊不传医保查询
         /// </summary>
         /// <param name="param"></param>
@@ -250,5 +256,6 @@ namespace BenDing.Repository.Interfaces.Web
         /// <param name="organizationCode"></param>
         /// <returns></returns>
         DataTable MedicalInsurancePairCodeTableData(string organizationCode);
+       
     }
 }
