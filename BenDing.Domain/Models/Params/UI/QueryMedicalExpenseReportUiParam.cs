@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BenDing.Domain.Models.Params.Base;
+using BenDing.Domain.Models.Dto.Base;
 
-namespace BenDing.Domain.Models.Params.OutpatientDepartment
+namespace BenDing.Domain.Models.Params.UI
 {
-   public class MedicalExpenseReportParam: PaginationWebParam
-    {
-        /// <summary>
+   public class QueryMedicalExpenseReportUiParam: PaginationDto
+    {/// <summary>
         /// 病人名称
         /// </summary>
         public string PatientName { get; set; }
@@ -18,20 +17,16 @@ namespace BenDing.Domain.Models.Params.OutpatientDepartment
         /// </summary>
         public string IdCardNo { get; set; }
         /// <summary>
-        /// 机构编号
-        /// </summary>
-        public string OrganizationCode { get; set; }
-        /// <summary>
-        /// 组织机构名称
-        /// </summary>
-        public string OrganizationName { get; set; }
-        /// <summary>
         /// 开始时间
         /// </summary>
-        public  string StartTime { get; set; }
+        public string StartTime { get; set; }
         /// <summary>
         /// 结束时间
         /// </summary>
         public string EndTime { get; set; }
-    } 
+      /// <summary>
+      /// 
+      /// </summary>
+        public string UserId { get; set; }
+    }
 }

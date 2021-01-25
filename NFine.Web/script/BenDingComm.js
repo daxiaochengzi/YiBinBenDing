@@ -262,7 +262,7 @@ function getReadCardInpatientInfo(getInpatientInfoBack) {
         baseInfo.Inpatient["MentorBalance"] = activeJsonInfo.MentorBalance;
         baseInfo.Inpatient["OverallPaymentBalance"] = activeJsonInfo.OverallPaymentBalance;
         baseInfo.HospitalInfo.AfferentSign = "2";
-        baseInfo.HospitalInfo.IdentityMark = activeJsonInfo.PersonalCoding;
+        baseInfo.HospitalInfo["IdentityMark"] = activeJsonInfo.PersonalCoding;
         getInpatientInfoBack();
     }
 }

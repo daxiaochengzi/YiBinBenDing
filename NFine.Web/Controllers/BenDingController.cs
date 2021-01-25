@@ -1822,8 +1822,6 @@ namespace NFine.Web.Controllers
             return new ApiJsonResultData(ModelState).RunWithTry(y =>
             {
                 var data = _outpatientDepartmentService.GetOutpatientPlanBirthSettlementParam(param);
-
-
                 y.Data = data;
             });
 
@@ -2125,6 +2123,8 @@ namespace NFine.Web.Controllers
         }
 
 
+        //   var patientInfo = _hisSqlRepository.MedicalExpenseReport(pagination);
+
 
         /// <summary>
         /// 门诊居民报账
@@ -2133,10 +2133,34 @@ namespace NFine.Web.Controllers
         public HttpResponseMessage MedicalExpenseReport([FromUri] MedicalExpenseReportUiParam param)
         {
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+            string startTime = "";
+            string endTime = "";
+            if (!string.IsNullOrWhiteSpace(param.StartTime))
+            {
+                if (param.StartTime.Length > 15)
+                {
+                    var time = CommonHelp.GetStartTime(param.StartTime);
+                    startTime = time.StartTime;
+                    endTime = time.EndTime;
+                }
+                else
+                {
+                    startTime = param.StartTime;
+                    endTime = param.EndTime;
+
+                }
+            }
+
+            param.StartTime = startTime;
+            param.EndTime = endTime;
             string fileName = null;
             if (!string.IsNullOrWhiteSpace(param.UserId))
             {   var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
                  fileName = userBase.OrganizationName + ".xls";
+            }
+            else
+            {
+                fileName ="门诊居民报账.xls";
             }
             string filePath = HttpContext.Current.Server.MapPath("~/") + "FileExcel\\" + fileName;
             if (System.IO.File.Exists(filePath))
@@ -2149,7 +2173,7 @@ namespace NFine.Web.Controllers
             if (tableData.Rows.Count > 0)
             {
 
-                ExcelHelper.Export(tableData, "医保对码表单", filePath);
+                ExcelHelper.Export(tableData, "门诊居民报账", filePath);
                 FileStream stream = new FileStream(filePath, FileMode.Open);
 
                 response.Content = new StreamContent(stream);
@@ -2165,6 +2189,56 @@ namespace NFine.Web.Controllers
 
             return response;
 
+        }
+
+        /// <summary>
+        /// 门诊居民报账查询
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiJsonResultData QueryMedicalExpenseReport([FromUri]QueryMedicalExpenseReportUiParam param)
+        {
+            return new ApiJsonResultData(ModelState, new MedicalExpenseReportDto()).RunWithTry(y =>
+            {
+                var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+                string startTime = "";
+                string endTime = "";
+                if (!string.IsNullOrWhiteSpace(param.StartTime))
+                {
+                    if (param.StartTime.Length > 15)
+                    {
+                      var time=  CommonHelp.GetStartTime(param.StartTime);
+                        startTime = time.StartTime;
+                        endTime = time.EndTime;
+                    }
+                    else
+                    {
+                        startTime = param.StartTime;
+                        endTime = param.EndTime;
+
+                    }
+                }
+
+                var queryData = _hisSqlRepository.MedicalExpenseReport(new MedicalExpenseReportParam()
+                {
+                    PatientName = param.PatientName,
+                    EndTime = endTime,
+                    IdCardNo = param.IdCardNo,
+                    OrganizationCode = userBase.OrganizationCode,
+                    Page = param.Page,
+                    rows = param.Limit,
+                    StartTime = startTime
+                });
+                var data = new
+                {
+                    data = queryData.Values.FirstOrDefault(),
+                    count = queryData.Keys.FirstOrDefault()
+                };
+                y.Data = data;
+             
+
+            });
         }
     }
 }

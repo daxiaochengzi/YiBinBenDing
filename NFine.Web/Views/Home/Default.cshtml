@@ -11,8 +11,8 @@
     <script src="~/Content/js/charts/Chart.js"></script>
     <script>
         $(function () {
-            GetSalaryChart();
-            GetLeaveChart();
+            //GetSalaryChart();
+            //GetLeaveChart();
         });
         function GetSalaryChart() {
             var randomScalingFactor = function () { return Math.round(Math.random() * 100) };
@@ -90,7 +90,7 @@
 </head>
 <body>
     <div id="areascontent">
-        <div class="rows" style="margin-bottom: 1%; border: 1px solid #e6e6e6; overflow: hidden; padding-left: 1px;">
+        @*<div class="rows" style="margin-bottom: 1%; border: 1px solid #e6e6e6; overflow: hidden; padding-left: 1px;">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-line-chart fa-lg" style="padding-right: 5px;"></i>关键数据实时指标
@@ -257,7 +257,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>*@
     </div>
     <style>
         #copyrightcontent {

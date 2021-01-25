@@ -53,8 +53,11 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             {
                 var loginInfo = OperatorProvider.Provider.GetCurrent();
                 var user = userApp.GetForm(loginInfo.UserId);
-                var userBase = _webServiceBasicService.GetUserBaseInfo(user.F_HisUserId);
-                pagination.OrganizationCode = userBase.OrganizationCode;
+                if (!string.IsNullOrWhiteSpace(user.F_HisUserId))
+                {
+                    var userBase = _webServiceBasicService.GetUserBaseInfo(user.F_HisUserId);
+                    pagination.OrganizationCode = userBase.OrganizationCode;
+                }
             }
 
             var patientInfo = _hisSqlRepository.MedicalExpenseReport(pagination);

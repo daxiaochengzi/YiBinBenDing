@@ -1590,18 +1590,24 @@ namespace BenDing.Repository.Providers.Web
                 try
                 {
                     sqlConnection.Open();
-                    querySql = @"select a.id,a.BusinessId,a.OrganizationCode,a.DiagnosticJson,a.[OrganizationName], a.[PatientName],a.[IdCardNo],a.[Operator],
+                    querySql = @"
+							select a.id,a.BusinessId,a.OrganizationCode,a.DiagnosticJson,a.[OrganizationName], a.[PatientName],a.[IdCardNo],a.[Operator],
                              a.[VisitDate],b.CommunityName,b.SettlementUserName,b.[SettlementTime],b.[SelfPayFeeAmount],
-                             a.[MedicalTreatmentTotalCost],b.[ContactAddress],b.ReimbursementExpensesAmount,b.[CarryOver],b.ContactPhone from [dbo].[Outpatient] as a  JOIN [dbo].[MedicalInsurance]  as b 
-                             on  a.BusinessId=b.BusinessId where 
-                              a.IsDelete=0  and b.IsDelete=0 and b.[InsuranceType]=342 and b.[MedicalInsuranceState]=6";
-                    string countSql = @"select COUNT(*) from [dbo].[Outpatient] as a  JOIN [dbo].[MedicalInsurance]  as b 
-                             on  a.BusinessId=b.BusinessId where  a.IsDelete=0  and b.IsDelete=0 
-							 and b.[InsuranceType]=342 and b.[MedicalInsuranceState]=6";
+                             a.[MedicalTreatmentTotalCost],b.[ContactAddress],b.ReimbursementExpensesAmount,b.[CarryOver],b.ContactPhone  
+                            from [dbo].[Outpatient] as a  JOIN (select *from [dbo].[MedicalInsurance] where  IsDelete=0 and 
+							  [InsuranceType]=342 and [MedicalInsuranceState]=6  
+							  and [PatientId] is not null and PatientId<>'') as b  on  a.Id=b.PatientId
+							  where a.IsDelete=0";
+                    string countSql = @"select COUNT(*) from [dbo].[Outpatient] as a  JOIN (select *from [dbo].[MedicalInsurance] where  IsDelete=0 and 
+							  [InsuranceType]=342 and [MedicalInsuranceState]=6  
+							  and [PatientId] is not null and PatientId<>'') as b  on  a.Id=b.PatientId
+							  where a.IsDelete=0";
                     if (!string.IsNullOrWhiteSpace(param.OrganizationCode))
                         whereSql += $"  and a.OrganizationCode='{param.OrganizationCode}'";
                     if (!string.IsNullOrWhiteSpace(param.PatientName))
                         whereSql += $"  and a.PatientName like '%{param.PatientName}%'";
+                    if (!string.IsNullOrWhiteSpace(param.OrganizationName))
+                        whereSql += $"  and a.OrganizationName like '%{param.OrganizationName}%'";
                     if (!string.IsNullOrWhiteSpace(param.IdCardNo))
                         whereSql += $"  and a.IdCardNo='{param.IdCardNo}'";
                     if (!string.IsNullOrWhiteSpace(param.StartTime) && !string.IsNullOrWhiteSpace(param.EndTime))
@@ -1683,16 +1689,21 @@ namespace BenDing.Repository.Providers.Web
                 try
                 {
                     sqlConnection.Open();
-                    querySql = @"select a.id,a.BusinessId,a.OrganizationCode,a.DiagnosticJson,a.[OrganizationName], a.[PatientName],a.[IdCardNo],a.[Operator],
+                    querySql = @"
+							  select a.id,a.BusinessId,a.OrganizationCode,a.DiagnosticJson,a.[OrganizationName], a.[PatientName],a.[IdCardNo],a.[Operator],
                              a.[VisitDate],b.CommunityName,b.SettlementUserName,b.[SettlementTime],b.[SelfPayFeeAmount],
-                             a.[MedicalTreatmentTotalCost],b.[ContactAddress],b.ReimbursementExpensesAmount,b.[CarryOver],b.ContactPhone from [dbo].[Outpatient] as a  JOIN [dbo].[MedicalInsurance]  as b 
-                             on  a.BusinessId=b.BusinessId where 
-                              a.IsDelete=0  and b.IsDelete=0 and b.[InsuranceType]=342 and b.[MedicalInsuranceState]=6";
+                             a.[MedicalTreatmentTotalCost],b.[ContactAddress],b.ReimbursementExpensesAmount,b.[CarryOver],b.ContactPhone  from [dbo].[Outpatient] as a  JOIN (select *from [dbo].[MedicalInsurance] where  IsDelete=0 and 
+							  [InsuranceType]=342 and [MedicalInsuranceState]=6  
+							  and [PatientId] is not null and PatientId<>'') as b  on  a.Id=b.PatientId
+							  where a.IsDelete=0
+";
                    
                     if (!string.IsNullOrWhiteSpace(param.OrganizationCode))
                         whereSql += $"  and a.OrganizationCode='{param.OrganizationCode}'";
                     if (!string.IsNullOrWhiteSpace(param.PatientName))
                         whereSql += $"  and a.PatientName like '%{param.PatientName}%'";
+                    if (!string.IsNullOrWhiteSpace(param.OrganizationName))
+                        whereSql += $"  and a.OrganizationName like '%{param.OrganizationName}%'";
                     if (!string.IsNullOrWhiteSpace(param.IdCardNo))
                         whereSql += $"  and a.IdCardNo='{param.IdCardNo}'";
                     if (!string.IsNullOrWhiteSpace(param.StartTime) && !string.IsNullOrWhiteSpace(param.EndTime))
@@ -1700,7 +1711,7 @@ namespace BenDing.Repository.Providers.Web
                         whereSql += $"  and a.VisitDate>='{param.StartTime + " 00:00:00.000"}' and a.VisitDate<='{param.EndTime + " 23:59:59.000"}'";
                     }
 
-                    string executeSql = querySql += querySql + whereSql;
+                    string executeSql = querySql + whereSql;
 
                      dataList = sqlConnection.Query<MedicalExpenseReportDto>(executeSql).ToList();
 
@@ -1735,8 +1746,8 @@ namespace BenDing.Repository.Providers.Web
                         }
 
                     }
-
-                    resultData = ListToDataTable(dataListNew);
+                    
+                    resultData = ListToDataTable(dataListNew.OrderByDescending(c=>c.就诊日期).ToList());
                     sqlConnection.Close();
                     return resultData;
 
@@ -1766,7 +1777,7 @@ namespace BenDing.Repository.Providers.Web
                 var startEnd = Convert.ToDateTime(item.VisitDate.ToString("yyyy-MM-dd") + " 23:59:59.000");
                 var idList = resultData.Select(d => d.Id).ToList();
                 var itemValueList = param.Where(c =>
-                        c.VisitDate > startTime && c.VisitDate < startEnd &&
+                        c.VisitDate > startTime && c.VisitDate < startEnd && c.IdCardNo==item.IdCardNo &&
                         c.OrganizationCode == item.OrganizationCode && !idList.Contains(c.Id))
                     .OrderBy(d=>d.VisitDate).ToList();
 

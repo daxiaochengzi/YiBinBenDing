@@ -27,6 +27,7 @@
         <li data-status="3" id="tabOutpatientExclusion">门诊目录</li>
         <li data-status="1">医保目录</li>
         <li data-status="2" id="tabProjectDirectoryThere">对码管理</li>
+        <li data-status="4" id="MedicalExpenseReport">门诊居民报账</li>
     </ul>
     <input type="hidden" id="empid" name="UserId" value="@ViewBag.empid" />
     <input type="hidden" id="pairCodeDirectoryCode" value="@ViewBag.InIDirectoryCode" />
@@ -197,7 +198,38 @@
 
 
         </div>
+        <div class="layui-tab-item">
+            <div class="layui-form layui-card-header layui-card-header-auto" style="padding-bottom:5px" lay-filter="yibao-content-list">
+                <div class="layui-form-item">
+                    
+                    <div class="layui-inline">
+                        <label class="layui-form-label-nw">病人姓名</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="PatientName" id="PatientName" placeholder="病人姓名" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label-nw">身份证号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="IdCardNo"id="IdCardNo" placeholder="身份证号" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="StartTime" name="StartTime" placeholder="日期" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                  
+                    <div class="layui-inline">
+                        <button class="layui-btn" lay-submit="" id="MedicalExpenseReportQuery">查询</button>
+                        <a class="layui-btn" id="btn_MedicalReport" href="/api/BenDing/MedicalExpenseReport">导出</a> 
+                    </div>
+                </div>
 
+            </div>
+            <table id="MedicalExpenseReportTable" lay-filter="MedicalExpenseReportTable"></table>
+        </div>
     </div>
 </div>
 
@@ -217,7 +249,10 @@
                 element = layui.element,
                 form = layui.form,
                 layer = layui.layer,
-                table = layui.table;
+                table = layui.table, 
+                laydate = layui.laydate;
+            laydate.render({ elem: '#StartTime', range: true });
+        
             //form.render(null, 'LAY-app-content-list');
             //form.render(null, 'yibao-content-list');
             //form.render(null, 'LAY-pair-content-list');
@@ -296,6 +331,10 @@
                     case '3':
                         //门诊目录
                         outpatientExclusionTable();
+                        break;
+                    case '4':
+                        //门诊目录
+                        medicalExpenseReportTable();
                         break;
                 }
                 form.render();
@@ -433,6 +472,19 @@
                     //,skin: 'line'
                 });
             }
+            //导出链接初始化
+            function reportExcelIni() {
+     
+                var url = "/api/BenDing/MedicalExpenseReport?";
+                url += "UserId=" + $("#empid").val();
+                url += "&StartTime=" + $("#StartTime").val();
+                url += "&PatientName=" + $("#PatientName").val();
+                url += "&IdCardNo=" + $("#IdCardNo").val();
+                $('#btn_MedicalReport').attr('href', url);
+        
+            }
+
+            reportExcelIni();
             //function pairCodeDataListTable() {
             //    //方法级渲染
             //    table.render({
@@ -557,6 +609,53 @@
                     //,skin: 'line'
                 });
             }
+            function medicalExpenseReportTable() {
+               
+                var tableWhere =
+                {
+                    'UserId': $("#empid").val(),
+                    'PatientName': $("#PatientName").val(),
+                    'IdCardNo': $("#IdCardNo").val(),
+                 
+                    'StartTime': $("#StartTime").val()
+                };
+
+                //医保目录
+                table.render({
+                    elem: '#MedicalExpenseReportTable',
+                    height: $(window).height() - 128,
+                    url: host + '/QueryMedicalExpenseReport' //数据接口
+                    , where: tableWhere,
+                    parseData: function (res) { //res 即为原始返回的数据
+                        return {
+                            "code": res.Code, //解析接口状态
+                            "msg": res.Message, //解析提示文本
+                            "count": res.Data.count, //解析数据长度
+                            "data": res.Data.data //解析数据列表
+                        };
+                    },
+                    page: true,
+                    cols: [
+                        [
+                            { type: 'numbers', fixed: 'left' }
+                            , { field: 'PatientName', title: '病人姓名', width: 100 }
+                            , { field: 'IdCardNo', title: '身份证号', width: 180}
+                            , { field: 'DiagnosticJson', title: '诊断', width: 160 }
+                            , { field: 'Operator', title: '经办人', width: 100 }
+                            , { field: 'ContactPhone', title: '联系电话', width: 130 }
+                            , { field: 'VisitDate', title: '就诊日期', width: 100 }
+                            , { field: 'MedicalTreatmentTotalCost', title: '合计金额', width: 100 }
+                            , { field: 'ReimbursementExpensesAmount', title: '报销金额', width: 100 }
+                            , { field: 'CarryOver', title: '历年结转', width: 100 }
+                            , { field: 'SettlementTime', title: '报销日期', width: 100 }
+                            , { field: 'CommunityName', title: '参保地', width: 250 }
+                            ,{ field: 'Sign', title: '标记', width: 80 }
+
+                        ]
+                    ]
+                    //,skin: 'line'
+                });
+            }
             //监听搜索
             form.on('submit(LAY-app-content-list)',
                 function (data) {
@@ -582,7 +681,12 @@
 
                 outpatientExclusionTable();
             });
-
+          
+            $('#MedicalExpenseReportQuery').on('click',
+                function() {
+                    medicalExpenseReportTable();
+                    reportExcelIni();
+                });
             $('#updateSearch').on('click',
                 function () {
                     var directoryCategoryCode = $("#UpdateDirectoryCategoryCode").val();

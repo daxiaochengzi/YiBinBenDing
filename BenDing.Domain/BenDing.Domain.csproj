@@ -312,6 +312,7 @@
     <Compile Include="Models\Params\UI\QueryCatalogUiParam.cs" />
     <Compile Include="Models\Params\UI\QueryHospitalizationFeeUiParam.cs" />
     <Compile Include="Models\Params\UI\QueryHospitalizationPresettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\QueryMedicalExpenseReportUiParam.cs" />
     <Compile Include="Models\Params\UI\QueryMedicalInsuranceUiParam.cs" />
     <Compile Include="Models\Params\UI\QueryOutpatientDepartmentCostUiParam.cs" />
     <Compile Include="Models\Params\UI\QueryPrescriptionDetailUiParam.cs" />

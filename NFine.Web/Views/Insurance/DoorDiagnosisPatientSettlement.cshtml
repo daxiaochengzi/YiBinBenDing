@@ -1011,9 +1011,11 @@
 
                 } else {
                     jsonToForm(data.Data, "LAY-form-render"); 
+                    
+                    $("#ContactPhone").val(data.Data.ContactPhone);
                     $("#AccountPayment").val(data.Data.MedicalTreatmentTotalCost);
                     baseInfo.HospitalInfo.IdentityMark = data.Data.IdCardNo;
-                 
+                    
                     if (baseInfo.PageFunction.IsSuspend !== 1) {
                     $("#queryDataDiv").show(); 
                     } 

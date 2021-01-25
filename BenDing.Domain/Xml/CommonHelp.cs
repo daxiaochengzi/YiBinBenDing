@@ -666,6 +666,22 @@ namespace BenDing.Domain.Xml
             return resultData;
         }
         /// <summary>
+        /// 开始时间解析
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static QueryDateBaseDto GetStartTime(string param)
+        {
+            var resultData = new QueryDateBaseDto();
+            if (!string.IsNullOrWhiteSpace(param))
+            {
+                resultData.StartTime = param.Substring(0, 10);
+                resultData.EndTime = param.Substring(param.Length - 10, 10);
+            }
+            return resultData;
+        }
+      
+        /// <summary>
         /// List转Table
         /// </summary>
         /// <param name="obj"></param>
