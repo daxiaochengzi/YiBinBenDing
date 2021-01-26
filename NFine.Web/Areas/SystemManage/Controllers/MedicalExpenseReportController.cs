@@ -46,6 +46,14 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             return View();
         }
         [HttpGet]
+        [HandlerAuthorize]
+        public  ActionResult DetailInfo( string patientId)
+        {
+            ViewBag.PatientId = patientId;
+            return View();
+        }
+
+        [HttpGet]
         [HandlerAjaxOnly]
         public ActionResult GetGridJson(MedicalExpenseReportParam pagination)
         {
@@ -72,6 +80,22 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             return Content(data.ToJson());
         }
 
-        
+        [HttpGet]
+        [HandlerAjaxOnly]
+        public ActionResult GetGridDetailJson(QueryOutpatientDetailParam pagination)
+        {
+          
+
+            var patientInfo = _hisSqlRepository.QueryOutpatientDetail(pagination);
+            pagination.records = patientInfo.Keys.FirstOrDefault();
+            var data = new
+            {
+                rows = patientInfo.Values.FirstOrDefault(),
+                total = pagination.total,
+                page = pagination.Page,
+                records = pagination.records
+            };
+            return Content(data.ToJson());
+        }
     }
 }

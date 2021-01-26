@@ -26,13 +26,11 @@
                 OrganizationCode: ""
             },
             colModel: [
-                { label: "主键", name: "BusinessId", hidden: true, key: true },
-                { label: '机构', name: 'OrganizationName', width: 200, align: 'left' },
-                { label: '病人姓名', name: 'PatientName', width: 80, align: 'left' },
+                { label: "主键", name: "PatientId", hidden: true, key: true },
+              
+                { label: '患者姓名', name: 'PatientName', width: 80, align: 'left' },
+                { label: '家庭住址', name: 'ContactAddress', width: 120, align: 'left' },
                 { label: '身份证号', name: 'IdCardNo', width: 120, align: 'left' },
-                { label: '诊断', name: 'DiagnosticJson', width: 150, align: 'left' },
-                { label: '联系电话', name: 'ContactPhone', width: 100, align: 'left' },
-                { label: '经办人', name: 'Operator', width: 80, align: 'left' },
                 {
                     label: '就诊日期',
                     name: 'VisitDate',
@@ -41,10 +39,12 @@
                     formatter: "date",
                     formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }
                 },
-                { label: '合计金额', name: 'MedicalTreatmentTotalCost', width: 80, align: 'left' },
-                { label: '报销金额', name: 'ReimbursementExpensesAmount', width: 80, align: 'left' },
+                { label: '就诊机构', name: 'OrganizationName', width: 200, align: 'left' },
+                { label: '诊断', name: 'DiagnosticJson', width: 150, align: 'left' },
+             
+                { label: '门诊费用', name: 'MedicalTreatmentTotalCost', width: 80, align: 'left' },
+                { label: '门诊报销', name: 'ReimbursementExpensesAmount', width: 80, align: 'left' },
                 { label: '历年结转', name: 'CarryOver', width: 80, align: 'left' },
-                { label: '标记', name: 'Sign', width: 40, align: 'left' },
                 {
                     label: '报销日期',
                     name: 'SettlementTime',
@@ -53,6 +53,9 @@
                     formatter: "date",
                     formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }
                 },
+                { label: '联系电话', name: 'ContactPhone', width: 100, align: 'left' },
+                { label: '经办人', name: 'Operator', width: 80, align: 'left' },
+                { label: '标记', name: 'Sign', width: 40, align: 'left' },
                 { label: '参保地', name: 'CommunityName', width: 150, align: 'left' }
                 //{
                 //    label: "有效",
@@ -86,33 +89,19 @@
                 }).trigger('reloadGrid');
 
         });
-        //$("#btn_MedicalExpenseReport").click(function () {
-        //    var params = {
-        //        "UserId": $("#UserId").val(),
-        //        "StartTime": $("#startTime").val(),
-        //        "EndTime": $("#endTime").val(),
-        //        "PatientName": $("#txt_PatientName").val(),
-        //        "IdCardNo": $("#txt_IdCardNo").val(),
-        //        "OrganizationCode": $("#OrganizationCode").val()
-        //        }
-        //    $.ajax({
-        //        type: 'get',
-        //        url: '/api/BenDing/MedicalExpenseReport',
-        //        data: params,
-        //        dataType: "json",
-        //        async: false,
-        //        success: function (data) {
-        //            if (data.Success === false) {
-        //                var errData = data.Message;
-        //                $.modalAlert(errData, "error");
-        //            } else {
-                  
-        //            }
-        //        }
-        //    });
+    }
 
-        //});
-
+    function btn_details() {
+      
+        var keyValue = $("#gridList").jqGridRowValue().PatientId;
+        $.modalOpen({
+            id: "DetailInfo",
+            title: "费用明细",
+            url: "/SystemManage/MedicalExpenseReport/DetailInfo?patientId=" + keyValue,
+            width: "800px",
+            height: "500px",
+            btn: null
+        });
     }
     //导出链接初始化
     function reportExcelIni() {
@@ -145,23 +134,23 @@
         </div>
         <div class="btn-group" style="height: 30px;">
 
-            <input id="txt_PatientName" type="text" class="form-control" placeholder="病人姓名" style="width: 80px; height: 20px">
+            <input id="txt_PatientName" type="text" class="form-control" placeholder="病人姓名" style="width: 60px; height: 20px">
         </div>
         <div class="btn-group" style="margin-left: 10px;">
             <span>身份证号:</span>
         </div>
         <div class="btn-group" style="height: 30px;">
 
-            <input id="txt_IdCardNo" type="text" class="form-control" placeholder="身份证号" style="width: 120px; height: 20px">
+            <input id="txt_IdCardNo" type="text" class="form-control" placeholder="身份证号" style="width: 100px; height: 20px">
         </div>
         <div class="btn-group" style="margin-left: 10px;">
             <span>机构名称:</span>
         </div>
         <div class="btn-group" style="height: 30px;">
-            <input id="txt_OrganizationName" type="text" class="form-control" placeholder="机构名称" style="width: 120px; height: 20px">
+            <input id="txt_OrganizationName" type="text" class="form-control" placeholder="机构名称" style="width: 100px; height: 20px">
         </div>
-        <div class="btn-group" style="margin-left: 5px;height: 30px;">
-          开始日期：
+        <div class="btn-group" style="margin-left: 5px;">
+            开始日期：
             <input type="text" class="Wdate" name="SettlementStartTime" id="startTime"
                    onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', maxDate: '#F{$dp.$D(\'startTime\')||\'new Date()\'}', readOnly: true });" style="width: 120px;"/>
             结束日期：
@@ -174,7 +163,18 @@
         <div class="btn-group" style="margin-left: 5px;">
             <a class="btn btn-primary" id="btn_MedicalExpenseReport" href="/api/BenDing/MedicalExpenseReport">导出</a>
         </div>
+        <div class="operate">
+        <ul class="nav nav-pills">
+            <li class="first">已选中<span>1</span>项</li>
+           
+            <li><a id="NF-Details" onclick="btn_details()"><i class="fa fa-search-plus"></i>查看明细</a></li>
+
+        </ul>
+        <a href="javascript:;" class="close"></a>
     </div>
+    <script>$('.toolbar').authorizeButton()</script>
+    </div>
+   
 </div>
 <div class="gridPanel">
     <table id="gridList"></table>

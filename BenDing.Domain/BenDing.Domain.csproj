@@ -209,6 +209,7 @@
     <Compile Include="Models\Params\OutpatientDepartment\UpdateMedicalInsuranceCardSettlementParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\WorkerCancelSettlementCardParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\WorkerHospitalSettlementCardParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\QueryOutpatientDetailParam.cs" />
     <Compile Include="Models\Params\Resident\AddProjectBatchParam.cs" />
     <Compile Include="Models\Params\Resident\AdjustmentDifferenceValueParam.cs" />
     <Compile Include="Models\Params\Resident\BatchConfirmParam.cs" />

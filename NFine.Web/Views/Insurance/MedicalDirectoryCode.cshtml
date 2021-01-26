@@ -7,14 +7,14 @@
 <style>
     .layui-card-header.layui-card-header-auto {
         padding-top: 15px;
-        padding-bottom: 15px;
+        padding-bottom: 8px;
         height: auto;
     }
 
     .layui-form-label-nw {
         float: left;
         display: block;
-        padding: 9px 15px;
+        padding: 9px 5px;
         /* width: 80px; */
         font-weight: 400;
         line-height: 20px;
@@ -215,9 +215,15 @@
                         </div>
                     </div>
                     <div class="layui-inline">
-                        <label class="layui-form-label">日期</label>
+                        <label class="layui-form-label-nw">开始日期</label>
                         <div class="layui-input-inline">
-                            <input type="text" id="StartTime" name="StartTime" placeholder="日期" autocomplete="off" class="layui-input">
+                            <input type="text" id="StartTime" name="StartTime" placeholder="开始日期" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label-nw">结束日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="EndTime" name="EndTime" placeholder="结束日期" autocomplete="off" class="layui-input">
                         </div>
                     </div>
                   
@@ -251,8 +257,9 @@
                 layer = layui.layer,
                 table = layui.table, 
                 laydate = layui.laydate;
-            laydate.render({ elem: '#StartTime', range: true });
-        
+            laydate.render({ elem: '#StartTime' });
+            laydate.render({ elem: '#EndTime'});
+            
             //form.render(null, 'LAY-app-content-list');
             //form.render(null, 'yibao-content-list');
             //form.render(null, 'LAY-pair-content-list');
@@ -478,6 +485,7 @@
                 var url = "/api/BenDing/MedicalExpenseReport?";
                 url += "UserId=" + $("#empid").val();
                 url += "&StartTime=" + $("#StartTime").val();
+                url += "&EndTime=" + $("#EndTime").val();
                 url += "&PatientName=" + $("#PatientName").val();
                 url += "&IdCardNo=" + $("#IdCardNo").val();
                 $('#btn_MedicalReport').attr('href', url);
@@ -616,7 +624,7 @@
                     'UserId': $("#empid").val(),
                     'PatientName': $("#PatientName").val(),
                     'IdCardNo': $("#IdCardNo").val(),
-                 
+                    'EndTime': $("#EndTime").val(),
                     'StartTime': $("#StartTime").val()
                 };
 
@@ -639,15 +647,15 @@
                         [
                             { type: 'numbers', fixed: 'left' }
                             , { field: 'PatientName', title: '病人姓名', width: 100 }
-                            , { field: 'IdCardNo', title: '身份证号', width: 180}
-                            , { field: 'DiagnosticJson', title: '诊断', width: 160 }
-                            , { field: 'Operator', title: '经办人', width: 100 }
-                            , { field: 'ContactPhone', title: '联系电话', width: 130 }
+                            , { field: 'IdCardNo', title: '身份证号', width: 180 }
                             , { field: 'VisitDate', title: '就诊日期', width: 100 }
-                            , { field: 'MedicalTreatmentTotalCost', title: '合计金额', width: 100 }
-                            , { field: 'ReimbursementExpensesAmount', title: '报销金额', width: 100 }
+                            , { field: 'DiagnosticJson', title: '诊断', width: 160 }
+                            , { field: 'MedicalTreatmentTotalCost', title: '门诊费用(元)', width: 100 }
+                            , { field: 'ReimbursementExpensesAmount', title: '门诊报销', width: 100 }
                             , { field: 'CarryOver', title: '历年结转', width: 100 }
                             , { field: 'SettlementTime', title: '报销日期', width: 100 }
+                            , { field: 'ContactPhone', title: '联系电话', width: 130 }
+                            , { field: 'Operator', title: '经办人', width: 100 }
                             , { field: 'CommunityName', title: '参保地', width: 250 }
                             ,{ field: 'Sign', title: '标记', width: 80 }
 

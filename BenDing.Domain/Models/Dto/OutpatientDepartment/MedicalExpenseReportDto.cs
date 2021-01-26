@@ -9,10 +9,13 @@ namespace BenDing.Domain.Models.Dto.OutpatientDepartment
    public class MedicalExpenseReportDto
     {
         public Guid Id { get; set; }
-
         /// <summary>
-    /// 业务id
-    /// </summary>
+        /// 病人id
+        /// </summary>
+        public string PatientId { get; set; }
+        /// <summary>
+        /// 业务id
+        /// </summary>
         public string BusinessId { get; set; }
         /// <summary>
         /// 组织机构名称

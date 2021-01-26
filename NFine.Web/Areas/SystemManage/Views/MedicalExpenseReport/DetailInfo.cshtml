@@ -1,0 +1,84 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<!DOCTYPE html>
+<script>
+
+    $(function () {
+        gridList();
+    });
+    function gridList() {
+        var $gridList = $("#gridList");
+        $gridList.dataGrid({
+            url: "/SystemManage/MedicalExpenseReport/GetGridDetailJson",
+            height: $(window).height() - 96,
+            postData:
+            {
+                DirectoryName: $("#txt_DirectoryName").val(),
+                PatientId: $("#PatientId").val()
+            },
+            colModel: [
+                { label: "主键", name: "PatientId", hidden: true, key: true },
+
+                { label: '项目名称', name: 'DirectoryName', width: 200, align: 'left' },
+                { label: '单价', name: 'UnitPrice', width: 120, align: 'left' },
+                { label: '数量', name: 'Quantity', width: 120, align: 'left' },
+                { label: '金额', name: 'Amount', width: 120, align: 'left' }
+
+            ],
+            pager: "#gridPager",
+            viewrecords: true
+        });
+        $("#btn_searchDetail").click(function () {
+
+            $gridList.jqGrid('setGridParam',
+                {
+                    postData:
+                    {
+                        DirectoryName: $("#txt_DirectoryName").val(),
+                        PatientId: $("#PatientId").val()
+
+                    }
+                }).trigger('reloadGrid');
+
+        });
+
+
+    }
+
+
+
+</script>
+<div class="topPanel">
+    <div class="toolbar" style="float: left">
+
+        @*<div class="btn-group" style="margin-left: 20px; width: 60px;height: 32px;">
+                <select id="PatientState" onchange="PatientStateChange();" class="form-control" style="padding: 0px;height: 32px;">
+                    <option value="0">住院</option>
+                    <option value="1">门诊</option>
+                </select>
+            </div>*@
+        <div class="btn-group" style="margin-left: 10px;">
+            <span>项目名称:</span>
+        </div>
+        <div class="btn-group" style="height: 30px;">
+
+            <input id="txt_DirectoryName" type="text" class="form-control" placeholder="项目名称" style="width: 80px; height: 20px">
+        </div>
+
+        <div class="btn-group" style="margin-left: 5px;">
+            <a class="btn btn-primary" id="btn_searchDetail">查询</a>
+        </div>
+
+    </div>
+</div>
+<div class="gridPanel">
+    <table id="gridList"></table>
+    <div id="gridPager"></div>
+    <div>
+        <input type="hidden" id="PatientId" value="@ViewBag.PatientId" />
+    </div>
+</div>
+

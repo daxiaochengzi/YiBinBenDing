@@ -717,6 +717,57 @@ namespace BenDing.Repository.Providers.Web
 
         }
         /// <summary>
+        /// 查询门诊病人明细
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public Dictionary<int, List<BaseOutpatientDetailDto>>  QueryOutpatientDetail(QueryOutpatientDetailParam param)
+        {
+            var resultData = new Dictionary<int, List<BaseOutpatientDetailDto>>();
+            var dataList = new List<BaseOutpatientDetailDto>();
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                string executeSql = null;
+               
+                try
+                {
+                    sqlConnection.Open();
+                    string querySql = $"select  * from [dbo].[OutpatientFee] where IsDelete=0 ";
+                    string countSql = $@"select  count(*) from [dbo].[OutpatientFee] where IsDelete=0";
+                    string whereSql = "";
+                    if (!string.IsNullOrWhiteSpace(param.Id))
+                        whereSql += $" and id='{param.Id}'";
+                    if (!string.IsNullOrWhiteSpace(param.PatientId))
+                        whereSql += $" and PatientId='{param.PatientId}'";
+                    if (!string.IsNullOrWhiteSpace(param.OutpatientNo))
+                        whereSql += $" and OutpatientNo='{param.OutpatientNo}'";
+                    if (!string.IsNullOrWhiteSpace(param.DirectoryName))
+                        whereSql += $" and DirectoryName='{param.DirectoryName}'";
+                    if (param.rows != 0 && param.Page > 0)
+                    {
+                        var skipCount = param.rows * (param.Page - 1);
+                        querySql += whereSql + " order by CreateTime desc OFFSET " + skipCount + " ROWS FETCH NEXT " + param.rows + " ROWS ONLY;";
+                    }
+                    executeSql = countSql + whereSql + ";" + querySql;
+                    var result = sqlConnection.QueryMultiple(executeSql);
+                    int totalPageCount = result.Read<int>().FirstOrDefault();
+                    dataList = (from t in result.Read<BaseOutpatientDetailDto>()
+                        select t).ToList();
+                    resultData.Add(totalPageCount, dataList);
+                    //resultData = sqlConnection.Query<BaseOutpatientDetailDto>(strSql).ToList();
+                    sqlConnection.Close();
+                    return resultData;
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(executeSql);
+                    throw new Exception(e.Message);
+                }
+
+            }
+        }
+
+        /// <summary>
         /// 更新门诊病人
         /// </summary>
         /// <param name="user"></param>
@@ -1592,9 +1643,9 @@ namespace BenDing.Repository.Providers.Web
                     sqlConnection.Open();
                     querySql = @"
 							select a.id,a.BusinessId,a.OrganizationCode,a.DiagnosticJson,a.[OrganizationName], a.[PatientName],a.[IdCardNo],a.[Operator],
-                             a.[VisitDate],b.CommunityName,b.SettlementUserName,b.[SettlementTime],b.[SelfPayFeeAmount],
+                             a.[VisitDate],b.CommunityName,b.SettlementUserName,b.[SettlementTime],b.[SelfPayFeeAmount],b.[PatientId],
                              a.[MedicalTreatmentTotalCost],b.[ContactAddress],b.ReimbursementExpensesAmount,b.[CarryOver],b.ContactPhone  
-                            from [dbo].[Outpatient] as a  JOIN (select *from [dbo].[MedicalInsurance] where  IsDelete=0 and 
+                            from [dbo].[Outpatient] as a  JOIN (select * from [dbo].[MedicalInsurance] where  IsDelete=0 and 
 							  [InsuranceType]=342 and [MedicalInsuranceState]=6  
 							  and [PatientId] is not null and PatientId<>'') as b  on  a.Id=b.PatientId
 							  where a.IsDelete=0";
@@ -1656,7 +1707,9 @@ namespace BenDing.Repository.Providers.Web
                                 OrganizationName = item.OrganizationName,
                                 OrganizationCode = item.OrganizationCode,
                                 Sign = repeatValue==null?1:0,
-                                Operator= item.Operator
+                                Operator= item.Operator,
+                                PatientId=item.PatientId
+
                             };
                             dataListNew.Add(itemData);
                         }
@@ -1734,11 +1787,11 @@ namespace BenDing.Repository.Providers.Web
                                 联系电话 = item.ContactPhone,
                                 诊断 = GetDiagnosticContent(item.DiagnosticJson),
                                 身份证号 = item.IdCardNo,
-                                合计金额 = item.MedicalTreatmentTotalCost,
-                                报销金额 = item.ReimbursementExpensesAmount,
-                                病人姓名 = item.PatientName,
+                                门诊费用 = item.MedicalTreatmentTotalCost,
+                                门诊报销 = item.ReimbursementExpensesAmount,
+                                患者姓名 = item.PatientName,
                                 就诊日期 = item.VisitDate,
-                                机构 = item.OrganizationName,
+                                就诊机构 = item.OrganizationName,
                                 标记 = repeatValue == null ? 1 : 0,
                                 经办人 = item.Operator
                             };
