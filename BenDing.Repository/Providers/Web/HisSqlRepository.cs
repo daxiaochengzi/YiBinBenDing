@@ -1625,6 +1625,98 @@ namespace BenDing.Repository.Providers.Web
             }
         }
         /// <summary>
+        /// 门诊居民报账月报表
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<int, List<MedicalExpenseMonthReportDto>> MedicalExpenseMonthReport(MedicalExpenseMonthReportParam param)
+        {
+            var dataListNew = new List<MedicalExpenseReportDto>();
+            var resultData = new Dictionary<int, List<MedicalExpenseMonthReportDto>>();
+            using (var sqlConnection = new SqlConnection(_connectionString))
+            {
+                string querySql = null;
+                string whereSql = "";
+                try
+                {
+                    sqlConnection.Open();
+                    querySql = @"
+							select a.id,a.BusinessId,a.OrganizationCode,a.DiagnosticJson,a.[OrganizationName], a.[PatientName],a.[IdCardNo],a.[Operator],
+                             a.[VisitDate],b.CommunityName,b.SettlementUserName,b.[SettlementTime],b.[SelfPayFeeAmount],b.[PatientId],
+                             a.[MedicalTreatmentTotalCost],b.[ContactAddress],b.ReimbursementExpensesAmount,b.[CarryOver],b.ContactPhone  
+                            from [dbo].[Outpatient] as a  JOIN (select * from [dbo].[MedicalInsurance] where  IsDelete=0 and 
+							  [InsuranceType]=342 and [MedicalInsuranceState]=6  
+							  and [PatientId] is not null and PatientId<>'') as b  on  a.Id=b.PatientId
+							  where a.IsDelete=0";
+            
+                    if (!string.IsNullOrWhiteSpace(param.OrganizationCode))
+                        whereSql += $"  and a.OrganizationCode='{param.OrganizationCode}'";
+
+                    if (!string.IsNullOrWhiteSpace(param.Date) )
+                    {
+                       var monthTime= CommonHelp.GetMonthTime(param.Date);
+                        whereSql += $"  and a.VisitDate>='{monthTime.StartTime}' and a.VisitDate<='{monthTime.EndTime}'";
+                    }
+
+
+                    string executeSql = querySql + whereSql;
+
+                    var result = sqlConnection.Query<MedicalExpenseReportDto>(executeSql).ToList();
+
+                    if (result.Count > 0)
+                    {
+                        var idCardNoList = result.GroupBy(g => g.IdCardNo).Where(s => s.Count() > 1).Select(c => c.Key).ToList();
+                        var idList = result.Where(c => idCardNoList.Contains(c.IdCardNo)).ToList();
+                        var repeatData = MedicalExpenseRepeat(idList);
+
+                        foreach (var item in result)
+                        {
+                            var repeatValue = repeatData.FirstOrDefault(c => c.Id == item.Id);
+                            var itemData = new MedicalExpenseReportDto()
+                            {
+                                SettlementTime = item.SettlementTime,
+                                BusinessId = item.BusinessId,
+                                ContactAddress = item.ContactAddress,
+                                CarryOver = item.CarryOver,
+                                CommunityName = item.CommunityName,
+                                ContactPhone = item.ContactPhone,
+                                DiagnosticJson = GetDiagnosticContent(item.DiagnosticJson),
+                                Id = item.Id,
+                                IdCardNo = item.IdCardNo,
+                                MedicalTreatmentTotalCost = item.MedicalTreatmentTotalCost,
+                                ReimbursementExpensesAmount = item.ReimbursementExpensesAmount,
+                                SettlementUserName = item.SettlementUserName,
+                                PatientName = item.PatientName,
+                                VisitDate = item.VisitDate,
+                                OrganizationName = item.OrganizationName,
+                                OrganizationCode = item.OrganizationCode,
+                                Sign = repeatValue == null ? 1 : 0,
+                                Operator = item.Operator,
+                                PatientId = item.PatientId
+
+                            };
+                            dataListNew.Add(itemData);
+                        }
+
+                    }
+
+                    var getListData = MedicalExpenseMonthReportList(dataListNew,param.Date);
+                    resultData.Add(getListData.Count(), getListData);
+                    sqlConnection.Close();
+                    return resultData;
+
+                }
+                catch (Exception e)
+                {
+                    _log.Debug(querySql);
+                    throw new Exception(e.Message);
+                }
+
+            }
+
+            
+        }
+
+        /// <summary>
         /// 门诊居民挂号费报销
         /// </summary>
         /// <param name="param"></param>
@@ -1793,7 +1885,8 @@ namespace BenDing.Repository.Providers.Web
                                 就诊日期 = item.VisitDate,
                                 就诊机构 = item.OrganizationName,
                                 标记 = repeatValue == null ? 1 : 0,
-                                经办人 = item.Operator
+                                经办人 = item.Operator,
+                                家庭住址=item.ContactAddress
                             };
                             dataListNew.Add(itemData);
                         }
@@ -1820,17 +1913,20 @@ namespace BenDing.Repository.Providers.Web
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        private List<MedicalExpenseReportDto> MedicalExpenseRepeat(List<MedicalExpenseReportDto> param)
+        private List<MedicalExpenseReportDto> MedicalExpenseRepeat(List<MedicalExpenseReportDto> paramNew)
         {
+            var param = paramNew.OrderBy(c => c.VisitDate).ToList();
             var resultData = new List<MedicalExpenseReportDto>();
 
             foreach (var item in param)
             {//
                 var startTime = Convert.ToDateTime(item.VisitDate.ToString("yyyy-MM-dd") + " 00:00:00.000");
-                var startEnd = Convert.ToDateTime(item.VisitDate.ToString("yyyy-MM-dd") + " 23:59:59.000");
+                var startEnd = Convert.ToDateTime(item.VisitDate.AddDays(3).ToString("yyyy-MM-dd") + " 23:59:59.000");
+               // var lastDayOfMonth = LastDayOfMonth(item.VisitDate);
                 var idList = resultData.Select(d => d.Id).ToList();
                 var itemValueList = param.Where(c =>
-                        c.VisitDate > startTime && c.VisitDate < startEnd && c.IdCardNo==item.IdCardNo &&
+                        c.VisitDate > startTime && c.VisitDate < startEnd && 
+                        c.IdCardNo==item.IdCardNo && 
                         c.OrganizationCode == item.OrganizationCode && !idList.Contains(c.Id))
                     .OrderBy(d=>d.VisitDate).ToList();
 
@@ -2296,6 +2392,46 @@ namespace BenDing.Repository.Providers.Web
                 dt.Rows.Add(entityValues);
             }
             return dt;
+        }
+
+        private List<MedicalExpenseMonthReportDto> MedicalExpenseMonthReportList(List<MedicalExpenseReportDto> param, string date)
+        {
+            var resultData = new List<MedicalExpenseMonthReportDto>();
+            var monthTime = CommonHelp.GetMonthTime(date);
+            var maxDay=Convert.ToInt16(monthTime.EndTime.Substring(8, 2)) ;
+            for (int i = 1; i <= maxDay; i++)
+            {//GetDayTime
+                var day = date+(i >= 10 ? "-" + i : "-0" + i);
+                var dayTime = CommonHelp.GetDayTime(day);
+                var queryData = param.Where(c => c.VisitDate >=Convert.ToDateTime(dayTime.StartTime) 
+                        && c.VisitDate <=Convert.ToDateTime(dayTime.EndTime) && c.Sign==1  ) .ToList();
+                if (queryData.Any())
+                {
+                    var item = new MedicalExpenseMonthReportDto()
+                    {
+                        Day = day,
+                        Frequency = queryData.Count(),
+                        MedicalTreatmentTotalCost = queryData.Sum(d=>d.MedicalTreatmentTotalCost),
+                        ReimbursementExpensesAmount = queryData.Sum(d => d.ReimbursementExpensesAmount)
+                    };
+                    resultData.Add(item);
+                }
+
+              
+            }
+
+            return resultData;
+        }
+
+        /// <summary>
+        /// 取得某月的最后一天
+        /// </summary>
+        /// <param name="datetime"></param>
+        /// <returns></returns>
+        private DateTime LastDayOfMonth(DateTime datetime)
+        {
+            var monthTime = datetime.AddDays(1 - datetime.Day).AddMonths(1).AddDays(-1);
+            return Convert.ToDateTime(monthTime.ToString("yyyy-MM-dd") + " 23:59:59.000");
         }
 
     }

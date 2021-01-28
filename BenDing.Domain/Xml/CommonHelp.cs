@@ -458,16 +458,25 @@ namespace BenDing.Domain.Xml
         /// <returns></returns>
         public static List<InpatientDiagnosisDto> InpatientDiagnosisSort(List<InpatientDiagnosisDto> param)
         {
-            int dataSort = 2;
-            var mainDiagnosisData = param.FirstOrDefault(c => c.IsMainDiagnosis == true);
-            if (mainDiagnosisData == null) throw new Exception("主诊断不能为空!!!");
-            mainDiagnosisData.DataSort = 1;
+            int dataSort = 1;
             var paramNew = new List<InpatientDiagnosisDto>();
-            paramNew.Add(mainDiagnosisData);
+            var mainDiagnosisData = param.FirstOrDefault(c => c.IsMainDiagnosis == true);
+            if (mainDiagnosisData != null)
+            {
+                mainDiagnosisData.DataSort = 1;
+                paramNew.Add(mainDiagnosisData);
+                dataSort = 2;
+            }
+           
             var unMainDiagnosis = param.Where(d => d.IsMainDiagnosis == false).ToList();
             foreach (var item in unMainDiagnosis)
             {
                 item.DataSort = dataSort;
+                if (dataSort == 1 && mainDiagnosisData == null)
+                {
+                    item.IsMainDiagnosis = true;
+                }
+
                 paramNew.Add(item);
                 dataSort++;
             }
@@ -662,6 +671,38 @@ namespace BenDing.Domain.Xml
             {
                 resultData.StartTime= param.Substring(0, 10)+ " 00:00:00.000";
                 resultData.EndTime= param.Substring(param.Length - 10, 10)+ " 23:59:59.000";
+            }
+            return resultData;
+        }
+        /// <summary>
+        /// 获取整月时间
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static QueryDateBaseDto GetMonthTime(string param)
+        {
+            var resultData = new QueryDateBaseDto();
+            if (!string.IsNullOrWhiteSpace(param))
+            {
+                resultData.StartTime = param.Substring(0, 7) + "-01 00:00:00.000";
+                var startTime = Convert.ToDateTime(resultData.StartTime);
+                var monthTime = startTime.AddDays(1 - startTime.Day).AddMonths(1).AddDays(-1);
+                resultData.EndTime = monthTime.ToString("yyyy-MM-dd") + " 23:59:59.000";
+            }
+            return resultData;
+        }
+        /// <summary>
+        /// 获取当天时间
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static QueryDateBaseDto GetDayTime(string param)
+        {
+            var resultData = new QueryDateBaseDto();
+            if (!string.IsNullOrWhiteSpace(param))
+            {
+                resultData.StartTime = param.Substring(0,10) + " 00:00:00.000";
+                resultData.EndTime = param.Substring(0, 10) + " 23:59:59.000";
             }
             return resultData;
         }

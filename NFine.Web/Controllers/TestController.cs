@@ -1023,6 +1023,11 @@ namespace NFine.Web.Controllers
         [HttpGet]
         public void CancelPairCode()
         {
+            var ddd = hisSqlRepository.MedicalExpenseMonthReport(new MedicalExpenseMonthReportParam()
+            {
+                Date = "2021-01",
+                OrganizationCode = "10ADC4A48AB743A2B532AD8D08C4B927"
+            });
             StringBuilder ctrXml = new StringBuilder();
             ctrXml.Append("<?xml version=\"1.0\" encoding=\"GBK\" standalone=\"yes\" ?>");
             ctrXml.Append("<control>");
@@ -1068,7 +1073,7 @@ namespace NFine.Web.Controllers
                 PairCodeRow = uploadDataRow,
                 VersionNumber = ""
             };
-            webServiceBasic.HIS_Interface("35", JsonConvert.SerializeObject(uploadData));
+          //  webServiceBasic.HIS_Interface("35", JsonConvert.SerializeObject(uploadData));
         }
 
    

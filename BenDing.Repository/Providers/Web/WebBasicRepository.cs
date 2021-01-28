@@ -18,13 +18,14 @@ namespace BenDing.Repository.Providers.Web
             // 创建 HTTP 绑定对象与设置最大传输接受数量
             var binding = new BasicHttpBinding { MaxReceivedMessageSize = 2147483647 };
             // 根据 WebService 的 URL 构建终端点对象
-          
-            //正式
-           var endpoint = new EndpointAddress(CommonHelp.GetWebServiceUrl());
+         
+             //正式
+             var endpoint = new EndpointAddress(CommonHelp.GetWebServiceUrl());
             // 创建调用接口的工厂，注意这里泛型只能传入接口 添加服务引用时生成的 webservice的接口 一般是 (XXXSoap)
             var factory = new ChannelFactory<WebServiceSoap>(binding, endpoint);
             // 从工厂获取具体的调用实例 
             var callClient = factory.CreateChannel();
+           
             //var paramIni = new ExecuteSPRequest(new ExecuteSPRequestBody() {param = param});
             string resultData = callClient.HIS_Interface(tradeCode, inputParameter);
             if (!string.IsNullOrEmpty(resultData))

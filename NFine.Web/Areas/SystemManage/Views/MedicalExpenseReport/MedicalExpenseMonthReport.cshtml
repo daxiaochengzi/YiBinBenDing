@@ -1,5 +1,6 @@
 ﻿
 
+
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Index.cshtml";
@@ -11,7 +12,7 @@
         initControl();
         gridList();
         reportExcelIni();
-      
+
     });
     function initControl() {
         $("#OrganizeSelect").bindSelect({
@@ -29,9 +30,7 @@
             {
                 StartTime: $("#startTime").val(),
                 EndTime: $("#endTime").val(),
-                PatientName: $("#txt_PatientName").val(),
-                IdCardNo: $("#txt_IdCardNo").val(),
-                OrganizationName: "",
+               
                 OrganizationCode: $("#OrganizeSelect").val()
     },
             colModel: [
@@ -77,7 +76,7 @@
                 //}
             ],
             pager: "#gridPager",
-           
+
             viewrecords: true
         });
         $("#btn_search").click(function () {
@@ -87,10 +86,7 @@
                     postData:
                     {
                         StartTime: $("#startTime").val(),
-                        EndTime: $("#endTime").val(),
-                        PatientName: $("#txt_PatientName").val(),
-                        IdCardNo: $("#txt_IdCardNo").val(),
-                    
+
                         OrganizationCode: $("#OrganizeSelect").val()
                     }
                 }).trigger('reloadGrid');
@@ -99,7 +95,7 @@
     }
 
     function btn_details() {
-      
+
         var keyValue = $("#gridList").jqGridRowValue().PatientId;
         $.modalOpen({
             id: "DetailInfo",
@@ -112,7 +108,7 @@
     }
     //导出链接初始化
     function reportExcelIni() {
-        debugger;
+      
         var url = "/api/BenDing/MedicalExpenseReport?";
         url += "UserId=" + $("#UserId").val();
         url += "&StartTime=" + $("#startTime").val();
@@ -120,20 +116,19 @@
         url += "&PatientName=" + $("#txt_PatientName").val();
         url += "&IdCardNo=" + $("#txt_IdCardNo").val();
         url += "&OrganizationCode=" + $("#OrganizeSelect").val();
-   
+
         $('#btn_MedicalExpenseReport').attr('href', url);
-        
+
     }
 
 
 </script>
 <div class="topPanel">
     <div class="toolbar" style="float: left">
-      
+
         <div class="btn-group" style="margin-left: 20px; width: 150px;height: 32px;">
-                <select id="OrganizeSelect" class="form-control"  style="padding: 0px;height: 32px;">
-                </select>
-            </div>
+            <select id="OrganizeSelect" class="form-control" style="padding: 0px;height: 32px;"></select>
+        </div>
         <div class="btn-group" style="margin-left: 10px;">
             <span>姓名:</span>
         </div>
@@ -149,18 +144,18 @@
             <input id="txt_IdCardNo" type="text" class="form-control" placeholder="身份证号" style="width: 100px; height: 20px">
         </div>
         @*<div class="btn-group" style="margin-left: 10px;">
-            <span>机构名称:</span>
-        </div>
-        <div class="btn-group" style="height: 30px;">
-            <input id="txt_OrganizationName" type="text" class="form-control" placeholder="机构名称" style="width: 100px; height: 20px">
-        </div>*@
+                <span>机构名称:</span>
+            </div>
+            <div class="btn-group" style="height: 30px;">
+                <input id="txt_OrganizationName" type="text" class="form-control" placeholder="机构名称" style="width: 100px; height: 20px">
+            </div>*@
         <div class="btn-group" style="margin-left: 5px;">
             开始日期：
             <input type="text" class="Wdate" name="SettlementStartTime" id="startTime"
-                   onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', maxDate: '#F{$dp.$D(\'startTime\')||\'new Date()\'}', readOnly: true });" style="width: 120px;"/>
+                   onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', maxDate: '#F{$dp.$D(\'startTime\')||\'new Date()\'}', readOnly: true });" style="width: 120px;" />
             结束日期：
             <input type="text" class="Wdate" name="SettlementEndTime" id="endTime"
-                   onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', minDate: '#F{$dp.$D(\'endTime\')}', maxDate: new Date(), readOnly: true });" style="width: 120px;"/>
+                   onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM-dd', minDate: '#F{$dp.$D(\'endTime\')}', maxDate: new Date(), readOnly: true });" style="width: 120px;" />
         </div>
         <div class="btn-group" style="margin-left: 5px;">
             <a class="btn btn-primary" id="btn_search">查询</a>
@@ -169,20 +164,20 @@
             <a class="btn btn-primary" id="btn_MedicalExpenseReport" href="/api/BenDing/MedicalExpenseReport">导出</a>
         </div>
         <div class="operate">
-        <ul class="nav nav-pills">
-            <li class="first">已选中<span>1</span>项</li>
-            <li><a id="NF-Details" onclick="btn_details()"><i class="fa fa-search-plus"></i>查看明细</a></li>
-        </ul>
-        <a href="javascript:;" class="close"></a>
+            <ul class="nav nav-pills">
+                <li class="first">已选中<span>1</span>项</li>
+                <li><a id="NF-Details" onclick="btn_details()"><i class="fa fa-search-plus"></i>查看明细</a></li>
+            </ul>
+            <a href="javascript:;" class="close"></a>
+        </div>
+        <script>$('.toolbar').authorizeButton()</script>
     </div>
-    <script>$('.toolbar').authorizeButton()</script>
-    </div>
-   
+
 </div>
 <div class="gridPanel">
     <table id="gridList"></table>
     <div id="gridPager"></div>
-    <div >
+    <div>
         <input type="hidden" id="UserId" name="UserId" value="@ViewBag.empid" placeholder="用户ID" />
         <input type="hidden" id="OrganizationCode" name="UserId" value="@ViewBag.OrganizationCode" placeholder="组织机构" />
     </div>

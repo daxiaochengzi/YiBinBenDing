@@ -88,6 +88,7 @@
     <Compile Include="Models\Dto\JsonEntity\WorkerBirthPreSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\WorkerHospitalizationPreSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\GetOutpatientSettlementCancelDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\MedicalExpenseMonthReportDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\MedicalExpenseReportDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\MedicalExpenseReportExcelDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\NationEcTransDto.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Models\Params\Base\PaginationWebParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\GetOutpatientSettlementNoParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\GetResidentOutpatientSettlementParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\MedicalExpenseMonthReportParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\MedicalExpenseReportParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\MonthlyHospitalizationCancelParam.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\MonthlyHospitalizationDto.cs" />

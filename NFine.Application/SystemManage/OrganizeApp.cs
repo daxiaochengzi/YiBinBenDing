@@ -26,6 +26,16 @@ namespace NFine.Application.SystemManage
             return service.FindEntity(keyValue);
         }
         /// <summary>
+        /// 获取组织机构列表数据
+        /// </summary>
+        /// <returns></returns>
+        public List<OrganizeEntity> GetListData()
+        {
+            string findSql = @"select *from [dbo].[Sys_Organize] where F_DeleteMark=0 and F_EnabledMark=1 
+                             and F_MedicalInsuranceHandleNo is not null and F_MedicalInsuranceAccount is not null";
+            return service.FindList(findSql);
+        }
+        /// <summary>
         /// 更新机构
         /// </summary>
         /// <param name="keyValue"></param>

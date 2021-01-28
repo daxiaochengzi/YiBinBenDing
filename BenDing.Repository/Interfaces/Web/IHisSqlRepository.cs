@@ -255,6 +255,13 @@ namespace BenDing.Repository.Interfaces.Web
         /// <param name="param"></param>
         /// <returns></returns>
         int OutpatientExclusionAdd(OutpatientExclusionAddParam param);
+        /// <summary>
+        /// 门诊居民月查询
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        Dictionary<int, List<MedicalExpenseMonthReportDto>> MedicalExpenseMonthReport(
+            MedicalExpenseMonthReportParam param);
 
         /// <summary>
         /// 对码数据导出

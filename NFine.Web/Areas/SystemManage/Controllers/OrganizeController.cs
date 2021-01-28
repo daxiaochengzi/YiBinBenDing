@@ -38,6 +38,17 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             }
             return Content(treeList.TreeSelectJson());
         }
+        /// <summary>
+        /// 获取组织机构列表数据
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [HandlerAjaxOnly]
+        public ActionResult GetListData()
+        {
+            var data = organizeApp.GetListData();
+            return Content(data.ToJson());
+        }
         [HttpGet]
         [HandlerAjaxOnly]
         public ActionResult GetTreeJson()

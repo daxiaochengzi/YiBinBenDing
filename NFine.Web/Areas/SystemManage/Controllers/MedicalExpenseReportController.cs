@@ -45,8 +45,21 @@ namespace NFine.Web.Areas.SystemManage.Controllers
            
             return View();
         }
+        /// <summary>
+        /// 门诊居民月报表
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [HandlerAuthorize]
+        //重载
+        public  ActionResult MedicalExpenseMonthReport()
+        {
+        
+
+            return View();
+        }
+        [HttpGet]
+     
         public  ActionResult DetailInfo( string patientId)
         {
             ViewBag.PatientId = patientId;
@@ -79,9 +92,8 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             };
             return Content(data.ToJson());
         }
-
+     
         [HttpGet]
-        [HandlerAjaxOnly]
         public ActionResult GetGridDetailJson(QueryOutpatientDetailParam pagination)
         {
           

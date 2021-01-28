@@ -810,6 +810,7 @@
     <Content Include="Areas\SystemManage\Views\BaseDataMaintenance\Index.cshtml" />
     <Content Include="Areas\SystemManage\Views\MedicalExpenseReport\Index.cshtml" />
     <Content Include="Areas\SystemManage\Views\MedicalExpenseReport\DetailInfo.cshtml" />
+    <Content Include="Areas\SystemManage\Views\MedicalExpenseReport\MedicalExpenseMonthReport.cshtml" />
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
     <Content Include="Views\Insurance\Card.cshtml" />
