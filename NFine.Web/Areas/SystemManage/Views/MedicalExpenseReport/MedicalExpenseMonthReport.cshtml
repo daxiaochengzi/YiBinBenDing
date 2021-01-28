@@ -24,59 +24,23 @@
     function gridList() {
         var $gridList = $("#gridList");
         $gridList.dataGrid({
-            url: "/SystemManage/MedicalExpenseReport/GetGridJson",
+            url: "/SystemManage/MedicalExpenseReport/GetGridMonthJson",
             height: $(window).height() - 96,
             postData:
             {
-                StartTime: $("#startTime").val(),
-                EndTime: $("#endTime").val(),
-               
+                Date:'2021-01',
                 OrganizationCode: $("#OrganizeSelect").val()
-    },
+            },
             colModel: [
-                { label: "主键", name: "PatientId", hidden: true, key: true },
-                { label: '患者姓名', name: 'PatientName', width: 80, align: 'left' },
-                { label: '家庭住址', name: 'ContactAddress', width: 120, align: 'left' },
-                { label: '身份证号', name: 'IdCardNo', width: 120, align: 'left' },
-                {
-                    label: '就诊日期',
-                    name: 'VisitDate',
-                    width: 120,
-                    align: 'left',
-                    formatter: "date",
-                    formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }
-                },
-                { label: '就诊机构', name: 'OrganizationName', width: 200, align: 'left' },
-                { label: '诊断', name: 'DiagnosticJson', width: 150, align: 'left' },
-                { label: '门诊费用', name: 'MedicalTreatmentTotalCost', width: 80, align: 'left' },
-                { label: '门诊报销', name: 'ReimbursementExpensesAmount', width: 80, align: 'left' },
-                { label: '历年结转', name: 'CarryOver', width: 80, align: 'left' },
-                {
-                    label: '报销日期',
-                    name: 'SettlementTime',
-                    width: 120,
-                    align: 'left',
-                    formatter: "date",
-                    formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }
-                },
-                { label: '联系电话', name: 'ContactPhone', width: 100, align: 'left' },
-                { label: '经办人', name: 'Operator', width: 80, align: 'left' },
-                { label: '标记', name: 'Sign', width: 40, align: 'left' },
-                { label: '参保地', name: 'CommunityName', width: 150, align: 'left' }
-                //{
-                //    label: "有效",
-                //    name: "IsRevoke",
-                //    width: 60,
-                //    align: "center",
-                //    formatter: function(cellvalue) {
-                //        return cellvalue === false
-                //            ? "<i class=\"fa fa-toggle-on\"></i>"
-                //            : "<i class=\"fa fa-toggle-off\"></i>";
-                //    }
-                //}
+                { label: "主键", name: "Day", hidden: true, key: true },
+                { label: '日期', name: 'Day', width: 120, align: 'left' },
+                { label: '一般诊疗费人次', name: 'Frequency', width: 120, align: 'left' },
+                { label: '门诊费用', name: 'MedicalTreatmentTotalCost', width: 120, align: 'left' },
+                { label: '报销金额', name: 'ReimbursementExpensesAmount', width: 200, align: 'left' },
+               
+               
             ],
-            pager: "#gridPager",
-
+          
             viewrecords: true
         });
         $("#btn_search").click(function () {
@@ -85,8 +49,7 @@
                 {
                     postData:
                     {
-                        StartTime: $("#startTime").val(),
-
+                        Date:'2021-01',
                         OrganizationCode: $("#OrganizeSelect").val()
                     }
                 }).trigger('reloadGrid');
@@ -94,27 +57,14 @@
         });
     }
 
-    function btn_details() {
-
-        var keyValue = $("#gridList").jqGridRowValue().PatientId;
-        $.modalOpen({
-            id: "DetailInfo",
-            title: "费用明细",
-            url: "/SystemManage/MedicalExpenseReport/DetailInfo?patientId=" + keyValue,
-            width: "800px",
-            height: "500px",
-            btn: null
-        });
-    }
+  
     //导出链接初始化
     function reportExcelIni() {
       
         var url = "/api/BenDing/MedicalExpenseReport?";
         url += "UserId=" + $("#UserId").val();
         url += "&StartTime=" + $("#startTime").val();
-        url += "&EndTime=" + $("#endTime").val();
-        url += "&PatientName=" + $("#txt_PatientName").val();
-        url += "&IdCardNo=" + $("#txt_IdCardNo").val();
+     
         url += "&OrganizationCode=" + $("#OrganizeSelect").val();
 
         $('#btn_MedicalExpenseReport').attr('href', url);
@@ -129,20 +79,7 @@
         <div class="btn-group" style="margin-left: 20px; width: 150px;height: 32px;">
             <select id="OrganizeSelect" class="form-control" style="padding: 0px;height: 32px;"></select>
         </div>
-        <div class="btn-group" style="margin-left: 10px;">
-            <span>姓名:</span>
-        </div>
-        <div class="btn-group" style="height: 30px;">
-
-            <input id="txt_PatientName" type="text" class="form-control" placeholder="病人姓名" style="width: 60px; height: 20px">
-        </div>
-        <div class="btn-group" style="margin-left: 10px;">
-            <span>身份证号:</span>
-        </div>
-        <div class="btn-group" style="height: 30px;">
-
-            <input id="txt_IdCardNo" type="text" class="form-control" placeholder="身份证号" style="width: 100px; height: 20px">
-        </div>
+        
         @*<div class="btn-group" style="margin-left: 10px;">
                 <span>机构名称:</span>
             </div>

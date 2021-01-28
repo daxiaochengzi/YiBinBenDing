@@ -92,7 +92,28 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             };
             return Content(data.ToJson());
         }
-     
+        /// <summary>
+        /// 门诊月统计
+        /// </summary>
+        /// <param name="pagination"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetGridMonthJson(MedicalExpenseMonthReportParam pagination)
+        {
+
+
+            var patientInfo = _hisSqlRepository.MedicalExpenseMonthReport(pagination);
+            pagination.records = patientInfo.Keys.FirstOrDefault();
+            var data = new
+            {
+                rows = patientInfo.Values.FirstOrDefault(),
+                total = pagination.total,
+                page = pagination.Page,
+                records = pagination.records
+            };
+            return Content(data.ToJson());
+        }
+
         [HttpGet]
         public ActionResult GetGridDetailJson(QueryOutpatientDetailParam pagination)
         {
