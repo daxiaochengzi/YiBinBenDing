@@ -1699,7 +1699,23 @@ namespace BenDing.Repository.Providers.Web
 
                     }
 
+                 
                     var getListData = MedicalExpenseMonthReportList(dataListNew,param.Date);
+                    if (getListData.Any())
+                    {
+                        var totalData = new MedicalExpenseMonthReportDto()
+                        {
+                            OrganizationName = getListData.Select(d=>d.OrganizationName).FirstOrDefault(),
+                            Day = "合计",
+                            Frequency = getListData.Sum(d=>d.Frequency),
+                            MedicalTreatmentTotalCost = getListData.Sum(d => d.MedicalTreatmentTotalCost),
+                            ReimbursementExpensesAmount = getListData.Sum(d => d.ReimbursementExpensesAmount),
+
+                        };
+                        getListData.Add(totalData);
+                    }
+                
+
                     resultData.Add(getListData.Count(), getListData);
                     sqlConnection.Close();
                     return resultData;
@@ -1714,6 +1730,111 @@ namespace BenDing.Repository.Providers.Web
             }
 
             
+        }
+        /// <summary>
+        /// 门诊居民月统计导出
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public DataTable MedicalExpenseMonthExcel( MedicalExpenseMonthReportParam param)
+        {
+            var resultData=new DataTable();
+            var monthData = MedicalExpenseMonthReport(param);
+            var monthList = monthData.Values.FirstOrDefault();
+            var monthListData = new List<MedicalExpenseMonthExcelDto>();
+            if (monthList != null && monthList.Any())
+            {
+                monthListData = monthList.Select(d => new MedicalExpenseMonthExcelDto
+                {
+                    日期 = d.Day,
+                    报销金额 = d.ReimbursementExpensesAmount,
+                    一般诊疗费人次 = d.Frequency,
+                    门诊费用=d.MedicalTreatmentTotalCost
+
+                }).ToList();
+            }
+
+            //MedicalExpenseMonthExcelDto
+            resultData = ListToDataTable(monthListData);
+
+            return resultData;
+        }
+        /// <summary>
+        /// 门诊居民年统计导出
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public DataTable MedicalExpenseYearExcel(MedicalExpenseYearReportParam param)
+        {
+           
+            var yearData = MedicalExpenseYearReport(param);
+            var yearList = yearData.Values.FirstOrDefault();
+             var yearListData = new List< MedicalExpenseYearExcelDto>();
+            if (yearList != null && yearList.Any())
+            {
+                yearListData = yearList.Select(d => new MedicalExpenseYearExcelDto
+                {
+                    机构名称 = d.OrganizationName,
+                    汇总月份 = d.Month,
+                    总汇总人次 = d.Frequency
+
+                }).ToList();
+            }
+
+
+            //MedicalExpenseMonthExcelDto
+            var resultData = ListToDataTable(yearListData);
+
+            return resultData;
+        }
+
+        /// <summary>
+        /// 年报表统计
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+
+        public Dictionary<int, List<MedicalExpenseYearReportDto>> MedicalExpenseYearReport(
+            MedicalExpenseYearReportParam param)
+        {
+            var resultData = new Dictionary<int, List<MedicalExpenseYearReportDto>>();
+
+            var yearList = new List<MedicalExpenseYearReportDto>();
+            int count = 12;
+            for (int i = 1; i <= count; i++)
+            {
+                var day = param.Date + (i >= 10 ? "-" + i : "-0" + i);
+                var monthList =  MedicalExpenseMonthReport(new MedicalExpenseMonthReportParam()
+                {
+                    Date = day,
+                    OrganizationCode = param.OrganizationCode
+                });
+                var monthListData = monthList.Values.FirstOrDefault();
+                if (monthListData!=null && monthListData.Any())
+                {
+                    var yearData = new MedicalExpenseYearReportDto()
+                    {
+                        OrganizationName = monthListData.Select(d=>d.OrganizationName).FirstOrDefault(),
+                        Frequency = monthListData.Where(d=>d.Day=="合计").Select(c=>c.Frequency).FirstOrDefault(),
+                        Month = day
+                    };
+                    yearList.Add(yearData);
+                }
+            }
+
+            if (yearList.Any())
+            {
+                var totalYear = new MedicalExpenseYearReportDto()
+                {
+                    OrganizationName = "",
+                    Frequency = yearList.Sum(d=>d.Frequency),
+                    Month = "合计"
+                };
+                yearList.Add(totalYear);
+            }
+
+            resultData.Add(yearList.Count(), yearList);
+            return resultData;
         }
 
         /// <summary>
@@ -2404,12 +2525,14 @@ namespace BenDing.Repository.Providers.Web
                 var day = date+(i >= 10 ? "-" + i : "-0" + i);
                 var dayTime = CommonHelp.GetDayTime(day);
                 var queryData = param.Where(c => c.VisitDate >=Convert.ToDateTime(dayTime.StartTime) 
-                        && c.VisitDate <=Convert.ToDateTime(dayTime.EndTime) && c.Sign==1  ) .ToList();
+                        && c.VisitDate <=Convert.ToDateTime(dayTime.EndTime) && c.Sign==1 
+                                               ) .ToList();
                 if (queryData.Any())
                 {
                     var item = new MedicalExpenseMonthReportDto()
                     {
                         Day = day,
+                        OrganizationName = queryData.Select(d=>d.OrganizationName).FirstOrDefault(),
                         Frequency = queryData.Count(),
                         MedicalTreatmentTotalCost = queryData.Sum(d=>d.MedicalTreatmentTotalCost),
                         ReimbursementExpensesAmount = queryData.Sum(d => d.ReimbursementExpensesAmount)

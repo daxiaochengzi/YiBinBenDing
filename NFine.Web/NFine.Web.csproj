@@ -811,6 +811,7 @@
     <Content Include="Areas\SystemManage\Views\MedicalExpenseReport\Index.cshtml" />
     <Content Include="Areas\SystemManage\Views\MedicalExpenseReport\DetailInfo.cshtml" />
     <Content Include="Areas\SystemManage\Views\MedicalExpenseReport\MedicalExpenseMonthReport.cshtml" />
+    <Content Include="Areas\SystemManage\Views\MedicalExpenseReport\MedicalExpenseYearReport.cshtml" />
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
     <Content Include="Views\Insurance\Card.cshtml" />

@@ -264,6 +264,25 @@ namespace BenDing.Repository.Interfaces.Web
             MedicalExpenseMonthReportParam param);
 
         /// <summary>
+        /// 门诊居民月统计导出
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        DataTable MedicalExpenseMonthExcel(MedicalExpenseMonthReportParam param);
+        /// <summary>
+        /// 门诊居民年统计导出
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        DataTable MedicalExpenseYearExcel(MedicalExpenseYearReportParam param);
+        /// <summary>
+        /// 年报表统计
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        Dictionary<int, List<MedicalExpenseYearReportDto>> MedicalExpenseYearReport(
+            MedicalExpenseYearReportParam param);
+        /// <summary>
         /// 对码数据导出
         /// </summary>
         /// <param name="organizationCode"></param>

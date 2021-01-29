@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using BenDing.Domain.Models.Params.Base;
 using BenDing.Domain.Models.Params.SystemManage;
 using BenDing.Domain.Models.Params.UI;
@@ -126,6 +127,7 @@ namespace NFine.Web.Controllers
         public ActionResult MedicalDirectoryCode(MedicalDirectoryCodeUiParam param)
         {
             ViewBag.empid = param.EmpId;
+            ViewBag.MonthNow = DateTime.Now.ToString("yyyy-MM");
             ViewBag.InIDirectoryCode = param.InIDirectoryCode;
             ViewBag.InIDirectoryName = param.InIDirectoryName;
             ViewBag.InIProjectCodeType = param.InIProjectCodeType;

@@ -16,5 +16,10 @@ namespace BenDing.Domain.Models.Params.OutpatientDepartment
         /// 组织机构编码
         /// </summary>
         public string OrganizationCode { get; set; }
+        /// <summary>
+        /// 机构名称
+        /// </summary>
+        public string OrganizationName { get; set; }
+        public string UserId { get; set; }
     }
 }

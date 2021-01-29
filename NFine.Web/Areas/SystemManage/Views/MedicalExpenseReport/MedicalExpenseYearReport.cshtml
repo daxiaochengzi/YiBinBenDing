@@ -1,4 +1,5 @@
-﻿@{
+﻿
+@{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Index.cshtml";
 }
@@ -24,7 +25,7 @@
         $("#startTime").val(dateTime);
         var $gridList = $("#gridList");
         $gridList.dataGrid({
-            url: "/SystemManage/MedicalExpenseReport/GetGridMonthJson",
+            url: "/SystemManage/MedicalExpenseReport/GetGridYearJson",
             height: $(window).height() - 96,
             postData:
             {
@@ -32,17 +33,17 @@
                 OrganizationCode: $("#OrganizeSelect").val()
             },
             colModel: [
-                { label: "主键", name: "Day", hidden: true, key: true },
-                { label: '日期', name: 'Day', width: 120, align: 'left' },
-                { label: '一般诊疗费人次', name: 'Frequency', width: 120, align: 'left' },
-                { label: '门诊费用', name: 'MedicalTreatmentTotalCost', width: 120, align: 'left' },
-                { label: '报销金额', name: 'ReimbursementExpensesAmount', width: 200, align: 'left' }
+              
+                { label: '机构名称', name: 'OrganizationName', width: 160, align: 'left' },
+                { label: '汇总月份', name: 'Month', width: 160, align: 'left' },
+                { label: '总汇总人次', name: 'Frequency', width: 160, align: 'left' }
+               
             ],
-          
+
             viewrecords: true
         });
         $("#btn_search").click(function () {
-           
+         
             //reportExcelIni();
             $gridList.jqGrid('setGridParam',
                 {
@@ -56,15 +57,15 @@
         });
     }
 
-  
+
     //导出链接初始化
     function reportExcelIni() {
-      
-        var url = "/api/BenDing/MedicalExpenseMonthExcel?";
+
+        var url = "/api/BenDing/MedicalExpenseYearExcel?";
         url += "&Date=" + $("#startTime").val();
         url += "&OrganizationCode=" + $("#OrganizeSelect").val();
         url += "&OrganizationName=" + $("#OrganizeSelect").text();
-        $('#btn_MonthExcel').attr('href', url);
+        $('#btn_YearExcel').attr('href', url);
 
     }
 
@@ -76,7 +77,7 @@
         <div class="btn-group" style="margin-left: 20px; width: 200px;height: 32px;">
             <select id="OrganizeSelect" class="form-control" style="padding: 0px;height: 32px;"></select>
         </div>
-        
+
         @*<div class="btn-group" style="margin-left: 10px;">
                 <span>机构名称:</span>
             </div>
@@ -86,15 +87,15 @@
         <div class="btn-group" style="margin-left: 15px;">
             月份：
             <input type="text" class="Wdate" id="startTime"
-                   onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy-MM', maxDate: '#F{\'new Date()\'}', readOnly: true });" style="width: 100px;" />
+                   onClick="WdatePicker({ autoPickDate: true, dateFmt: 'yyyy', maxDate: '#F{\'new Date()\'}', readOnly: true });" style="width: 100px;" />
         </div>
         <div class="btn-group" style="margin-left: 5px;">
             <a class="btn btn-primary" id="btn_search">查询</a>
         </div>
         <div class="btn-group" style="margin-left: 5px;">
-            <a class="btn btn-primary" id="btn_MonthExcel" href="/api/BenDing/MedicalExpenseMonthExcel">导出</a>
-        </div>
-       
+                <a class="btn btn-primary" id="btn_YearExcel" href="/api/BenDing/MedicalExpenseYearExcel">导出</a>
+            </div>
+
     </div>
 
 </div>
@@ -102,9 +103,10 @@
     <table id="gridList"></table>
     <div id="gridPager"></div>
     <div>
-        <input type="hidden" id="UserId" name="UserId" value="@ViewBag.empid" placeholder="用户ID" />
         <input type="hidden" id="dateTime" name="dateTime" value="@ViewBag.startTime" placeholder="用户ID" />
-        <input type="hidden" id="OrganizationCode" name="UserId" value="@ViewBag.OrganizationCode" placeholder="组织机构" />
+        @*<input type="hidden" id="UserId" name="UserId" value="@ViewBag.empid" placeholder="用户ID"/>
+
+        <input type="hidden" id="OrganizationCode" name="UserId" value="@ViewBag.OrganizationCode" placeholder="组织机构"/>*@
     </div>
 </div>
 

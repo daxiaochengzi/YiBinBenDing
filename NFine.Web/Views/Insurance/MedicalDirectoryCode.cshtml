@@ -28,11 +28,13 @@
         <li data-status="1">医保目录</li>
         <li data-status="2" id="tabProjectDirectoryThere">对码管理</li>
         <li data-status="4" id="MedicalExpenseReport">门诊居民报账</li>
+        <li data-status="5" id="MedicalExpenseMonthReport">门诊居民报账月统计</li>
     </ul>
     <input type="hidden" id="empid" name="UserId" value="@ViewBag.empid" />
     <input type="hidden" id="pairCodeDirectoryCode" value="@ViewBag.InIDirectoryCode" />
     <input type="hidden" id="pairCodeProjectCodeType" value="@ViewBag.InIProjectCodeType" />
     <input type="hidden" id="pairCodeProjectName" value="@ViewBag.InIDirectoryName" />
+    <input type="hidden" id="MonthNow" name="TransKey" value="@ViewBag.MonthNow" />
     <input type="hidden" id="pairCodeManufacturer">
 
     <div class="layui-tab-content">
@@ -201,7 +203,7 @@
         <div class="layui-tab-item">
             <div class="layui-form layui-card-header layui-card-header-auto" style="padding-bottom:5px" lay-filter="yibao-content-list">
                 <div class="layui-form-item">
-                    
+
                     <div class="layui-inline">
                         <label class="layui-form-label-nw">病人姓名</label>
                         <div class="layui-input-inline">
@@ -211,7 +213,7 @@
                     <div class="layui-inline">
                         <label class="layui-form-label-nw">身份证号</label>
                         <div class="layui-input-inline">
-                            <input type="text" name="IdCardNo"id="IdCardNo" placeholder="身份证号" autocomplete="off" class="layui-input">
+                            <input type="text" name="IdCardNo" id="IdCardNo" placeholder="身份证号" autocomplete="off" class="layui-input">
                         </div>
                     </div>
                     <div class="layui-inline">
@@ -226,15 +228,34 @@
                             <input type="text" id="EndTime" name="EndTime" placeholder="结束日期" autocomplete="off" class="layui-input">
                         </div>
                     </div>
-                  
+
                     <div class="layui-inline">
                         <button class="layui-btn" lay-submit="" id="MedicalExpenseReportQuery">查询</button>
-                        <a class="layui-btn" id="btn_MedicalReport" href="/api/BenDing/MedicalExpenseReport">导出</a> 
+                        <a class="layui-btn" id="btn_MedicalReport" href="/api/BenDing/MedicalExpenseReport">导出</a>
                     </div>
                 </div>
 
             </div>
             <table id="MedicalExpenseReportTable" lay-filter="MedicalExpenseReportTable"></table>
+        </div>
+        <div class="layui-tab-item">
+            <div class="layui-form layui-card-header layui-card-header-auto" style="padding-bottom:5px" lay-filter="yibao-content-list">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label-nw">日期</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="MonthDate" name="MonthDate" placeholder="yyyy-MM" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                 
+                    <div class="layui-inline">
+                        <button class="layui-btn" lay-submit="" id="MedicalExpenseMonthReportQuery">查询</button>
+                        <a class="layui-btn" id="btn_MedicalMonthReport" href="/api/BenDing/MedicalExpenseMonthExcel">导出</a>
+                    </div>
+                </div>
+
+            </div>
+            <table id="MedicalExpenseMonthReportTable" lay-filter="MedicalExpenseMonthReportTable"></table>
         </div>
     </div>
 </div>
@@ -259,7 +280,14 @@
                 laydate = layui.laydate;
             laydate.render({ elem: '#StartTime' });
             laydate.render({ elem: '#EndTime'});
-            
+           
+            //年月选择器
+            laydate.render({
+                elem: '#MonthDate'
+                , type: 'month'
+                , value: $("#MonthNow").val()
+
+            });
             //form.render(null, 'LAY-app-content-list');
             //form.render(null, 'yibao-content-list');
             //form.render(null, 'LAY-pair-content-list');
@@ -340,9 +368,14 @@
                         outpatientExclusionTable();
                         break;
                     case '4':
-                        //门诊目录
+                        //门诊居民报账
                         medicalExpenseReportTable();
                         break;
+                    case '5':
+                        //门诊居民报账月统计
+                        medicalExpenseMonthReportTable();
+                        break;
+                        
                 }
                 form.render();
             }
@@ -489,59 +522,13 @@
                 url += "&PatientName=" + $("#PatientName").val();
                 url += "&IdCardNo=" + $("#IdCardNo").val();
                 $('#btn_MedicalReport').attr('href', url);
-        
+                var urlMonth = "/api/BenDing/MedicalExpenseMonthExcel?";
+                urlMonth += "UserId=" + $("#empid").val();
+                urlMonth += "&Date=" + $("#MonthDate").val();
+                $('#btn_MedicalMonthReport').attr('href', urlMonth);
             }
-
             reportExcelIni();
-            //function pairCodeDataListTable() {
-            //    //方法级渲染
-            //    table.render({
-            //        elem: '#LAY-pairDate-content-list'
-            //        , url: host + '/QueryProjectDownload' //数据接口
-            //        , height: $(window).height() - 228 - (($(window).height() - 128) / 2)
-            //        , where: {
-            //            UserId: $("#empid").val() //必传参数
-            //            , ProjectName: $("#pairCodeProjectName").val()
-            //            , ProjectCode: $("#pairCodeProjectCode").val()
-            //            , QuasiFontSize: $("#pairCodeQuasiFontSize").val()
-            //            , Manufacturer: $("#pairCodeManufacturer").val(),
-            //             ProjectCodeType: $("#pairCodeProjectCodeType").val()
-            //        }
-            //        , parseData: function (res) { //res 即为原始返回的数据
-            //            return {
-            //                "code": res.Code, //解析接口状态
-            //                "msg": res.Message, //解析提示文本
-            //                "count": res.Data.count, //解析数据长度
-            //                "data": res.Data.data //解析数据列表
-            //            };
-            //        }
-            //        , limits: [10, 20, 50]
-            //        , limit: 10 //每页默认显示的数量
-            //        , cols: [[
-            //            { type: 'numbers', fixed: 'left' }
-            //            , { title: '对码', toolbar: '#tableCodeBtn', width: 150, align: 'center', fixed: true }
-            //            , { field: 'PairCodeId', title: '对码ID', width: 160, hide: true }
-            //            , { field: 'ProjectCode', title: '医保项目编码', width: 160 }
-            //            , { field: 'ProjectName', title: '医保项目名称', width: 160, sort: true }
-            //            , { field: 'ProjectCodeType', title: '医保类别', width: 100 }
-            //            , { field: 'ProjectLevel', title: '项目等级', width: 160 }
-            //            , { field: 'Manufacturer', title: '生产厂家', width: 300 }
-            //            , { field: 'QuasiFontSize', title: '国药准字号', width: 150 }
-            //            //, { field: 'Unit', title: '单位', width: 100 }
-            //            , { field: 'Specification', title: '规格', width: 100 }
-            //            , { field: 'Formulation', title: '剂型', width: 160 }
-            //            , { field: 'RestrictionSign', title: '限制用药标志', width: 100 }
-            //            , { field: 'NewCodeMark', title: '新码标志', width: 100 }
-            //            , { field: 'LimitPaymentScope', title: '限制支付范围', width: 100 }
-            //            , { field: 'StartTime', title: '开始时间', width: 160 }
-            //            , { field: 'EndTime', title: '结束时间', width: 160 }
-            //        ]]
-
-            //        , page: true
-            //        , id: 'dataTable'
-            //    });
-
-            //}
+         
             function pairCodeDataModelTable() {
                 var directoryName = replaceValueChar($("#pairCodeProjectName").val());
                 //var directoryName = $("#pairCodeProjectName").val();
@@ -664,6 +651,42 @@
                     //,skin: 'line'
                 });
             }
+            function medicalExpenseMonthReportTable() {
+
+                var tableWhere =
+                {
+                    'UserId': $("#empid").val(),
+                    'MonthDate': $("#MonthDate").val()
+                };
+
+                //医保目录
+                table.render({
+                    elem: '#MedicalExpenseMonthReportTable',
+                    height: $(window).height() - 128,
+                    url: host + '/QueryMedicalExpenseMonthReport' //数据接口
+                    , where: tableWhere,
+                    parseData: function (res) { //res 即为原始返回的数据
+                        return {
+                            "code": res.Code, //解析接口状态
+                            "msg": res.Message, //解析提示文本
+                            "count": res.Data.count, //解析数据长度
+                            "data": res.Data.data //解析数据列表
+                        };
+                    },
+                    page: false,
+                    cols: [
+                        [
+                            { type: 'numbers', fixed: 'left' }
+                            , { field: 'Day', title: '日期', width: 120 }
+                            , { field: 'Frequency', title: '一般诊疗费人次', width: 180 }
+                            , { field: 'MedicalTreatmentTotalCost', title: '门诊费用', width: 120 }
+                            , { field: 'ReimbursementExpensesAmount', title: '报销金额', width: 120 }
+
+                        ]
+                    ]
+                    //,skin: 'line'
+                });
+            }
             //监听搜索
             form.on('submit(LAY-app-content-list)',
                 function (data) {
@@ -694,6 +717,11 @@
                 function() {
                     medicalExpenseReportTable();
                     reportExcelIni();
+                });
+            $('#MedicalExpenseMonthReportQuery').on('click',
+                function() {
+                    medicalExpenseMonthReportTable();
+                    //reportExcelIni();
                 });
             $('#updateSearch').on('click',
                 function () {

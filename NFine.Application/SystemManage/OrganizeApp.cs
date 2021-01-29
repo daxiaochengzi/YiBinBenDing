@@ -32,7 +32,8 @@ namespace NFine.Application.SystemManage
         public List<OrganizeEntity> GetListData()
         {
             string findSql = @"select *from [dbo].[Sys_Organize] where F_DeleteMark=0 and F_EnabledMark=1 
-                             and F_MedicalInsuranceHandleNo is not null and F_MedicalInsuranceAccount is not null";
+                             and F_MedicalInsuranceHandleNo is not null 
+                             and F_MedicalInsuranceAccount is not null and F_EnCode<>'yb'";
             return service.FindList(findSql);
         }
         /// <summary>

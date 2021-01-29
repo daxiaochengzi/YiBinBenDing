@@ -2192,6 +2192,92 @@ namespace NFine.Web.Controllers
         }
 
         /// <summary>
+        /// 门诊居民月报表导出
+        /// </summary>
+        [HttpGet]
+        public HttpResponseMessage MedicalExpenseMonthExcel([FromUri] MedicalExpenseMonthReportParam param)
+        {
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+            string fileName = null;
+
+            if (!string.IsNullOrWhiteSpace(param.UserId))
+            {
+                var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+                fileName = userBase.OrganizationName + "月汇总.xls";
+            }
+            else
+            {
+                fileName = param.OrganizationName + "月汇总.xls";
+            }
+
+            string filePath = HttpContext.Current.Server.MapPath("~/") + "FileExcel\\" + fileName;
+            if (System.IO.File.Exists(filePath))
+            {
+
+                System.IO.File.Delete(filePath);//删除文件夹以及文件夹中的子目录，文件   
+            }
+            var tableData = _hisSqlRepository.MedicalExpenseMonthExcel(param);
+
+            if (tableData.Rows.Count > 0)
+            {
+
+                ExcelHelper.Export(tableData, "宜宾市叙州区医疗保险一般诊疗费月汇总表", filePath);
+                FileStream stream = new FileStream(filePath, FileMode.Open);
+
+                response.Content = new StreamContent(stream);
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+                {
+                    FileName = HttpUtility.UrlEncode(fileName)
+                };
+                response.Headers.Add("Access-Control-Expose-Headers", "FileName");
+                response.Headers.Add("FileName", HttpUtility.UrlEncode(fileName));
+            }
+
+
+            return response;
+
+        }
+        /// <summary>
+        /// 门诊居民月报表导出
+        /// </summary>
+        [HttpGet]
+        public HttpResponseMessage MedicalExpenseYearExcel([FromUri] MedicalExpenseYearReportParam param)
+        {
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+         
+          
+            string fileName = param.OrganizationName+"年汇总.xls";
+
+            string filePath = HttpContext.Current.Server.MapPath("~/") + "FileExcel\\" + fileName;
+            if (System.IO.File.Exists(filePath))
+            {
+
+                System.IO.File.Delete(filePath);//删除文件夹以及文件夹中的子目录，文件   
+            }
+            var tableData = _hisSqlRepository.MedicalExpenseYearExcel(param);
+
+            if (tableData.Rows.Count > 0)
+            {
+
+                ExcelHelper.Export(tableData, "宜宾市叙州区医疗保险一般诊疗费年汇总表", filePath);
+                FileStream stream = new FileStream(filePath, FileMode.Open);
+
+                response.Content = new StreamContent(stream);
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+                {
+                    FileName = HttpUtility.UrlEncode(fileName)
+                };
+                response.Headers.Add("Access-Control-Expose-Headers", "FileName");
+                response.Headers.Add("FileName", HttpUtility.UrlEncode(fileName));
+            }
+
+
+            return response;
+
+        }
+        /// <summary>
         /// 门诊居民报账查询
         /// </summary>
         /// <param name="param"></param>
@@ -2237,6 +2323,36 @@ namespace NFine.Web.Controllers
                 };
                 y.Data = data;
              
+
+            });
+        }
+        /// <summary>
+        /// 门诊居民报账月统计
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public ApiJsonResultData QueryMedicalExpenseMonthReport([FromUri]QueryMedicalExpenseMonthReportUiParam param)
+        {
+            return new ApiJsonResultData(ModelState, new MedicalExpenseReportDto()).RunWithTry(y =>
+            {
+                var userBase = _webServiceBasicService.GetUserBaseInfo(param.UserId);
+                var queryData = _hisSqlRepository.MedicalExpenseMonthReport(new MedicalExpenseMonthReportParam()
+                {
+                   
+                    OrganizationCode = userBase.OrganizationCode,
+                    Page = param.Page,
+                    rows = param.Limit,
+                    Date = param.MonthDate
+                });
+
+                var data = new
+                {
+                    data = queryData.Values.FirstOrDefault(),
+                    count = queryData.Keys.FirstOrDefault()
+                };
+                y.Data = data;
+
 
             });
         }

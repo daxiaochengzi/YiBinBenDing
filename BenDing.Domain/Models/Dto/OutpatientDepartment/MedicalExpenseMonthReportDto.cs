@@ -8,13 +8,13 @@ namespace BenDing.Domain.Models.Dto.OutpatientDepartment
 {
   public  class MedicalExpenseMonthReportDto
     {  /// <summary>
-    /// 天
+    /// 日期
     /// </summary>
         public string Day { get; set; }
         /// <summary>
-        /// 次数
+        /// 一般诊疗费人次
         /// </summary>
-        public  int Frequency { get; set; }
+        public int Frequency { get; set; }
         /// <summary>
         /// 门诊费用
         /// </summary>
@@ -23,5 +23,9 @@ namespace BenDing.Domain.Models.Dto.OutpatientDepartment
         /// 报销合计
         /// </summary>
         public decimal ReimbursementExpensesAmount { get; set; }
+        /// <summary>
+        /// 机构名称
+        /// </summary>
+        public  string OrganizationName { get; set; }
     }
 }

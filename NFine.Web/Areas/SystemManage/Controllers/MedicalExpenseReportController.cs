@@ -51,10 +51,23 @@ namespace NFine.Web.Areas.SystemManage.Controllers
         /// <returns></returns>
         [HttpGet]
         [HandlerAuthorize]
-        //重载
+    
         public  ActionResult MedicalExpenseMonthReport()
         {
-        
+            ViewBag.startTime = DateTime.Now.ToString("yyyy-MM");
+
+            return View();
+        }
+        /// <summary>
+        /// 门诊居民年报表
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+      
+
+        public ActionResult MedicalExpenseYearReport()
+        {
+            ViewBag.startTime = DateTime.Now.ToString("yyyy");
 
             return View();
         }
@@ -82,6 +95,27 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             }
 
             var patientInfo = _hisSqlRepository.MedicalExpenseReport(pagination);
+            pagination.records = patientInfo.Keys.FirstOrDefault();
+            var data = new
+            {
+                rows = patientInfo.Values.FirstOrDefault(),
+                total = pagination.total,
+                page = pagination.Page,
+                records = pagination.records
+            };
+            return Content(data.ToJson());
+        }
+        /// <summary>
+        /// 门诊月统计
+        /// </summary>
+        /// <param name="pagination"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetGridYearJson(MedicalExpenseYearReportParam pagination)
+        {
+
+
+            var patientInfo = _hisSqlRepository.MedicalExpenseYearReport(pagination);
             pagination.records = patientInfo.Keys.FirstOrDefault();
             var data = new
             {

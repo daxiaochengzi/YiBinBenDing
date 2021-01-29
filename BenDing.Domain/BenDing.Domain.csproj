@@ -88,9 +88,12 @@
     <Compile Include="Models\Dto\JsonEntity\WorkerBirthPreSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\JsonEntity\WorkerHospitalizationPreSettlementJsonDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\GetOutpatientSettlementCancelDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\MedicalExpenseMonthExcelDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\MedicalExpenseMonthReportDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\MedicalExpenseReportDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\MedicalExpenseReportExcelDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\MedicalExpenseYearExcelDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\MedicalExpenseYearReportDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\NationEcTransDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\OutpatientPairCodeQueryDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\QueryHospitalizationFeeNewDto.cs" />
@@ -113,6 +116,7 @@
     <Compile Include="Models\Params\OutpatientDepartment\GetResidentOutpatientSettlementParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\MedicalExpenseMonthReportParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\MedicalExpenseReportParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\MedicalExpenseYearReportParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\MonthlyHospitalizationCancelParam.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\MonthlyHospitalizationDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\OutpatientCostReturnDataDto.cs" />
@@ -315,6 +319,7 @@
     <Compile Include="Models\Params\UI\QueryCatalogUiParam.cs" />
     <Compile Include="Models\Params\UI\QueryHospitalizationFeeUiParam.cs" />
     <Compile Include="Models\Params\UI\QueryHospitalizationPresettlementUiParam.cs" />
+    <Compile Include="Models\Params\UI\QueryMedicalExpenseMonthReportUiParam.cs" />
     <Compile Include="Models\Params\UI\QueryMedicalExpenseReportUiParam.cs" />
     <Compile Include="Models\Params\UI\QueryMedicalInsuranceUiParam.cs" />
     <Compile Include="Models\Params\UI\QueryOutpatientDepartmentCostUiParam.cs" />
