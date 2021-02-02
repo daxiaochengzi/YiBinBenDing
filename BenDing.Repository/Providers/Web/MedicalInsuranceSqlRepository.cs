@@ -263,7 +263,7 @@ namespace BenDing.Repository.Providers.Web
                     sqlConnection.Open();
                     string querySql = @"
                              select [Id],[ProjectCode],[ProjectName],[ProjectCodeType],Unit,MnemonicCode,Formulation,ProjectLevel,
-                             Manufacturer,QuasiFontSize,Specification,Remark,NewCodeMark,NewUpdateTime,[StartTime],[EndTime] from [dbo].[MedicalInsuranceProject] 
+                             Manufacturer,QuasiFontSize,Specification,Remark,NewCodeMark,NewUpdateTime,CreateTime,[StartTime],[EndTime] from [dbo].[MedicalInsuranceProject] 
                              where  IsDelete=0 and EffectiveSign=1";
                     string countSql = @"select count(*) from [dbo].[MedicalInsuranceProject] where  IsDelete=0  and EffectiveSign=1";
                     string whereSql = "";
@@ -333,6 +333,7 @@ namespace BenDing.Repository.Providers.Web
                                     RestrictionSign = t.RestrictionSign,
                                     LimitPaymentScope = t.LimitPaymentScope,
                                     Unit = t.Unit,
+                                    CreateTime=t.CreateTime,
                                     EndTime = t.EndTime,
                                     StartTime = t.StartTime
                                         

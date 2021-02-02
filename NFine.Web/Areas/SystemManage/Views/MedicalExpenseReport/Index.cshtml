@@ -10,7 +10,7 @@
     $(function () {
         initControl();
         gridList();
-        reportExcelIni();
+     
       
     });
     function initControl() {
@@ -81,7 +81,7 @@
             viewrecords: true
         });
         $("#btn_search").click(function () {
-            reportExcelIni();
+          
             $gridList.jqGrid('setGridParam',
                 {
                     postData:
@@ -95,6 +95,16 @@
                     }
                 }).trigger('reloadGrid');
 
+        });
+        $("#btn_MedicalExpenseReport").click(function () {
+            var url = "/api/BenDing/MedicalExpenseReport?";
+            url += "UserId=" + $("#UserId").val();
+            url += "&StartTime=" + $("#startTime").val();
+            url += "&EndTime=" + $("#endTime").val();
+            url += "&PatientName=" + $("#txt_PatientName").val();
+            url += "&IdCardNo=" + $("#txt_IdCardNo").val();
+            url += "&OrganizationCode=" + $("#OrganizeSelect").val();
+            window.location.href = url; 
         });
     }
 
@@ -110,21 +120,7 @@
             btn: null
         });
     }
-    //导出链接初始化
-    function reportExcelIni() {
-        
-        var url = "/api/BenDing/MedicalExpenseReport?";
-        url += "UserId=" + $("#UserId").val();
-        url += "&StartTime=" + $("#startTime").val();
-        url += "&EndTime=" + $("#endTime").val();
-        url += "&PatientName=" + $("#txt_PatientName").val();
-        url += "&IdCardNo=" + $("#txt_IdCardNo").val();
-        url += "&OrganizationCode=" + $("#OrganizeSelect").val();
    
-        $('#btn_MedicalExpenseReport').attr('href', url);
-        
-    }
-
 
 </script>
 <div class="topPanel">
@@ -166,7 +162,7 @@
             <a class="btn btn-primary" id="btn_search">查询</a>
         </div>
         <div class="btn-group" style="margin-left: 5px;">
-            <a class="btn btn-primary" id="btn_MedicalExpenseReport" href="/api/BenDing/MedicalExpenseReport">导出</a>
+            <a class="btn btn-primary" id="btn_MedicalExpenseReport">导出</a>
         </div>
         <div class="operate">
         <ul class="nav nav-pills">

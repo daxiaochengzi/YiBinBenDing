@@ -50,6 +50,10 @@ namespace BenDing.Domain.Models.Dto.Web
         /// 
         /// </summary>
         public string PairCodeTime { get; set; }
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime? CreateTime { get; set; }
         //是医保
         public  int IsMedicalInsurance { get; set; }
     }

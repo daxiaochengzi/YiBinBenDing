@@ -48,6 +48,14 @@ namespace BenDing.Domain.Xml
         {
             return ConfigurationManager.AppSettings[key].ToString().Trim();
         }
+        /// <summary>
+        /// 获取天数
+        /// </summary>
+        /// <returns></returns>
+        public static string GetDays()
+        {
+            return GetValue("ReportDay");
+        }
         //入参字符串为空则为0
         public static string getNum(string num)
         {

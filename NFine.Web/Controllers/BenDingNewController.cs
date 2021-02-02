@@ -1527,6 +1527,10 @@ namespace NFine.Web.Controllers
                 string sql = $@" update HospitalizationFee set UpdateUserId='{param.UserId}',UpdateTime=GETDATE(),UploadMark=0 
                                where HospitalizationId='{param.BusinessId}' and IsDelete=0";
                 _hisSqlRepository.ExecuteSql(sql);
+                //更新医保状态
+                string sqlMedicalInsurance = $@"update MedicalInsurance set IsDelete=1
+                               where BusinessId='{param.BusinessId}' and  MedicalInsuranceState <6   and IsDelete=0";
+                _hisSqlRepository.ExecuteSql(sqlMedicalInsurance);
             });
         }
         /// <summary>

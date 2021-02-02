@@ -113,6 +113,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BenDing.Domain\BenDing.Domain.csproj">
+      <Project>{4941FBD9-9C5C-46CE-93B4-A41BBBF09622}</Project>
+      <Name>BenDing.Domain</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

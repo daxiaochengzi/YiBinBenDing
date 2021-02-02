@@ -128,9 +128,13 @@ namespace BenDing.Domain.Models.Dto.Resident
      
         public string NewCodeMark { get; set; }
         /// <summary>
+        /// 更新时间
+        /// </summary>
+        public  DateTime? CreateTime { get; set; }
+        /// <summary>
         /// 最近一次变更日期
         /// </summary>
-      
+
         public string NewUpdateTime { get; set; }
         /// <summary>
         /// 开始时间

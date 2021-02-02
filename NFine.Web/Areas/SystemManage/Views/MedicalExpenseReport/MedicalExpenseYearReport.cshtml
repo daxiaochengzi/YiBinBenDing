@@ -9,7 +9,7 @@
     $(function () {
         initControl();
         gridList();
-        reportExcelIni();
+        
 
     });
     function initControl() {
@@ -55,19 +55,18 @@
                 }).trigger('reloadGrid');
 
         });
-    }
-
-
-    //导出链接初始化
-    function reportExcelIni() {
-
-        var url = "/api/BenDing/MedicalExpenseYearExcel?";
-        url += "&Date=" + $("#startTime").val();
-        url += "&OrganizationCode=" + $("#OrganizeSelect").val();
-        url += "&OrganizationName=" + $("#OrganizeSelect").text();
-        $('#btn_YearExcel').attr('href', url);
+        $("#btn_YearExcel").click(function () {
+         //$("#OrganizeSelect").find("option:selected").text()
+            var url = "/api/BenDing/MedicalExpenseYearExcel?";
+            url += "&Date=" + $("#startTime").val();
+            url += "&OrganizationCode=" + $("#OrganizeSelect").val();
+            url += "&OrganizationName=" + $("#OrganizeSelect").find("option:selected").text();
+            window.location.href = url; 
+        });
 
     }
+    
+
 
 
 </script>
@@ -93,7 +92,7 @@
             <a class="btn btn-primary" id="btn_search">查询</a>
         </div>
         <div class="btn-group" style="margin-left: 5px;">
-                <a class="btn btn-primary" id="btn_YearExcel" href="/api/BenDing/MedicalExpenseYearExcel">导出</a>
+                <a class="btn btn-primary" id="btn_YearExcel" >导出</a>
             </div>
 
     </div>

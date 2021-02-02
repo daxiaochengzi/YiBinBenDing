@@ -97,6 +97,7 @@
     <Compile Include="Models\Dto\OutpatientDepartment\NationEcTransDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\OutpatientPairCodeQueryDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\QueryHospitalizationFeeNewDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\ReportParametersDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\ResidentOutpatientPreSettlementXmlDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\WorkerBirthSettlementDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\WorkerHospitalSettlementCardBackDataDto.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="Models\Entitys\HospitalLog.cs" />
     <Compile Include="Models\Entitys\ICD10PairCode.cs" />
     <Compile Include="Models\Entitys\OutpatientExclusion.cs" />
+    <Compile Include="Models\Enums\ReportEnum.cs" />
     <Compile Include="Models\Params\Base\PaginationWebParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\GetOutpatientSettlementNoParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\GetResidentOutpatientSettlementParam.cs" />

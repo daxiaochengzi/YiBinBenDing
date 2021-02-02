@@ -32,6 +32,9 @@ namespace BenDing.Domain.Models.Dto.OutpatientDepartment
         /// 金额
         /// </summary>
         public decimal Amount { get; set; }
-
+        /// <summary>
+        /// 不传标记
+        /// </summary>
+        public int? NotUploadMark { get; set; }
     }
 }

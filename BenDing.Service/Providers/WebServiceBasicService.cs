@@ -407,7 +407,7 @@ namespace BenDing.Service.Providers
         /// </summary>
         public Dictionary<int, List<OutpatientPairCodeQueryDto>> OutpatientPairCodeQuery(OutpatientPairCodeUiParam param)
         {
-           var dataList=new  List<OutpatientPairCodeQueryDto>();
+            var dataList=new  List<OutpatientPairCodeQueryDto>();
             var dataListNew = new List<OutpatientPairCodeQueryDto>();
             var resultData = new Dictionary<int, List<OutpatientPairCodeQueryDto>>();
             var baseUser = GetUserBaseInfo(param.UserId);
@@ -419,8 +419,9 @@ namespace BenDing.Service.Providers
                 BusinessId = param.BusinessId,
                 IsSave = false
             });
-            var detailDataNew = detailData.Where(c => c.NotUploadMark ==0).ToList();
-            
+            var detailDataNew = detailData; //detailData.Where(c => c.NotUploadMark ==0).ToList();
+
+
             var pairCodeData =
                 _medicalInsuranceSqlRepository.QueryMedicalInsurancePairCode(new QueryMedicalInsurancePairCodeParam()
                 {
@@ -439,7 +440,8 @@ namespace BenDing.Service.Providers
                         DirectoryCode = item.DirectoryCode,
                         Specification = item.Specification,
                         Amount = item.Amount,
-                        PairCodeState = pairCodeValue!=null? 1:0
+                        PairCodeState = pairCodeValue!=null? 1:0,
+                        NotUploadMark = item.NotUploadMark
                     };
                     dataList.Add(itemData); 
 

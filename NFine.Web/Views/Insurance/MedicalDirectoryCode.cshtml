@@ -250,7 +250,8 @@
                  
                     <div class="layui-inline">
                         <button class="layui-btn" lay-submit="" id="MedicalExpenseMonthReportQuery">查询</button>
-                        <a class="layui-btn" id="btn_MedicalMonthReport" href="/api/BenDing/MedicalExpenseMonthExcel">导出</a>
+                        <button class="layui-btn"  id="btn_MedicalMonthReport">导出</button>
+                       
                     </div>
                 </div>
 
@@ -445,9 +446,10 @@
                             , { field: 'Specification', title: '规格', width: 100 },
                             { field: 'Formulation', title: '剂型', width: 160 },
                             { field: 'RestrictionSign', title: '限制用药标志', width: 100 },
-                            { field: 'Manufacturer', title: '生产厂家', width: 300, sort: true },
+                            { field: 'Manufacturer', title: '生产厂家', width: 300 },
                             { field: 'NewCodeMark', title: '新码标志', width: 100 },
                             { field: 'LimitPaymentScope', title: '限制支付范围', width: 100 },
+                            { field: 'CreateTime', title: '更新时间', width: 160 },
                             { field: 'StartTime', title: '开始时间', width: 160 },
                             { field: 'EndTime', title: '结束时间', width: 160 }
                             //, { field: 'NewUpdateTime', title: '变更日期', width: 160 }
@@ -512,22 +514,8 @@
                     //,skin: 'line'
                 });
             }
-            //导出链接初始化
-            function reportExcelIni() {
-     
-                var url = "/api/BenDing/MedicalExpenseReport?";
-                url += "UserId=" + $("#empid").val();
-                url += "&StartTime=" + $("#StartTime").val();
-                url += "&EndTime=" + $("#EndTime").val();
-                url += "&PatientName=" + $("#PatientName").val();
-                url += "&IdCardNo=" + $("#IdCardNo").val();
-                $('#btn_MedicalReport').attr('href', url);
-                var urlMonth = "/api/BenDing/MedicalExpenseMonthExcel?";
-                urlMonth += "UserId=" + $("#empid").val();
-                urlMonth += "&Date=" + $("#MonthDate").val();
-                $('#btn_MedicalMonthReport').attr('href', urlMonth);
-            }
-            reportExcelIni();
+         
+         
          
             function pairCodeDataModelTable() {
                 var directoryName = replaceValueChar($("#pairCodeProjectName").val());
@@ -712,11 +700,30 @@
 
                 outpatientExclusionTable();
             });
-          
+            //导出
+            $('#btn_MedicalReport').on('click', function () {
+                var url = "/api/BenDing/MedicalExpenseReport?";
+                url += "UserId=" + $("#empid").val();
+                url += "&StartTime=" + $("#StartTime").val();
+                url += "&EndTime=" + $("#EndTime").val();
+                url += "&PatientName=" + $("#PatientName").val();
+                url += "&IdCardNo=" + $("#IdCardNo").val();
+                $('#btn_MedicalReport').attr('href', url);
+               
+            });
+            //导出
+            $('#btn_MedicalMonthReport').on('click', function () {
+                var urlMonth = "/api/BenDing/MedicalExpenseMonthExcel?";
+                urlMonth += "UserId=" + $("#empid").val();
+                urlMonth += "&Date=" + $("#MonthDate").val();
+                window.location.href = urlMonth;  
+               
+            });
+            
             $('#MedicalExpenseReportQuery').on('click',
                 function() {
                     medicalExpenseReportTable();
-                    reportExcelIni();
+                 
                 });
             $('#MedicalExpenseMonthReportQuery').on('click',
                 function() {

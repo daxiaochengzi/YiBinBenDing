@@ -2104,7 +2104,7 @@ namespace NFine.Web.Controllers
             if (tableData.Rows.Count > 0)
             {
               
-                ExcelHelper.Export(tableData, "医保对码表单", filePath);
+                ExcelHelper.Export(tableData, "医保对码表单", filePath, new List<ReportParametersDto>(), ReportEnum.默认);
                 FileStream stream = new FileStream(filePath, FileMode.Open);
 
                 response.Content = new StreamContent(stream);
@@ -2173,7 +2173,7 @@ namespace NFine.Web.Controllers
             if (tableData.Rows.Count > 0)
             {
 
-                ExcelHelper.Export(tableData, "门诊居民报账", filePath);
+                ExcelHelper.Export(tableData, "门诊居民报账", filePath, new List<ReportParametersDto>(), ReportEnum.默认);
                 FileStream stream = new FileStream(filePath, FileMode.Open);
 
                 response.Content = new StreamContent(stream);
@@ -2220,8 +2220,18 @@ namespace NFine.Web.Controllers
 
             if (tableData.Rows.Count > 0)
             {
-
-                ExcelHelper.Export(tableData, "宜宾市叙州区医疗保险一般诊疗费月汇总表", filePath);
+                var reportParam = new List<ReportParametersDto>();
+                reportParam.Add(new ReportParametersDto()
+                {
+                    Key = "医院",
+                    Value = param.OrganizationName
+                });
+                reportParam.Add(new ReportParametersDto()
+                {
+                    Key = "汇总月份",
+                    Value = param.Date
+                });
+                ExcelHelper.Export(tableData, "宜宾市叙州区医疗保险一般诊疗费月汇总表", filePath, reportParam, ReportEnum.门诊居民月统计);
                 FileStream stream = new FileStream(filePath, FileMode.Open);
 
                 response.Content = new StreamContent(stream);
@@ -2260,7 +2270,7 @@ namespace NFine.Web.Controllers
             if (tableData.Rows.Count > 0)
             {
 
-                ExcelHelper.Export(tableData, "宜宾市叙州区医疗保险一般诊疗费年汇总表", filePath);
+                ExcelHelper.Export(tableData, "宜宾市叙州区医疗保险一般诊疗费年汇总表", filePath, new List<ReportParametersDto>(), ReportEnum.默认);
                 FileStream stream = new FileStream(filePath, FileMode.Open);
 
                 response.Content = new StreamContent(stream);

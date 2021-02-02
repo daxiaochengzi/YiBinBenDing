@@ -508,7 +508,7 @@ namespace BenDing.Repository.Providers.Web
                 {
                     sqlConnection.Open();
                     string querySql = $@"
-                             select  [id],[DiseaseCoding],[DiseaseName] ,[MnemonicCode],[Remark] ,DiseaseId from [dbo].[ICD10]  where IsDelete=0 and IsMedicalInsurance={param.IsMedicalInsurance}";
+                             select  [id],[DiseaseCoding],[DiseaseName] ,[MnemonicCode],[Remark] ,[CreateTime],DiseaseId from [dbo].[ICD10]  where IsDelete=0 and IsMedicalInsurance={param.IsMedicalInsurance}";
                     string countSql = $@"select  count(*) from [dbo].[ICD10]  where IsDelete=0  and IsMedicalInsurance={param.IsMedicalInsurance}";
 
                     string regexstr = @"[\u4e00-\u9fa5]";
@@ -2038,11 +2038,14 @@ namespace BenDing.Repository.Providers.Web
         {
             var param = paramNew.OrderBy(c => c.VisitDate).ToList();
             var resultData = new List<MedicalExpenseReportDto>();
+           var getDays= CommonHelp.GetDays();
+           if (getDays==null) throw  new Exception("获取报表配置天数失败!!!");
+
 
             foreach (var item in param)
             {//
                 var startTime = Convert.ToDateTime(item.VisitDate.ToString("yyyy-MM-dd") + " 00:00:00.000");
-                var startEnd = Convert.ToDateTime(item.VisitDate.AddDays(3).ToString("yyyy-MM-dd") + " 23:59:59.000");
+                var startEnd = Convert.ToDateTime(item.VisitDate.AddDays(Convert.ToInt16(getDays)).ToString("yyyy-MM-dd") + " 23:59:59.000");
                // var lastDayOfMonth = LastDayOfMonth(item.VisitDate);
                 var idList = resultData.Select(d => d.Id).ToList();
                 var itemValueList = param.Where(c =>

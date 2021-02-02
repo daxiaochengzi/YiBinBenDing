@@ -11,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BenDing.Domain.Models.Dto.OutpatientDepartment;
+using BenDing.Domain.Models.Enums;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
@@ -121,10 +123,12 @@ namespace NFine.Code
         /// </summary>  
         /// <param name="dtSource">源DataTable</param>  
         /// <param name="strHeaderText">表头文本</param>  
-        /// <param name="strFileName">保存位置</param>  
-        public static void Export(DataTable dtSource, string strHeaderText, string strFileName)
+        /// <param name="strFileName">保存位置</param>
+        /// <param name="paramList">参数列表</param>  
+        /// <param name="reportEnum">报表类型</param>  
+        public static void Export(DataTable dtSource, string strHeaderText, string strFileName,List<ReportParametersDto> paramList, ReportEnum reportEnum)
         {
-            using (MemoryStream ms = Export(dtSource, strHeaderText))
+            using (MemoryStream ms = Export(dtSource, strHeaderText,paramList,  reportEnum))
             {
                 using (FileStream fs = new FileStream(strFileName, FileMode.Create, FileAccess.Write))
                 {
@@ -140,7 +144,7 @@ namespace NFine.Code
         /// </summary>  
         /// <param name="dtSource">源DataTable</param>  
         /// <param name="strHeaderText">表头文本</param>  
-        public static MemoryStream Export(DataTable dtSource, string strHeaderText)
+        public static MemoryStream Export(DataTable dtSource, string strHeaderText, List<ReportParametersDto> paramList, ReportEnum reportEnum)
         {
             HSSFWorkbook workbook = new HSSFWorkbook();
             ISheet sheet = workbook.CreateSheet();
@@ -187,25 +191,50 @@ namespace NFine.Code
                         IRow headerRow = sheet.CreateRow(0);
                         headerRow.HeightInPoints = 25;
                         headerRow.CreateCell(0).SetCellValue(strHeaderText);//第一列表头名称
-
                         ICellStyle headStyle = workbook.CreateCellStyle();
                         headStyle.Alignment = HorizontalAlignment.Center;
                         IFont font = workbook.CreateFont();
                         font.FontHeightInPoints = 20;
                         font.Boldweight = 700;
                         headStyle.SetFont(font);
-
                         headerRow.GetCell(0).CellStyle = headStyle;
 
                         sheet.AddMergedRegion(new CellRangeAddress(0, 0, 0, dtSource.Columns.Count - 1));
+                        if (reportEnum == ReportEnum.门诊居民月统计 && paramList.Any())
+                        {
+
+                            var hospilalName = paramList.FirstOrDefault(c => c.Key == "医院");
+                            var timeMonth = paramList.FirstOrDefault(c => c.Key == "汇总月份");
+                            IRow headerRowNew = sheet.CreateRow(1);
+                         
+                            headerRowNew.CreateCell(0).SetCellValue("医院:"+ hospilalName.Value);
+                            headerRowNew.CreateCell(2).SetCellValue("汇总月份:" + timeMonth.Value);
+                            headerRowNew.CreateCell(3).SetCellValue("单位：元");
+                            ICellStyle headStyleNew = workbook.CreateCellStyle();
+                            headStyleNew.Alignment = HorizontalAlignment.Left;
+                            IFont fontNew = workbook.CreateFont();
+                            fontNew.FontHeightInPoints = 10;
+                            fontNew.Boldweight = 700;
+                            headStyleNew.SetFont(fontNew);
+                            headerRowNew.GetCell(0).CellStyle = headStyleNew;
+                            headerRowNew.GetCell(2).CellStyle = headStyleNew;
+                            headerRowNew.GetCell(3).CellStyle = headStyleNew;
+                            sheet.AddMergedRegion(new CellRangeAddress(1, 1, 0, 1));
+
+                        }
+
+
                     }
                     #endregion
 
 
                     #region 列头及样式
+
                     {
-                        //也可自定义标题名称，填写到 headerRow.CreateCell(1).SetCellValue();需使用directory<string,string>先填写标题，然后遍历操作中即可
-                        IRow headerRow = sheet.CreateRow(1);
+                        int rowIndexNew = 1;
+                        if (reportEnum == ReportEnum.门诊居民月统计) rowIndexNew = 2;
+                             //也可自定义标题名称，填写到 headerRow.CreateCell(1).SetCellValue();需使用directory<string,string>先填写标题，然后遍历操作中即可
+                        IRow headerRow = sheet.CreateRow(rowIndexNew);
                         ICellStyle headStyle = workbook.CreateCellStyle();
                         headStyle.Alignment = HorizontalAlignment.Center;
                         IFont font = workbook.CreateFont();
@@ -226,7 +255,10 @@ namespace NFine.Code
                     }
                     #endregion
 
-                    rowIndex = 2;
+                    rowIndex = reportEnum == ReportEnum.门诊居民月统计 ? 3 : 2;
+
+                  
+                      
                 }
                 #endregion
 
