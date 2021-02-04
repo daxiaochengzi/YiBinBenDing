@@ -361,7 +361,7 @@
                     msgError("胎儿数必须大于0!!!");
                     return false;
                 }
-
+                settlementParam["timestamp"] = (new Date()).valueOf();
                 settlementParam["MedicalCategory"] = $("#MedicalCategory").val();
                 settlementParam["FetusNumber"] = fetusNumber;
                 settlementParam["AccountPayment"] = $("#AccountPayment").val();
@@ -475,6 +475,7 @@
         }
      
         $('#Settlement').on('click', function () {
+            buttonStatus("Settlement", false);
             getHospitalizationSettlementParam();
            
         });

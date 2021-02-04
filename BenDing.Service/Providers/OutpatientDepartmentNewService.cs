@@ -683,17 +683,7 @@ namespace BenDing.Service.Providers
             var resultData = new NationEcTransParam();
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
             userBase.TransKey = param.TransKey;
-
-            var outpatientParam = new GetOutpatientPersonParam()
-            {
-                User = userBase,
-                UiParam = param,
-                //IsSave = true,
-                Id = Guid.NewGuid(),
-            };
-            var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
-            if (outpatientPerson == null) throw new Exception("his中未获取到当前病人!!!");
-            var outpatientDetailPerson = _serviceBasicService.GetOutpatientDetailPerson(new OutpatientDetailParam()
+            var outpatientDetail = _serviceBasicService.OutpatientMedicalInsuranceInput(new OutpatientDetailParam()
             {
                 User = userBase,
                 BusinessId = param.BusinessId,
@@ -716,13 +706,8 @@ namespace BenDing.Service.Providers
             var rowDataList = new List<NationEcTransRow>();
           
             resultData.DownAccountType = "1";
-            //resultData.Remark = param.Remark;
-            //decimal downAccountAmount = 0;
-            //if (!string.IsNullOrWhiteSpace(param.DownAccountAmount))
-            //{
-            //    downAccountAmount = Convert.ToDecimal(param.DownAccountAmount);
-            //}
-            resultData.DownAccountAmount =CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost);
+            var outpatientDetailPerson = outpatientDetail.DetailList;
+           
             //升序
             var dataSort = outpatientDetailPerson.OrderBy(c => c.BillTime).ToArray();
             int num = 0;
@@ -737,7 +722,7 @@ namespace BenDing.Service.Providers
                         ProjectCode = item.MedicalInsuranceProjectCode,
                         UnitPrice = item.UnitPrice,
                         Quantity = item.Quantity,
-                        TotalAmount =CommonHelp.ValueToDouble(item.Amount) ,
+                        TotalAmount = item.UnitPrice * item.Quantity,
                         DirectoryName = item.DirectoryName,
                         DirectoryCode =CommonHelp.GuidToStr(item.DirectoryCode),
 
@@ -746,11 +731,14 @@ namespace BenDing.Service.Providers
                     rowDataList.Add(row);
                     num++;
                 }
-
-
             }
-            resultData.Nums = rowDataList.Count();
-            resultData.RowDataList = rowDataList;
+            //门诊调差
+            var rowDataListNew = OutpatientNationEcTransAdjustment(rowDataList, outpatientDetail.NewTotalCost, CommonHelp.ValueToDouble(outpatientDetail.OldTotalCost));
+            resultData.DownAccountAmount = CommonHelp.ValueToDouble(rowDataListNew.Sum(d=>d.TotalAmount));
+            resultData.RowDataList = rowDataListNew;
+            resultData.Nums = rowDataListNew.Count();
+
+            resultData.RowDataList = rowDataListNew;
             return XmlSerializeHelper.HisXmlSerialize(resultData) ;
         }
         /// <summary>
@@ -881,13 +869,15 @@ namespace BenDing.Service.Providers
             };
             var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
             if (outpatientPerson == null) throw new Exception("his中未获取到当前病人!!!");
-            var outpatientDetailPerson = _serviceBasicService.GetOutpatientDetailPerson(new OutpatientDetailParam()
+         
+            var outpatientDetail = _serviceBasicService.OutpatientMedicalInsuranceInput(new OutpatientDetailParam()
             {
                 User = userBase,
                 BusinessId = param.BusinessId,
                 //IsSave = true,
                 NotUploadMark = 1
             });
+            var outpatientDetailPerson = outpatientDetail.DetailList;
             var saveData = new MedicalInsuranceDto
             {
                 AdmissionInfoJson = JsonConvert.SerializeObject(param),
@@ -922,25 +912,20 @@ namespace BenDing.Service.Providers
                             ProjectCode = item.MedicalInsuranceProjectCode,
                             UnitPrice = item.UnitPrice,
                             Quantity = item.Quantity,
-                            TotalAmount = CommonHelp.ValueToDouble(item.Amount),
+                            TotalAmount = item.UnitPrice * item.Quantity,
                             DirectoryName = item.DirectoryName,
 
                         };
-
                         rowDataList.Add(row);
                         num++;
                     }
                 }
-
-              
-
-
             }
-            resultData.Num = rowDataList.Count();
+            
             resultData.IdCardNo = outpatientPerson.IdCardNo;
             resultData.PatientName = outpatientPerson.PatientName;
             resultData.VisitDate = Convert.ToDateTime(outpatientPerson.VisitDate).ToString("yyyyMMddHHmmss");
-            resultData.RowDataList = rowDataList;
+         
             
             resultData.SerialNumber = CommonHelp.GuidToStr(id.ToString());//取消结算后重新结算流水号不能重复
             //var diagnosisData = outpatientPerson.DiagnosisList.FirstOrDefault(c => c.IsMainDiagnosis == "是");
@@ -949,9 +934,14 @@ namespace BenDing.Service.Providers
             if (!string.IsNullOrWhiteSpace(diagnosisData.ProjectCode) == false) throw new Exception("诊断:" + diagnosisData.DiseaseName + "未医保对码!!!");
             resultData.DiagnosisIcd10 = diagnosisData.ProjectCode;
             resultData.DiagnosisName = diagnosisData.DiseaseName;
-            resultData.TotalAmount = CommonHelp.ValueToDouble(rowDataList.Select(d=>d.TotalAmount).Sum()); 
+            //门诊调差
+           var rowDataListNew= OutpatientAdjustment(rowDataList, outpatientDetail.NewTotalCost, CommonHelp.ValueToDouble(outpatientDetail.OldTotalCost));
+            resultData.RowDataList = rowDataListNew;
+            resultData.Num = rowDataListNew.Count();
+            resultData.TotalAmount = CommonHelp.ValueToDouble(rowDataListNew.Select(d=>d.TotalAmount).Sum());
             return XmlSerializeHelper.HisXmlSerialize(resultData);
         }
+       
         ///// <summary>
         ///// 检查当前病人是否已经结算
         ///// </summary>
@@ -1093,26 +1083,22 @@ namespace BenDing.Service.Providers
             userBase.TransKey = param.TransKey;
         
             var id = Guid.NewGuid();
-            var outpatientParam = new GetOutpatientPersonParam()
-            {
-                User = userBase,
-                UiParam = param,
-                //IsSave = true,
-                Id = id,
-            };
+    
             //报销类别
             var reimbursementType = "2";
             //如果卡号不为空测为刷卡报销
             if (!string.IsNullOrWhiteSpace(param.InsuranceNo)) reimbursementType = "1";
-            var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
-            if (outpatientPerson == null) throw new Exception("his中未获取到当前病人!!!");
-            var outpatientDetailPerson = _serviceBasicService.GetOutpatientDetailPerson(new OutpatientDetailParam()
+            //var outpatientPerson = _serviceBasicService.GetOutpatientPerson(outpatientParam);
+            //if (outpatientPerson == null) throw new Exception("his中未获取到当前病人!!!");
+            var outpatientDetail = _serviceBasicService.OutpatientMedicalInsuranceInput(new OutpatientDetailParam()
             {
                 User = userBase,
                 BusinessId = param.BusinessId,
                 //IsSave = true,
                 NotUploadMark = 1
             });
+            var outpatientPerson = outpatientDetail.BaseOutpatient;
+            var outpatientDetailPerson = outpatientDetail.DetailList;
             var saveData = new MedicalInsuranceDto
             {
                 AdmissionInfoJson = JsonConvert.SerializeObject(param),
@@ -1146,7 +1132,7 @@ namespace BenDing.Service.Providers
                             ProjectCode = item.MedicalInsuranceProjectCode,
                             UnitPrice = item.UnitPrice,
                             Quantity = item.Quantity,
-                            TotalAmount = CommonHelp.ValueToDouble(item.Amount),
+                            TotalAmount = item.UnitPrice * item.Quantity,
                             DirectoryName = item.DirectoryName,
 
                         };
@@ -1157,7 +1143,6 @@ namespace BenDing.Service.Providers
                 }
 
             }
-            resultData.Num = rowDataList.Count();
             resultData.IdentityMark = outpatientPerson.IdCardNo;
             resultData.PatientName = outpatientPerson.PatientName;
             resultData.VisitDate = Convert.ToDateTime(outpatientPerson.VisitDate).ToString("yyyyMMddHHmmss");
@@ -1172,23 +1157,35 @@ namespace BenDing.Service.Providers
             resultData.Pwd =param.Pwd;
             resultData.ReimbursementType = reimbursementType;
             resultData.InsuranceNo = param.InsuranceNo;
-            resultData.TotalAmount = CommonHelp.ValueToDouble(rowDataList.Select(d=>d.TotalAmount).Sum());
+            //门诊调差
+            var rowDataListNew = OutpatientPreSettlementAdjustment(rowDataList, outpatientDetail.NewTotalCost, CommonHelp.ValueToDouble(outpatientDetail.OldTotalCost));
+            resultData.RowDataList = rowDataListNew;
+            resultData.Num = rowDataListNew.Count();
+            resultData.TotalAmount = CommonHelp.ValueToDouble(rowDataListNew.Select(d => d.TotalAmount).Sum());
             return XmlSerializeHelper.HisXmlSerialize(resultData);
         }
+       
         /// <summary>
         /// 门诊居民预结算
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
         public OutpatientNationEcTransResidentBackDto ResidentOutpatientPreSettlement(GetResidentOutpatientSettlementUiParam param)
-        {
+        {   //门诊病人信息存储
+            var id = Guid.NewGuid();
+            //针对门诊居民病人余额为0的
+            if (!string.IsNullOrWhiteSpace(param.SettlementJson) == false)
+            {
+                var residentDataIni = new ResidentOutpatientPreSettlementXmlDto()
+                    {SettlementNo = CommonHelp.GuidToStr(id.ToString())};
+                param.SettlementJson = JsonConvert.SerializeObject(residentDataIni);
+            }
+
             var iniData = XmlSerializeHelper.DESerializer<ResidentOutpatientPreSettlementXmlDto>(param.SettlementJson);
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
             userBase.TransKey = param.TransKey;
             var resultData = AutoMapper.Mapper.Map<OutpatientNationEcTransResidentBackDto>(iniData);
-           
-            //门诊病人信息存储
-            var id = Guid.NewGuid();
+          
             var outpatientParam = new GetOutpatientPersonParam()
             {
                 User = userBase,
@@ -1694,6 +1691,105 @@ namespace BenDing.Service.Providers
                
             };
             _systemManageRepository.AddHospitalLog(logParam);
+        }
+        /// <summary>
+        /// 电子凭证职工调差
+        /// </summary>
+        /// <param name="dataList"></param>
+        /// <param name="newTotalAmount"></param>
+        /// <param name="oldTotalAmount"></param>
+        /// <returns></returns>
+        private List<NationEcTransRow> OutpatientNationEcTransAdjustment(List<NationEcTransRow> dataList,
+            decimal newTotalAmount, decimal oldTotalAmount)
+        {
+            var resultData = new List<NationEcTransRow>();
+
+            if (newTotalAmount > oldTotalAmount)
+            {
+                var unitPrice = newTotalAmount - oldTotalAmount;
+                var quantityOne = resultData.FirstOrDefault(c => c.Quantity == 1);
+
+                if (quantityOne != null)
+                {
+
+                    foreach (var item in dataList)
+                    {
+
+                        if (item.DirectoryCode == quantityOne.DirectoryCode)
+                        {
+                            var itemNew = item;
+                            itemNew.UnitPrice = item.UnitPrice + unitPrice;
+                            itemNew.TotalAmount = (item.UnitPrice + unitPrice) * item.Quantity;
+                            resultData.Add(itemNew);
+                        }
+                        resultData.Add(item);
+                    }
+                }
+                else
+                {
+                    resultData = dataList;
+                }
+            }
+
+            return resultData;
+
+        }
+
+        /// <summary>
+        /// 门诊调差
+        /// </summary>
+        /// <param name="dataList"></param>
+        /// <param name="newTotalAmount"></param>
+        /// <param name="oldTotalAmount"></param>
+        /// <returns></returns>
+        private List<NationEcTransResidentRowParam> OutpatientAdjustment(List<NationEcTransResidentRowParam> dataList, decimal newTotalAmount, decimal oldTotalAmount)
+        {
+            var resultData = new List<NationEcTransResidentRowParam>();
+            resultData = dataList;
+            if (newTotalAmount > oldTotalAmount)
+            {
+                var unitPrice = newTotalAmount - oldTotalAmount;
+                var row = new NationEcTransResidentRowParam()
+                {
+                    ColNum = (resultData.Count() + 1).ToString(),
+                    ProjectCode = "C00000002",
+                    UnitPrice = unitPrice,
+                    Quantity = 1,
+                    TotalAmount = unitPrice,
+                    DirectoryName = "居民门诊可报销西药",
+                };
+                resultData.Add(row);
+            }
+
+            return resultData;
+        }
+        /// <summary>
+        /// 门诊预结算调差
+        /// </summary>
+        /// <param name="dataList"></param>
+        /// <param name="newTotalAmount"></param>
+        /// <param name="oldTotalAmount"></param>
+        /// <returns></returns>
+        private List<GetResidentOutpatientSettlementRowParam> OutpatientPreSettlementAdjustment(List<GetResidentOutpatientSettlementRowParam> dataList, decimal newTotalAmount, decimal oldTotalAmount)
+        {
+            var resultData = new List<GetResidentOutpatientSettlementRowParam>();
+            resultData = dataList;
+            if (newTotalAmount > oldTotalAmount)
+            {
+                var unitPrice = newTotalAmount - oldTotalAmount;
+                var row = new GetResidentOutpatientSettlementRowParam()
+                {
+                    ColNum = (resultData.Count() + 1).ToString(),
+                    ProjectCode = "C00000002",
+                    UnitPrice = unitPrice,
+                    Quantity = 1,
+                    TotalAmount = unitPrice,
+                    DirectoryName = "居民门诊可报销西药",
+                };
+                resultData.Add(row);
+            }
+
+            return resultData;
         }
     }
 }

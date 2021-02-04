@@ -852,7 +852,13 @@
                         var activeData = activeXNew.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "ResidentSettlement");
                         var activeJsonData = JSON.parse(activeData);
                         if (activeJsonData.Success === false) {
-                            msgError(activeJsonData.Message);
+                            var errorMsg = activeJsonData.Message;
+                            if (errorMsg.indexOf('居民门诊统筹余额及转结余额均为零') === -1) {
+                                msgError(activeJsonData.Message);
+                            } else {
+                                residentOutpatientPreSettlement("");
+                            }
+                          
                         } else {
                             residentOutpatientPreSettlement(activeJsonData.Data);
                         }

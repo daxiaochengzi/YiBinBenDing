@@ -95,6 +95,7 @@
     <Compile Include="Models\Dto\OutpatientDepartment\MedicalExpenseYearExcelDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\MedicalExpenseYearReportDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\NationEcTransDto.cs" />
+    <Compile Include="Models\Dto\OutpatientDepartment\OutpatientMedicalInsuranceInputDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\OutpatientPairCodeQueryDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\QueryHospitalizationFeeNewDto.cs" />
     <Compile Include="Models\Dto\OutpatientDepartment\ReportParametersDto.cs" />

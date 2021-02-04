@@ -301,6 +301,7 @@ namespace BenDing.Service.Providers
             OutpatientPersonJsonDto dataValue = JsonConvert.DeserializeObject<OutpatientPersonJsonDto>(data.Msg);
             var dataValueFirst = dataValue.OutpatientPersonBase;
             var dataValueList = dataValue.DetailInfo;
+            if  (dataValue.DiagnosisList==null) throw  new Exception("病人诊断不能为空!!!");
             if (dataValueFirst != null)
             {
                 resultData = AutoMapper.Mapper.Map<BaseOutpatientInfoDto>(dataValueFirst);
@@ -319,7 +320,6 @@ namespace BenDing.Service.Providers
                     detail.Amount = CommonHelp.ValueToDouble(item.Amount);
                     detail.NotUploadMark = 0;
                     detailList.Add(detail);
-
                 }
 
                 resultData.MedicalTreatmentTotalCost = detailList.Sum(c => c.Amount);
@@ -336,6 +336,7 @@ namespace BenDing.Service.Providers
 
 
         }
+
         public HisHospitalizationSettlementCancelInfoJsonDto GetOutpatientSettlementCancel(SettlementCancelParam param)
         {
             var resultData = new PatientLeaveHospitalInfoDto();
@@ -354,7 +355,6 @@ namespace BenDing.Service.Providers
         /// <summary>
         /// 获取门诊病人费用明细
         /// </summary>
-     
         /// <param name="param"></param>
         /// <returns></returns>
         public List<BaseOutpatientDetailDto> GetOutpatientDetailPerson(OutpatientDetailParam param)
@@ -370,8 +370,10 @@ namespace BenDing.Service.Providers
             var jsonParam = JsonConvert.SerializeObject(xmlData);
             var data = _webServiceBasic.HIS_Interface("39", jsonParam);
             OutpatientPersonJsonDto dataValue = JsonConvert.DeserializeObject<OutpatientPersonJsonDto>(data.Msg);
+          
             var detailInfo = dataValue.DetailInfo;
             var exclusionList = new List<OutpatientExclusion>();
+
             if (param.NotUploadMark == 1)
             {
                 exclusionList = _hisSqlRepository.OutpatientExclusionListQuery(param.User.OrganizationCode);
@@ -402,6 +404,79 @@ namespace BenDing.Service.Providers
             }
             return resultData;
         }
+        /// <summary>
+        /// 获取门诊医保出参
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public OutpatientMedicalInsuranceInputDto OutpatientMedicalInsuranceInput(OutpatientDetailParam param)
+        {
+            var resultData = new OutpatientMedicalInsuranceInputDto();
+            var detailData = new List<BaseOutpatientDetailDto>();
+            var baseOutpatient = new BaseOutpatientInfoDto();
+            
+            var xmlData = new MedicalInsuranceXmlDto();
+            xmlData.BusinessId = param.BusinessId;
+            xmlData.HealthInsuranceNo = "48";//42MZ
+            xmlData.TransactionId = param.User.TransKey;
+            xmlData.AuthCode = param.User.AuthCode;
+            xmlData.UserId = param.User.UserId;
+            xmlData.OrganizationCode = param.User.OrganizationCode;
+            var jsonParam = JsonConvert.SerializeObject(xmlData);
+            var data = _webServiceBasic.HIS_Interface("39", jsonParam);
+            OutpatientPersonJsonDto dataValue = JsonConvert.DeserializeObject<OutpatientPersonJsonDto>(data.Msg);
+            var detailInfo = dataValue.DetailInfo;
+            var dataValueFirst = dataValue.OutpatientPersonBase;
+            if (dataValueFirst != null)
+            {
+                baseOutpatient = AutoMapper.Mapper.Map<BaseOutpatientInfoDto>(dataValueFirst);
+              
+                baseOutpatient.BusinessId = param.BusinessId;
+                baseOutpatient.DiagnosticJson = JsonConvert.SerializeObject(dataValue.DiagnosisList);
+                baseOutpatient.DiagnosisList = dataValue.DiagnosisList;
+              
+
+                var exclusionList = new List<OutpatientExclusion>();
+                if (param.NotUploadMark == 1)
+                {
+                    exclusionList = _hisSqlRepository.OutpatientExclusionListQuery(param.User.OrganizationCode);
+                }
+
+                foreach (var item in detailInfo)
+                {
+                    var detail = AutoMapper.Mapper.Map<BaseOutpatientDetailDto>(item);
+                    detail.OrganizationCode = param.User.OrganizationCode;
+                    detail.OrganizationName = param.User.OrganizationName;
+                    detail.OutpatientNo = dataValue.OutpatientPersonBase.OutpatientNumber;
+                    detail.UnitPrice = item.UnitPrice;
+                    detail.Amount = CommonHelp.ValueToDouble(item.UnitPrice * item.Quantity);
+                    detail.NotUploadMark = 0;
+                    detail.PatientId = param.PatientId;
+                    if (param.NotUploadMark == 1)
+                    {
+                        var exclusionData = exclusionList.FirstOrDefault(c => c.DirectoryCode == item.DirectoryCode);
+                        if (exclusionData != null && exclusionData.IsDelete == false) detail.NotUploadMark = 1;
+                    }
+
+                    detailData.Add(detail);
+
+                }
+
+                if (param.IsSave)
+                {
+                    _hisSqlRepository.SaveOutpatientDetail(param.User, detailData);
+                }
+                resultData.OldTotalCost = Convert.ToDecimal(dataValue.OutpatientPersonBase.MedicalTreatmentTotalCost);
+                baseOutpatient.MedicalTreatmentTotalCost = detailData.Sum(c => c.Amount);
+               if (!string.IsNullOrWhiteSpace(param.Id)) baseOutpatient.Id=Guid.Parse(param.Id); 
+                resultData.BaseOutpatient = baseOutpatient;
+                resultData.DetailList = detailData;
+                resultData.NewTotalCost = detailData.Sum(c => c.Amount);
+            }
+
+            return resultData;
+        }
+
         /// <summary>
         /// 门诊对码查询
         /// </summary>
@@ -439,6 +514,7 @@ namespace BenDing.Service.Providers
                         DirectoryName = item.DirectoryName,
                         DirectoryCode = item.DirectoryCode,
                         Specification = item.Specification,
+
                         Amount = item.Amount,
                         PairCodeState = pairCodeValue!=null? 1:0,
                         NotUploadMark = item.NotUploadMark

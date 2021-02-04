@@ -17,6 +17,10 @@ namespace BenDing.Domain.Models.Params.Web
         /// </summary>
         public UserInfoDto User { get; set; }
         /// <summary>
+        /// 
+        /// </summary>
+        public  string  Id { get; set; }
+        /// <summary>
         /// 是否保存
         /// </summary>
         public bool IsSave { get; set; }

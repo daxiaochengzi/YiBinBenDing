@@ -17,13 +17,14 @@ namespace BenDing.Domain.Models.Dto.JsonEntity
         /// 诊断列表
         /// </summary>
         [JsonProperty(PropertyName = "诊断信息")]
-        public List<InpatientDiagnosisDataDto> DiagnosisList { get; set; }
+        public List<InpatientDiagnosisDataDto> DiagnosisList { get; set; } = null;
+
         /// <summary>
         /// 
         /// </summary>
         [JsonProperty(PropertyName = "清单明细")]
         public List<OutpatientDetailJsonDto> DetailInfo { get; set; }
-        
+
     }
     public class OutpatientPersonBaseJsonDto
     {/// <summary>

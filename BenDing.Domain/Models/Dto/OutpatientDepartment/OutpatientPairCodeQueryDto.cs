@@ -36,5 +36,9 @@ namespace BenDing.Domain.Models.Dto.OutpatientDepartment
         /// 不传标记
         /// </summary>
         public int? NotUploadMark { get; set; }
+       /// <summary>
+       /// 业务id
+       /// </summary>
+        public  string DetailId { get; set; }
     }
 }
