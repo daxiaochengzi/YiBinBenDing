@@ -399,6 +399,15 @@ namespace BenDing.Service.Providers
             infoParam.DiagnosisIcd10Three = diagnosisData.DiagnosisIcd10Three;
             infoParam.LeaveHospitalMainDiagnosis = diagnosisData.DiagnosisDescribe;
             infoParam.IsHospitalizationFrequency = "1";
+            var logParam = new AddHospitalLogParam()
+            {
+                JoinOrOldJson = JsonConvert.SerializeObject(param),
+                ReturnOrNewJson = JsonConvert.SerializeObject(infoParam),
+                User = userBase,
+                BusinessId = param.BusinessId,
+                Remark = "获取住院结算参数"
+            };
+            _systemManageRepository.AddHospitalLog(logParam);
             return infoParam;
         }
         /// <summary>
@@ -502,6 +511,7 @@ namespace BenDing.Service.Providers
                 PatientName = inpatientInfoData.PatientName,
                 AccountBalance = param.InsuranceBalance,
                 AccountAmountPay = resultData.AccountPayment,
+                InsuredStatus = "1"
             };
 
 
@@ -955,6 +965,15 @@ namespace BenDing.Service.Providers
             infoParam.DiagnosisIcd10Two = diagnosisData.DiagnosisIcd10Two;
             infoParam.DiagnosisIcd10Three = diagnosisData.DiagnosisIcd10Three;
             infoParam.AdmissionMainDiagnosis = diagnosisData.DiagnosisDescribe;
+            var logParam = new AddHospitalLogParam()
+            {
+                JoinOrOldJson = JsonConvert.SerializeObject(param),
+                ReturnOrNewJson = JsonConvert.SerializeObject(infoParam),
+                User = userBase,
+                BusinessId = param.BusinessId,
+                Remark = "获取住院结算参数"
+            };
+            _systemManageRepository.AddHospitalLog(logParam);
             return infoParam;
         }
         /// <summary>
@@ -1052,6 +1071,7 @@ namespace BenDing.Service.Providers
                 PatientName = inpatientInfoData.PatientName,
                 AccountBalance = param.InsuranceBalance,
                 AccountAmountPay = resultData.AccountPayment,
+                InsuredStatus = "1"
             };
             var strXmlBackParam = XmlSerializeHelper.HisXmlSerialize(xmlData);
             var saveXml = new SaveXmlDataParam()

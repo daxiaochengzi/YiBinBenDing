@@ -27,6 +27,10 @@ namespace BenDing.Domain.Models.Dto.Web
         /// </summary>
         public  string ProjectCode { get; set; }
         /// <summary>
+        /// 医保名称
+        /// </summary>
+        public string ProjectName { get; set; }
+        /// <summary>
         /// 医保类别
         /// </summary>
         public string ProjectCodeType { get; set; }

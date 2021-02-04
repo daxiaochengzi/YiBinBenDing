@@ -60,5 +60,10 @@ namespace BenDing.Domain.Models.HisXml
         /// </summary>
         [XmlElementAttribute("ake034", IsNullable = false)]
         public decimal AccountAmountPay { get; set; }
+        /// <summary>
+        /// 参保身份  1 职工 其它居民
+        /// </summary>
+        [XmlElementAttribute("aac066", IsNullable = false)]
+        public string InsuredStatus { get; set; }
     } 
 }

@@ -382,7 +382,15 @@ namespace BenDing.Service.Providers
             settlementParam.LeaveHospitalDiagnosisIcd10Two = diagnosisData.DiagnosisIcd10Two;
             settlementParam.LeaveHospitalDiagnosisIcd10Three = diagnosisData.DiagnosisIcd10Three;
             settlementParam.LeaveHospitalMainDiagnosis = diagnosisData.DiagnosisDescribe;
-
+            var logParam = new AddHospitalLogParam()
+            {
+                JoinOrOldJson = JsonConvert.SerializeObject(param),
+                ReturnOrNewJson = JsonConvert.SerializeObject(settlementParam),
+                User = userBase,
+                BusinessId = param.BusinessId,
+                Remark = "获取住院结算参数"
+            };
+            _systemManageRepository.AddHospitalLog(logParam);
             return settlementParam;
         }
         /// <summary>
@@ -483,6 +491,7 @@ namespace BenDing.Service.Providers
                 PatientName = inpatientInfoData.PatientName,
                 AccountBalance = insuranceBalance,
                 AccountAmountPay = 0,
+                InsuredStatus = "342"
             };
 
 

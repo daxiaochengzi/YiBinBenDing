@@ -202,6 +202,7 @@
                     isBirthHospital = data.Data.IsBirthHospital;
                     settlementType = data.Data.SettlementType;
                     insuranceType = data.Data.InsuranceType;
+                    settlementNo = data.Data.SettlementNo;
                     jsonToForm(data.Data, "LAY-form-render");
                     if (data.Data.PayMsg !== null) {
                         settlementData(data.Data.PayMsg);
@@ -238,6 +239,7 @@
                         var activeData;
                         var activeJsonData;
                         if (insuranceType === "342" && settlementNo.length === 19) {
+                          
                             CancelOutpatientDepartmentCost();
                             return;
                         }

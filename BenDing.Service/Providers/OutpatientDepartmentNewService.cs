@@ -1173,15 +1173,18 @@ namespace BenDing.Service.Providers
         public OutpatientNationEcTransResidentBackDto ResidentOutpatientPreSettlement(GetResidentOutpatientSettlementUiParam param)
         {   //门诊病人信息存储
             var id = Guid.NewGuid();
+            var  iniData = new ResidentOutpatientPreSettlementXmlDto();
             //针对门诊居民病人余额为0的
             if (!string.IsNullOrWhiteSpace(param.SettlementJson) == false)
             {
-                var residentDataIni = new ResidentOutpatientPreSettlementXmlDto()
-                    {SettlementNo = CommonHelp.GuidToStr(id.ToString())};
-                param.SettlementJson = JsonConvert.SerializeObject(residentDataIni);
+                iniData.SettlementNo = CommonHelp.GuidToStr(id.ToString());
             }
 
-            var iniData = XmlSerializeHelper.DESerializer<ResidentOutpatientPreSettlementXmlDto>(param.SettlementJson);
+            else
+            {
+                iniData = XmlSerializeHelper.DESerializer<ResidentOutpatientPreSettlementXmlDto>(param.SettlementJson);
+            }
+            
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
             userBase.TransKey = param.TransKey;
             var resultData = AutoMapper.Mapper.Map<OutpatientNationEcTransResidentBackDto>(iniData);
