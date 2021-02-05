@@ -938,7 +938,7 @@ namespace BenDing.Service.Providers
            var rowDataListNew= OutpatientAdjustment(rowDataList, outpatientDetail.NewTotalCost, CommonHelp.ValueToDouble(outpatientDetail.OldTotalCost));
             resultData.RowDataList = rowDataListNew;
             resultData.Num = rowDataListNew.Count();
-            resultData.TotalAmount = CommonHelp.ValueToDouble(rowDataListNew.Select(d=>d.TotalAmount).Sum());
+            resultData.TotalAmount = rowDataListNew.Select(d => d.TotalAmount).Sum();
             return XmlSerializeHelper.HisXmlSerialize(resultData);
         }
        
@@ -1161,7 +1161,7 @@ namespace BenDing.Service.Providers
             var rowDataListNew = OutpatientPreSettlementAdjustment(rowDataList, outpatientDetail.NewTotalCost, CommonHelp.ValueToDouble(outpatientDetail.OldTotalCost));
             resultData.RowDataList = rowDataListNew;
             resultData.Num = rowDataListNew.Count();
-            resultData.TotalAmount = CommonHelp.ValueToDouble(rowDataListNew.Select(d => d.TotalAmount).Sum());
+            resultData.TotalAmount = rowDataListNew.Select(d => d.TotalAmount).Sum();
             return XmlSerializeHelper.HisXmlSerialize(resultData);
         }
        
@@ -1732,6 +1732,10 @@ namespace BenDing.Service.Providers
                 {
                     resultData = dataList;
                 }
+            }
+            else
+            {
+                resultData = dataList;
             }
 
             return resultData;

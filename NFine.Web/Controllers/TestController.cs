@@ -180,20 +180,27 @@ namespace NFine.Web.Controllers
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpPost]
-        public ApiJsonResultData GetUserInfo([FromBody] UiInIParam param)
+        public ApiJsonResultData GetUserInfoLogin([FromBody] GetUserInfoLoginUiParam param)
         {
-            return new ApiJsonResultData(ModelState, new UiInIParam()).RunWithTry(y =>
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
             {
-                //var userBase = webServiceBasicService.GetUserBaseInfo(param.UserId);
-                //y.Data = userBase;
-
-
-                var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
+                var inputParam = new UserInfoParam()
                 {
-                    BusinessId = "26F6B97CE2F2494182B6CB7942BBA96F",
-                    MedicalInsuranceState = 3
+                    UserName = param.UserName,
+                    Pwd = param.pwd,
+                    ManufacturerNumber = "510303001",
                 };
-                var residentData = ImedicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(queryResidentParam);
+                string inputParamJson = JsonConvert.SerializeObject(inputParam, Formatting.Indented);
+                var verificationCode = webServiceBasicService.GetVerificationCode("01", inputParamJson);
+                y.Data = verificationCode;
+
+
+                //var queryResidentParam = new QueryMedicalInsuranceResidentInfoParam()
+                //{
+                //    BusinessId = "26F6B97CE2F2494182B6CB7942BBA96F",
+                //    MedicalInsuranceState = 3
+                //};
+                //var residentData = ImedicalInsuranceSqlRepository.QueryMedicalInsuranceResidentInfo(queryResidentParam);
 
             });
 
