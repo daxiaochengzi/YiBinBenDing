@@ -925,8 +925,6 @@ namespace BenDing.Service.Providers
             resultData.IdCardNo = outpatientPerson.IdCardNo;
             resultData.PatientName = outpatientPerson.PatientName;
             resultData.VisitDate = Convert.ToDateTime(outpatientPerson.VisitDate).ToString("yyyyMMddHHmmss");
-         
-            
             resultData.SerialNumber = CommonHelp.GuidToStr(id.ToString());//取消结算后重新结算流水号不能重复
             //var diagnosisData = outpatientPerson.DiagnosisList.FirstOrDefault(c => c.IsMainDiagnosis == "是");
             var diagnosisData = CommonHelp.GetOutpatientDiagnostic(outpatientPerson.DiagnosisList);
@@ -935,7 +933,7 @@ namespace BenDing.Service.Providers
             resultData.DiagnosisIcd10 = diagnosisData.ProjectCode;
             resultData.DiagnosisName = diagnosisData.DiseaseName;
             //门诊调差
-           var rowDataListNew= OutpatientAdjustment(rowDataList, outpatientDetail.NewTotalCost, CommonHelp.ValueToDouble(outpatientDetail.OldTotalCost));
+           var rowDataListNew= OutpatientAdjustment(rowDataList, outpatientDetail.NewTotalCost, CommonHelp.ValueToDouble(outpatientDetail.OldTotalCost),outpatientDetailPerson);
             resultData.RowDataList = rowDataListNew;
             resultData.Num = rowDataListNew.Count();
             resultData.TotalAmount = rowDataListNew.Select(d => d.TotalAmount).Sum();
@@ -1158,7 +1156,7 @@ namespace BenDing.Service.Providers
             resultData.ReimbursementType = reimbursementType;
             resultData.InsuranceNo = param.InsuranceNo;
             //门诊调差
-            var rowDataListNew = OutpatientPreSettlementAdjustment(rowDataList, outpatientDetail.NewTotalCost, CommonHelp.ValueToDouble(outpatientDetail.OldTotalCost));
+            var rowDataListNew = OutpatientPreSettlementAdjustment(rowDataList, outpatientDetail.NewTotalCost, CommonHelp.ValueToDouble(outpatientDetail.OldTotalCost), outpatientDetailPerson);
             resultData.RowDataList = rowDataListNew;
             resultData.Num = rowDataListNew.Count();
             resultData.TotalAmount = rowDataListNew.Select(d => d.TotalAmount).Sum();
@@ -1743,14 +1741,16 @@ namespace BenDing.Service.Providers
         }
 
         /// <summary>
-        /// 门诊调差
+        /// 门诊电子凭证调差
         /// </summary>
         /// <param name="dataList"></param>
         /// <param name="newTotalAmount"></param>
         /// <param name="oldTotalAmount"></param>
         /// <returns></returns>
-        private List<NationEcTransResidentRowParam> OutpatientAdjustment(List<NationEcTransResidentRowParam> dataList, decimal newTotalAmount, decimal oldTotalAmount)
+        private List<NationEcTransResidentRowParam> OutpatientAdjustment(List<NationEcTransResidentRowParam> dataList, decimal newTotalAmount, decimal oldTotalAmount, List<BaseOutpatientDetailDto> oldList)
         {
+            
+            int isAdjusted = 0;//是否调整
             var resultData = new List<NationEcTransResidentRowParam>();
             resultData = dataList;
             if (newTotalAmount > oldTotalAmount)
@@ -1767,7 +1767,82 @@ namespace BenDing.Service.Providers
                 };
                 resultData.Add(row);
             }
+            if (newTotalAmount < oldTotalAmount)
+            {
+                var unitPrice = oldTotalAmount - newTotalAmount;
 
+                resultData = new List<NationEcTransResidentRowParam>();
+                var directoryCategoryName = new List<string>() { "诊疗" };
+                var categoryName = oldList.FirstOrDefault(c => !directoryCategoryName.Contains(c.DirectoryCategoryName));
+                foreach (var item in dataList)
+                {
+
+                    if (isAdjusted == 0)
+                    {
+                        if (categoryName != null)
+                        {
+                            if (item.DirectoryName == categoryName.DirectoryName)
+                            {
+                                var itemNew = item;
+                                var totalAmount = item.TotalAmount - unitPrice;
+                                itemNew.UnitPrice = CommonHelp.ValueToFour(totalAmount / itemNew.Quantity);
+                                itemNew.TotalAmount = itemNew.UnitPrice * itemNew.Quantity;
+                                resultData.Add(itemNew);
+                                isAdjusted = 1;
+                            }
+                            else
+                            {
+                                resultData.Add(item);
+                            }
+
+
+                        }
+                        else
+                        {
+                            var itemNew = item;
+                            var totalAmount = item.TotalAmount - unitPrice;
+                            itemNew.UnitPrice = CommonHelp.ValueToFour(totalAmount / itemNew.Quantity);
+                            itemNew.TotalAmount = itemNew.UnitPrice * itemNew.Quantity;
+                            resultData.Add(itemNew);
+                            isAdjusted = 1;
+
+                        }
+
+
+                    }
+                    else
+                    {
+                        resultData.Add(item);
+                    }
+                }
+
+
+
+
+            }
+            if (isAdjusted == 1)
+            {  //不传费用合计
+                var exclusionData = oldList.Where(c => c.NotUploadMark == 1).Sum(d => d.Amount);
+                var newTotalAmountAdjusted = CommonHelp.ValueToDouble(resultData.Select(d => d.TotalAmount).Sum()) + exclusionData;
+
+                if (newTotalAmount > newTotalAmountAdjusted)
+                {
+                    var unitPrice = newTotalAmount - newTotalAmountAdjusted;
+                    var row = new NationEcTransResidentRowParam()
+                    {
+                        ColNum = (resultData.Count() + 1).ToString(),
+                        ProjectCode = "C00000002",
+                        UnitPrice = unitPrice,
+                        Quantity = 1,
+                        TotalAmount = unitPrice,
+                        DirectoryName = "居民门诊可报销西药",
+                    };
+                    resultData.Add(row);
+                }
+            }
+            //结束合计
+            var endTotalAmount = CommonHelp.ValueToDouble(resultData.Select(d => d.TotalAmount).Sum());
+            if (newTotalAmount != endTotalAmount) throw new Exception("门诊居民报账基层合计与医保合计金额不等,不能报账;基层:" + newTotalAmount + "医保合计:" + endTotalAmount);
             return resultData;
         }
         /// <summary>
@@ -1777,8 +1852,9 @@ namespace BenDing.Service.Providers
         /// <param name="newTotalAmount"></param>
         /// <param name="oldTotalAmount"></param>
         /// <returns></returns>
-        private List<GetResidentOutpatientSettlementRowParam> OutpatientPreSettlementAdjustment(List<GetResidentOutpatientSettlementRowParam> dataList, decimal newTotalAmount, decimal oldTotalAmount)
+        private List<GetResidentOutpatientSettlementRowParam> OutpatientPreSettlementAdjustment(List<GetResidentOutpatientSettlementRowParam> dataList, decimal newTotalAmount, decimal oldTotalAmount, List<BaseOutpatientDetailDto> oldList)
         {
+            int isAdjusted = 0;//是否调整
             var resultData = new List<GetResidentOutpatientSettlementRowParam>();
             resultData = dataList;
             if (newTotalAmount > oldTotalAmount)
@@ -1795,7 +1871,81 @@ namespace BenDing.Service.Providers
                 };
                 resultData.Add(row);
             }
+            if (newTotalAmount < oldTotalAmount)
+            {
+                var unitPrice = oldTotalAmount - newTotalAmount;
+           
+                resultData= new List<GetResidentOutpatientSettlementRowParam>();
+                var directoryCategoryName = new List<string>(){ "诊疗" };
+                var categoryName = oldList.FirstOrDefault(c => !directoryCategoryName.Contains(c.DirectoryCategoryName));
+                foreach (var item in dataList)
+                {
+                    
+                    if (isAdjusted == 0)
+                    {
+                        if (categoryName != null)
+                        {
+                            if (item.DirectoryName == categoryName.DirectoryName)
+                            {
+                                var itemNew = item;
+                                var totalAmount = item.TotalAmount - unitPrice;
+                                itemNew.UnitPrice =CommonHelp.ValueToFour (totalAmount / itemNew.Quantity);
+                                itemNew.TotalAmount = itemNew.UnitPrice * itemNew.Quantity;
+                                resultData.Add(itemNew);
+                                isAdjusted = 1;
+                            }
+                            else
+                            {
+                                resultData.Add(item);
+                            }
 
+                          
+                        }
+                        else
+                        {
+                            var itemNew = item;
+                            var totalAmount = item.TotalAmount - unitPrice;
+                            itemNew.UnitPrice = CommonHelp.ValueToFour(totalAmount / itemNew.Quantity);
+                            itemNew.TotalAmount = itemNew.UnitPrice * itemNew.Quantity;
+                            resultData.Add(itemNew);
+                            isAdjusted = 1;
+
+                        }
+
+                      
+                    }
+                    else
+                    {
+                        resultData.Add(item);
+                    }
+                }
+
+               
+
+
+            }
+            if (isAdjusted == 1)
+            {    //不传费用合计
+                var exclusionData = oldList.Where(c => c.NotUploadMark == 1).Sum(d => d.Amount);
+                var newTotalAmountAdjusted = CommonHelp.ValueToDouble(resultData.Select(d => d.TotalAmount).Sum())+ exclusionData;
+                if (newTotalAmount > newTotalAmountAdjusted)
+                {
+                    var unitPrice = newTotalAmount - newTotalAmountAdjusted;
+                    var row = new GetResidentOutpatientSettlementRowParam()
+                    {
+                        ColNum = (resultData.Count() + 1).ToString(),
+                        ProjectCode = "C00000002",
+                        UnitPrice = unitPrice,
+                        Quantity = 1,
+                        TotalAmount = unitPrice,
+                        DirectoryName = "居民门诊可报销西药",
+                    };
+                    resultData.Add(row);
+                }
+            }
+            //结束合计
+            var endTotalAmount= CommonHelp.ValueToDouble(resultData.Select(d => d.TotalAmount).Sum());
+            if (newTotalAmount!= endTotalAmount) throw new Exception("门诊居民报账基层合计与医保合计金额不等,不能报账;基层:"+ newTotalAmount+"医保合计:"+endTotalAmount);
             return resultData;
         }
     }

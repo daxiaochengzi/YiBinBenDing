@@ -2245,21 +2245,21 @@ namespace BenDing.Repository.Providers.Web
                     string countSql  = $@"
                             select count(*) from [dbo].[Inpatient] as a,[dbo].[MedicalInsurance] as b
                              where a.BusinessId=b.BusinessId and a.IsDelete=0 and b.IsDelete=0
-                              and InsuranceType<>'999' and a.[OrganizationCode]='{param.OrganizationCode}'";
+                           and a.[OrganizationCode]='{param.OrganizationCode}'";
                     string querySql = $@"select [PatientName], [IdCardNo],[HospitalizationNo] as NumCode,[MedicalInsuranceState] 
                              ,a.[CreateTime],a.BusinessId as Id from [dbo].[Inpatient] as a,[dbo].[MedicalInsurance] as b
                              where a.BusinessId=b.BusinessId and a.IsDelete=0 and b.IsDelete=0
-                               and InsuranceType<>'999' and a.[OrganizationCode]='{param.OrganizationCode}'";
+                              and a.[OrganizationCode]='{param.OrganizationCode}'";
 
                     if (param.IsOutpatient == "1")
                     {
                         countSql = $@" select  count(*) from [dbo].[Outpatient] as a,[dbo].[MedicalInsurance] as b
-                                 where a.BusinessId=b.BusinessId and a.IsDelete=0 and b.IsDelete=0
-                                  and InsuranceType='999' and a.[OrganizationCode]='{param.OrganizationCode}'";
+                                 where b.PatientId is not null and b.PatientId<>'' and a.id=b.PatientId and a.IsDelete=0 and b.IsDelete=0 
+                                  and MedicalInsuranceState=6 and a.[OrganizationCode]='{param.OrganizationCode}'";
                         querySql = $@" select [PatientName], [IdCardNo],[OutpatientNumber] as NumCode,[MedicalInsuranceState] 
                               ,a.[CreateTime],a.BusinessId as Id from [dbo].[Outpatient] as a,[dbo].[MedicalInsurance] as b
-                             where a.BusinessId=b.BusinessId and a.IsDelete=0 and b.IsDelete=0
-                              and InsuranceType='999' and a.[OrganizationCode]='{param.OrganizationCode}'";
+                             where b.PatientId is not null and b.PatientId<>'' and a.id=b.PatientId and a.IsDelete=0 and b.IsDelete=0 
+                              and MedicalInsuranceState=6 and a.[OrganizationCode]='{param.OrganizationCode}'";
                     }
 
                     string regexstr = @"[\u4e00-\u9fa5]";
