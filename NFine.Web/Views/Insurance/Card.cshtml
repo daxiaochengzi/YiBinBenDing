@@ -13,7 +13,7 @@
                     <select id="AfferentSign" name="AfferentSign" lay-filter="AfferentSign" lay-verify="required">
                         <option id="AfferentSignIcCard" value="1" selected>身份证号</option>
                         <option id="AfferentSignNum" value="2">个人编号</option>
-                        @*<option id="CardReading" value="3">读卡</option>*@
+                        <option id="CardReading" value="3">异地读卡</option>
                     </select>
                 </div>
             </div>
@@ -33,6 +33,9 @@
             </div>
 
         </div>
+        <label style="color: red;margin-left: 18%">
+            温馨提示:异地只能通过读卡获取病人信息
+        </label>
     </form>
 </div>
 <script>
@@ -43,10 +46,10 @@
     });
 
     layui.use(['form'],
-        function() {
+        function () {
             var $ = layui.$,
                 form = layui.form;
-            window.getMyData   = function () {
+            window.getMyData = function () {
                 var data = {
                     "IdentityMark": $('#IdentityMark').val(),
                     "CardPwd": $('#CardPwd').val(),
@@ -59,9 +62,11 @@
                 var r = window.location.search.substr(1).match(reg);
                 if (r != null) return unescape(r[2]); return null;
             }
-         
+
             var idCardNo = getUrlParam('IdCardNo');
-            $("#IdentityMark").val(idCardNo);  
+            var checkPwd = getUrlParam('CheckPwd');
+            //  if (checkPwd==="0")
+            $("#IdentityMark").val(idCardNo);
             form.render();
             //查询方式切换
             form.on('select(AfferentSign)',
@@ -75,11 +80,16 @@
                         $("#markTextLable").text("身份证号");
                     }
                     else if (val === "3") {
-                        $("#CardPwd").attr("class", "layui-input");
-                        $("#CardPwd").removeAttr("disabled");
+
+                        if (checkPwd === "0") {
+                            $("#CardPwd").attr("class", "layui-input");
+                            $("#CardPwd").removeAttr("disabled");
+                        }
+                        $("#IdentityMark").val("");
+                        $("#markTextLable").text("卡号");
                     }
                 });
         });
 
-      
-     </script>
+
+</script>
