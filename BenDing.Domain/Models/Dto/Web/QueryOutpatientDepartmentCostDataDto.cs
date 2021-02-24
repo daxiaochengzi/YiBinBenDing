@@ -91,6 +91,10 @@ namespace BenDing.Domain.Models.Dto.Web
         /// </summary>
         public string InsuranceType { get; set; }
         /// <summary>
+        /// 参保区域编码
+        /// </summary>
+        public  string AreaCode { get; set; }
+        /// <summary>
         /// 结算信息
         /// </summary>
         public List<PayMsgData> PayMsg { get; set; } = null;

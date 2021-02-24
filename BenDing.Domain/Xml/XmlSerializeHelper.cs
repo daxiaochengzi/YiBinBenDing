@@ -159,5 +159,27 @@ namespace BenDing.Domain.Xml
             doc = null;
             return result;
         }
+        /// <summary>
+        /// 异地xml转实体
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="strXml"></param>
+        /// <returns></returns>
+        public static T YdDeSerializer<T>(string strXml) where T : class
+        {
+            try
+            {
+                using (StringReader sr = new StringReader(strXml))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(T));
+                    return serializer.Deserialize(sr) as T;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+                // return null;
+            }
+        }
     }
 }

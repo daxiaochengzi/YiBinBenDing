@@ -217,7 +217,8 @@ namespace BenDing.Repository.Providers.Web
                               ,[IdentityMark]
                               ,[AfferentSign]
                               ,[SettlementType]
-                              ,[PatientId]
+                              ,[PatientId],
+                               [AreaCode]
                             FROM [dbo].[MedicalInsurance]
                             where  IsDelete=0";
                     if (!string.IsNullOrWhiteSpace(param.DataId))

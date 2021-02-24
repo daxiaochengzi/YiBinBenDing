@@ -16,6 +16,7 @@ using BenDing.Domain.Models.Params.OutpatientDepartment;
 using BenDing.Domain.Models.Params.Resident;
 using BenDing.Domain.Models.Params.SystemManage;
 using BenDing.Domain.Models.Params.UI;
+using BenDing.Domain.Models.Params.UI.DifferentPlaces;
 using BenDing.Domain.Models.Params.Web;
 using BenDing.Domain.Models.Params.Workers;
 using BenDing.Domain.Xml;
@@ -43,7 +44,8 @@ namespace NFine.Web.Controllers
         private readonly IOutpatientDepartmentRepository _outpatientDepartmentRepository;
         private readonly IWorkerMedicalInsuranceService _workerMedicalInsuranceService;
         private readonly IWorkerMedicalInsuranceNewService _workerMedicalInsuranceNewService;
-
+        private readonly IYdMedicalInsuranceService _ydMedicalInsuranceService;
+        
         /// <summary>
         /// 
         /// </summary>
@@ -73,7 +75,8 @@ namespace NFine.Web.Controllers
             IWorkerMedicalInsuranceService workerMedicalInsuranceService,
             IOutpatientDepartmentNewService outpatientDepartmentNewService,
             IResidentMedicalInsuranceNewService residentMedicalInsuranceNewService,
-            IWorkerMedicalInsuranceNewService workerMedicalInsuranceNewService
+            IWorkerMedicalInsuranceNewService workerMedicalInsuranceNewService,
+            IYdMedicalInsuranceService ydMedicalInsuranceService
             )
         {
             _webServiceBasicService = webServiceBasicService;
@@ -89,7 +92,9 @@ namespace NFine.Web.Controllers
             _outpatientDepartmentNewService = outpatientDepartmentNewService;
             _residentMedicalInsuranceNewService = residentMedicalInsuranceNewService;
             _workerMedicalInsuranceNewService = workerMedicalInsuranceNewService;
-            
+            _ydMedicalInsuranceService = ydMedicalInsuranceService;
+
+
         }
 
         #region 门诊
@@ -384,6 +389,7 @@ namespace NFine.Web.Controllers
                 resultData.SettlementNo = cancelSettlementData.SettlementNo;
                 resultData.SettlementType = residentData.SettlementType;
                 resultData.InsuranceType = residentData.InsuranceType;
+                resultData.AreaCode = residentData.AreaCode;
                 if (!string.IsNullOrWhiteSpace(residentData.OtherInfo))
                 {
                     resultData.PayMsg = CommonHelp.GetPayMsg(residentData.OtherInfo);
@@ -1806,8 +1812,37 @@ namespace NFine.Web.Controllers
             });
 
         }
-       
-        #endregion
 
+        #endregion
+        #region 异地
+        /// <summary>
+        /// 获取异地门诊划卡参数
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData GetYdOutpatientPayCardParam([FromBody]GetYdOutpatientPayCardParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                y.Data = _ydMedicalInsuranceService.GetYdOutpatientPayCardParam(param);
+
+            });
+        }
+        /// <summary>
+        /// 异地门诊刷卡
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ApiJsonResultData YdOutpatientPayCard([FromBody]GetYdOutpatientPayCardParam param)
+        {
+            return new ApiJsonResultData(ModelState).RunWithTry(y =>
+            {
+                _ydMedicalInsuranceService.YdOutpatientPayCard(param);
+
+            });
+        }
+        #endregion
     }
 }

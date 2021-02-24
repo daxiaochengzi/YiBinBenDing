@@ -49,6 +49,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Infrastructures\IBaseCreationAudited.cs" />
+    <Compile Include="Infrastructures\IBaseDeleteAudited.cs" />
+    <Compile Include="Infrastructures\IBaseEntity.cs" />
+    <Compile Include="Infrastructures\IBaseModificationAudited.cs" />
+    <Compile Include="Models\DifferentPlacesXml\PayCard\YdOutpatientPayCardXml.cs" />
     <Compile Include="Models\Dto\Base\DiagnosisData.cs" />
     <Compile Include="Models\Dto\Base\GetPostUrlDto.cs" />
     <Compile Include="Models\Dto\Base\PaginationDto.cs" />
@@ -112,9 +117,12 @@
     <Compile Include="Models\Dto\Web\QueryPatientInfoDto.cs" />
     <Compile Include="Models\Entitys\HospitalLog.cs" />
     <Compile Include="Models\Entitys\ICD10PairCode.cs" />
+    <Compile Include="Models\Entitys\MedicalInsurance.cs" />
     <Compile Include="Models\Entitys\OutpatientExclusion.cs" />
     <Compile Include="Models\Enums\ReportEnum.cs" />
     <Compile Include="Models\Params\Base\PaginationWebParam.cs" />
+    <Compile Include="Models\Params\Base\YdBaseParam.cs" />
+    <Compile Include="Models\Params\OutpatientDepartment\DifferentPlaces\WorkerOutpatientDifferentPlacesSettlementCardParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\GetOutpatientSettlementNoParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\GetResidentOutpatientSettlementParam.cs" />
     <Compile Include="Models\Params\OutpatientDepartment\MedicalExpenseMonthReportParam.cs" />
@@ -238,6 +246,7 @@
     <Compile Include="Models\Params\Resident\LeaveHospitalSettlementParam.cs" />
     <Compile Include="Models\Params\Resident\LeaveHospitalSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\BatchExamineDataUiParam.cs" />
+    <Compile Include="Models\Params\UI\DifferentPlaces\WorkerOutpatientDifferentPlacesSettlementCardUiParam.cs" />
     <Compile Include="Models\Params\UI\GetResidentOutpatientSettlementUiParam.cs" />
     <Compile Include="Models\Params\UI\GetUserInfoLoginUiParam.cs" />
     <Compile Include="Models\Params\UI\MedicalExpenseReportUiParam.cs" />

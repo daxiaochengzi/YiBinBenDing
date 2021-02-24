@@ -93,7 +93,10 @@ namespace BenDing.Domain.Models.Dto.Web
         /// 门诊结算id
         /// </summary>
         public  string PatientId { get; set; }
-
+        /// <summary>
+        /// 参保区域
+        /// </summary>
+        public  string AreaCode { get; set; }
 
     }
 }

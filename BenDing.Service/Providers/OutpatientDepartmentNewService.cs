@@ -3,16 +3,23 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using BenDing.Domain.Models.DifferentPlacesXml.PayCard;
 using BenDing.Domain.Models.Dto.JsonEntity;
 using BenDing.Domain.Models.Dto.OutpatientDepartment;
 using BenDing.Domain.Models.Dto.Web;
+using BenDing.Domain.Models.Entitys;
 using BenDing.Domain.Models.Enums;
 using BenDing.Domain.Models.HisXml;
+using BenDing.Domain.Models.Params;
+using BenDing.Domain.Models.Params.Base;
 using BenDing.Domain.Models.Params.OutpatientDepartment;
+using BenDing.Domain.Models.Params.OutpatientDepartment.DifferentPlaces;
 using BenDing.Domain.Models.Params.SystemManage;
 using BenDing.Domain.Models.Params.UI;
+using BenDing.Domain.Models.Params.UI.DifferentPlaces;
 using BenDing.Domain.Models.Params.Web;
 using BenDing.Domain.Xml;
+using BenDing.Repository.EntityMap;
 using BenDing.Repository.Interfaces.Web;
 using BenDing.Service.Interfaces;
 using Newtonsoft.Json;
@@ -28,6 +35,7 @@ namespace BenDing.Service.Providers
         private readonly IWebBasicRepository _webBasicRepository;
         private readonly IHisSqlRepository _hisSqlRepository;
         private readonly ISystemManageRepository _systemManageRepository;
+        private readonly MedicalInsuranceMap _medicalInsuranceMap;
         private readonly IResidentMedicalInsuranceRepository _residentMedicalInsuranceRepository;
         private readonly IResidentMedicalInsuranceService _residentMedicalInsuranceService;
         private readonly IMedicalInsuranceSqlRepository _medicalInsuranceSqlRepository;
@@ -47,6 +55,7 @@ namespace BenDing.Service.Providers
             _outpatientDepartmentRepository = outpatientDepartmentRepository;
             _webBasicRepository = webBasicRepository;
             _hisSqlRepository = hisSqlRepository;
+            _medicalInsuranceMap = new MedicalInsuranceMap();
             _systemManageRepository = systemManageRepository;
             _residentMedicalInsuranceRepository = residentMedicalInsuranceRepository;
             _medicalInsuranceSqlRepository = medicalInsuranceSqlRepository;
@@ -199,37 +208,53 @@ namespace BenDing.Service.Providers
             if (residentData.MedicalInsuranceState != MedicalInsuranceState.HisSettlement) throw new Exception("当前病人未结算,不能取消结算!!!");
             //职工
             if (residentData.InsuranceType=="310")
-            {
-                if (residentData.SettlementType == "2" || residentData.SettlementType == "3")
+            {  //职工异地
+                if (!string.IsNullOrWhiteSpace(residentData.AreaCode))
                 {
-                    var inputParam = new WorkerCancelSettlementCardParam()
-                    {
-                        SettlementNo = residentData.SettlementNo,
-                        CancelRemarks = param.CancelSettlementRemarks,
-                        OperatorName = userBase.UserName
-                    };
-                    resultData = XmlSerializeHelper.XmlSerialize(inputParam);
+                    StringBuilder ctrXml = new StringBuilder();
+                    ctrXml.Append("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>");
+                    ctrXml.Append("<row>");
+                    ctrXml.Append($"<jydm>YYJK014</jydm>");//需要被冲正交易的代码
+                    ctrXml.Append($"<jylsh>{residentData.SettlementNo}</jylsh>");//交易流水号
+                    ctrXml.Append($"<pi_jbr>{userBase.UserName}</pi_jbr>");//经办人
+                    ctrXml.Append("</row>");
+                    resultData = ctrXml.ToString();
                 }
-                if (!string.IsNullOrWhiteSpace(residentData.SettlementType) == false)
-                {//生育
-                    if (residentData.IsBirthHospital == 1)
+                else
+                {
+
+                    if (residentData.SettlementType == "2" || residentData.SettlementType == "3")
                     {
-                        var inputParam = new OutpatientPlanBirthSettlementCancelParam()
+                        var inputParam = new WorkerCancelSettlementCardParam()
                         {
                             SettlementNo = residentData.SettlementNo,
-                            CancelRemarks = param.CancelSettlementRemarks
+                            CancelRemarks = param.CancelSettlementRemarks,
+                            OperatorName = userBase.UserName
                         };
                         resultData = XmlSerializeHelper.XmlSerialize(inputParam);
                     }
-                    else
-                    {
-                        var inputParam = new CancelOutpatientDepartmentCostParam()
+                    if (!string.IsNullOrWhiteSpace(residentData.SettlementType) == false)
+                    {//生育
+                        if (residentData.IsBirthHospital == 1)
                         {
-                            DocumentNo = residentData.SettlementNo
-                        };
-                        resultData = XmlSerializeHelper.XmlSerialize(inputParam);
+                            var inputParam = new OutpatientPlanBirthSettlementCancelParam()
+                            {
+                                SettlementNo = residentData.SettlementNo,
+                                CancelRemarks = param.CancelSettlementRemarks
+                            };
+                            resultData = XmlSerializeHelper.XmlSerialize(inputParam);
+                        }
+                        else
+                        {
+                            var inputParam = new CancelOutpatientDepartmentCostParam()
+                            {
+                                DocumentNo = residentData.SettlementNo
+                            };
+                            resultData = XmlSerializeHelper.XmlSerialize(inputParam);
+                        }
                     }
                 }
+
 
             }//居民
             else if (residentData.InsuranceType == "342")
@@ -1693,6 +1718,7 @@ namespace BenDing.Service.Providers
             };
             _systemManageRepository.AddHospitalLog(logParam);
         }
+       
         /// <summary>
         /// 电子凭证职工调差
         /// </summary>
@@ -1840,9 +1866,7 @@ namespace BenDing.Service.Providers
                     resultData.Add(row);
                 }
             }
-            //结束合计
-            var endTotalAmount = CommonHelp.ValueToDouble(resultData.Select(d => d.TotalAmount).Sum());
-            if (newTotalAmount != endTotalAmount) throw new Exception("门诊居民报账基层合计与医保合计金额不等,不能报账;基层:" + newTotalAmount + "医保合计:" + endTotalAmount);
+           
             return resultData;
         }
         /// <summary>
@@ -1942,10 +1966,9 @@ namespace BenDing.Service.Providers
                     };
                     resultData.Add(row);
                 }
+            
             }
-            //结束合计
-            var endTotalAmount= CommonHelp.ValueToDouble(resultData.Select(d => d.TotalAmount).Sum());
-            if (newTotalAmount!= endTotalAmount) throw new Exception("门诊居民报账基层合计与医保合计金额不等,不能报账;基层:"+ newTotalAmount+"医保合计:"+endTotalAmount);
+            
             return resultData;
         }
     }

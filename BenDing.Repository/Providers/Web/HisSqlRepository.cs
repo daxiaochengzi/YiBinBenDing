@@ -2244,11 +2244,11 @@ namespace BenDing.Repository.Providers.Web
                     sqlConnection.Open();
                     string countSql  = $@"
                             select count(*) from [dbo].[Inpatient] as a,[dbo].[MedicalInsurance] as b
-                             where a.BusinessId=b.BusinessId and a.IsDelete=0 and b.IsDelete=0
+                             where b.PatientId='' and a.BusinessId=b.BusinessId and a.IsDelete=0 and b.IsDelete=0
                            and a.[OrganizationCode]='{param.OrganizationCode}'";
                     string querySql = $@"select [PatientName], [IdCardNo],[HospitalizationNo] as NumCode,[MedicalInsuranceState] 
                              ,a.[CreateTime],a.BusinessId as Id from [dbo].[Inpatient] as a,[dbo].[MedicalInsurance] as b
-                             where a.BusinessId=b.BusinessId and a.IsDelete=0 and b.IsDelete=0
+                             where b.PatientId='' and a.BusinessId=b.BusinessId and a.IsDelete=0 and b.IsDelete=0
                               and a.[OrganizationCode]='{param.OrganizationCode}'";
 
                     if (param.IsOutpatient == "1")

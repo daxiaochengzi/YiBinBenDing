@@ -32,11 +32,12 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">结算方式</label>
                     <div class="layui-input-block">
-                        <input type="radio" id="SettlementThree" name="Settlement" value="2" title="职工刷卡结算">
+                        <input type="radio" id="SettlementThree" name="Settlement" value="2" title="职工刷卡">
                         <input type="radio" id="SettlementFour" name="Settlement" value="4"   checked="checked"  title="居民有卡报账">
                         <input type="radio" id="SettlementFive" name="Settlement" value="5"   title="居民无卡报账">
-                        <input type="radio" id="SettlementTwo" name="Settlement" value="1"  title="职工计划生育结算">
-                        <input type="radio" id="SettlementOne" name="Settlement" value="3" title="医保电子凭证结算">
+                        @*<input type="radio" id="SettlementTwo" name="Settlement" value="1"  title="职工计划生育结算">*@
+                        <input type="radio" id="SettlementSix" name="Settlement" value="6"   title="异地职工刷卡">
+                        <input type="radio" id="SettlementOne" name="Settlement" value="3" title="医保电子凭证">
                     </div>
 
                 </div>
@@ -172,6 +173,7 @@
             <div class="layui-form-item" id="DoorDiagnosisPreSettlementDiv" style="text-align: center; margin-top: 20px;">
                 <button type="button" Id="CatalogPairCode" class="layui-btn layui-btn-radius">项目对码</button>
                 <button type="button" Id="SettlementCard" class="layui-btn layui-btn-disabled layui-btn-radius">职工刷卡结算</button>
+                <button type="button" Id="YdPayCard" class="layui-btn layui-btn-disabled layui-btn-radius">异地职工刷卡结算</button>
                 <button type="button" Id="ResidentSettlementCard" class="layui-btn layui-btn-disabled layui-btn-radius">居民结算</button>
                 <button type="button" Id="DoorDiagnosisPreSettlement" class="layui-btn layui-btn-disabled layui-btn-radius">职工计划生育预结算</button>
                 <button type="button" Id="OutpatientNationEcTrans" class="layui-btn layui-btn-disabled layui-btn-radius">医保电子凭证结算</button>
@@ -320,6 +322,10 @@
                 isPassKey();
                 $("#AccountPaymentDiv").show();
 
+            }
+            if (settlementVal === "6")//异地划卡
+            {
+                buttonStatus("YdPayCard", true);
             }
             //居民刷卡结算
             if ( settlementVal === "4" && baseInfo.Inpatient.InsuranceType === "342") {
@@ -867,8 +873,72 @@
 
             });
         }
-     
+        //异地划卡
+        function ydOutpatientPayCard(settlementDataInfo) {
+            var cardParam = $.extend({}, params);
+           
+            cardParam["SettlementJson"] = settlementDataInfo;
+            cardParam["DownAmount"] = $("#AccountPayment").val();
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/YdOutpatientPayCard',
+                data: cardParam,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                    } else {
+                        $('#CashPayment').val(data.Data.SelfPayFeeAmount);
+                        layer.alert('划卡支付成功', { icon: 6, shade: 0.1, skin: 'layui-layer-molv' });
+                        //添加预结算信息
+                        if (data.Data.PayMsg !== null) {
+                            settlementData(data.Data.PayMsg);
+                        }
+                    }
+                }
 
+            });
+        }
+        //获取异地划卡参数
+        function getYdOutpatientPayCardParam() {
+            var getCardParam = $.extend({}, params);
+            getCardParam["AreaCode"] = $("#AccountPayment").val();
+            getCardParam["DownAmount"] = $("#AccountPayment").val();
+            getCardParam["InsuranceNo"] = $("#AccountPayment").val();
+            
+            $.ajax({
+                type: 'POST',
+                url: hostNew + '/GetYdOutpatientPayCardParam',
+                data: getCardParam,
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    if (data.Success === false) {
+                        var errData = data.Message;
+                        layer.alert(errData, { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
+                        return false;
+                    } else {
+                        buttonStatus("YdPayCard", false);
+                        //var activeX = document.getElementById("CSharpActiveX");
+                        //划卡支付
+                      
+                        var activeData = activeXNew.HospitalizationMethods(data.Data.InputXml, JSON.stringify(baseInfo.HospitalInfo), data.Data.TransactionCode);
+                        var activeJsonData = JSON.parse(activeData);
+                        if (activeJsonData.Success === false) {
+                            msgError(activeJsonData.Message);
+                        } else {
+                            ydOutpatientPayCard(activeJsonData.Data);
+                        }
+
+                     
+                    }
+                }
+
+            });
+        }
+      
         $('#CardPwd').bind('keypress', function (event) {
             var settlementVal = $('input[name="Settlement"]:checked').val();
 
@@ -943,6 +1013,10 @@
                 return false;
             }
             workerSettlementCard();
+        });
+        //医保电子支付
+        $('#YdPayCard').on('click', function () {
+            getYdOutpatientPayCardParam();
         });
         //查询
         $('#queryData').on('click', function () {
