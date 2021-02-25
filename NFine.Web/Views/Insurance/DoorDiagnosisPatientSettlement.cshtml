@@ -217,7 +217,7 @@
         $("#passwordDiv").hide();
         
         baseInfo.PageFunction.FunctionName = "Outpatient";
-
+        var baseInfoNew;
         var passWordKey = "1";
         var settlementRadio = null;
         var insuranceNo = null;//社保卡号
@@ -284,7 +284,9 @@
         }
         params["timestamp"] = (new Date()).valueOf();
         //获取医院基本信息回调方法
-        window.getHospitalInfoBack = function () { };
+        window.getHospitalInfoBack = function() {
+            baseInfoNew = $.extend({}, baseInfo);
+        };
      
         getHospitalInfo(getHospitalInfoBack);
         //结算方式控制
@@ -295,19 +297,19 @@
         function iniInpatientInfo() {
           
             // 居民
-            if (baseInfo.Inpatient.InsuranceType === "342") {
-                $("#InsuranceBalance").val(baseInfo.Inpatient.ResidentInsuranceBalance);
-                $("#OverallPaymentBalance").val(baseInfo.Inpatient.OverallPaymentBalance);
+            if (baseInfoNew.Inpatient.InsuranceType === "342") {
+                $("#InsuranceBalance").val(baseInfoNew.Inpatient.ResidentInsuranceBalance);
+                $("#OverallPaymentBalance").val(baseInfoNew.Inpatient.OverallPaymentBalance);
                 $("#OverallPaymentBalanceDiv").show();
                 $("#ContactPhoneDiv").show();
                 //职工
-            } else if (baseInfo.Inpatient.InsuranceType === "310") {
-                $("#InsuranceBalance").val(baseInfo.Inpatient.WorkersInsuranceBalance);
+            } else if (baseInfoNew.Inpatient.InsuranceType === "310") {
+                $("#InsuranceBalance").val(baseInfoNew.Inpatient.WorkersInsuranceBalance);
             }
             var settlementVal = $('input[name="Settlement"]:checked').val();
             $("#DoorDiagnosisPreSettlementDiv").show();
             //计划生育结算
-            if (settlementVal === "1" && baseInfo.Inpatient.InsuranceType === "310") {
+            if (settlementVal === "1" && baseInfoNew.Inpatient.InsuranceType === "310") {
                            
                 buttonStatus("DoorDiagnosisPreSettlement", true);
             }
@@ -316,7 +318,7 @@
                 buttonStatus("OutpatientNationEcTrans", true);
             }
             //职工刷卡结算
-            if (settlementVal === "2" && baseInfo.Inpatient.InsuranceType === "310" )
+            if (settlementVal === "2" && baseInfoNew.Inpatient.InsuranceType === "310" )
             {
                 buttonStatus("SettlementCard", true);
                 isPassKey();
@@ -328,17 +330,17 @@
                 buttonStatus("YdPayCard", true);
             }
             //居民刷卡结算
-            if ( settlementVal === "4" && baseInfo.Inpatient.InsuranceType === "342") {
+            if ( settlementVal === "4" && baseInfoNew.Inpatient.InsuranceType === "342") {
                 buttonStatus("ResidentSettlementCard", true);
                 isPassKey();
             }
             //居民无卡结算
-            if ( settlementVal === "5" && baseInfo.Inpatient.InsuranceType === "342") {
+            if ( settlementVal === "5" && baseInfoNew.Inpatient.InsuranceType === "342") {
                 buttonStatus("ResidentSettlementCard", true);
                 $("#passwordDiv").show();
                 $("#CardPwd").focus();
             }
-            $("#InsuranceType").val(baseInfo.Inpatient.InsuranceType);
+            $("#InsuranceType").val(baseInfoNew.Inpatient.InsuranceType);
             form.render();
             //if (settlementVal === "4" )//门诊结算
             //{////显示结算按钮
@@ -349,9 +351,9 @@
             //    //buttonStatus("DoorDiagnosisSettlement", true);
             //}
             $("#InsuranceBalanceDiv").show();
-            params["AfferentSign"] =  baseInfo.HospitalInfo.AfferentSign;
-            params["IdentityMark"] = baseInfo.HospitalInfo.IdentityMark;
-            params["InsuranceType"] = baseInfo.Inpatient.InsuranceType;
+            params["AfferentSign"] =  baseInfoNew.HospitalInfo.AfferentSign;
+            params["IdentityMark"] = baseInfoNew.HospitalInfo.IdentityMark;
+            params["InsuranceType"] = baseInfoNew.Inpatient.InsuranceType;
         }
         //获取医保病人信息
         window.getInpatientInfoBack = function () {
@@ -396,7 +398,7 @@
                     } else {
                         //var activeX = document.getElementById("CSharpActiveX");
                         //门诊结算
-                        var activeData = activeXNew.OutpatientMethods(data.Data,JSON.stringify(baseInfo.HospitalInfo),"OutpatientDepartmentCostInput");
+                        var activeData = activeXNew.OutpatientMethods(data.Data,JSON.stringify(baseInfoNew.HospitalInfo),"OutpatientDepartmentCostInput");
                         var activeJsonData = JSON.parse(activeData);
                         if (activeJsonData.Success === false) {
                             msgError(activeJsonData.Message);
@@ -411,7 +413,7 @@
         }
         //普通门诊结算
         function outpatientDepartmentCostInput(costInputData, accountBalance) {
-            var costInputParam = $.extend({}, params);;
+            var costInputParam = $.extend({}, params);
             costInputParam["SettlementJson"] = costInputData;
             costInputParam["AccountBalance"] = accountBalance;
             $.ajax({
@@ -461,7 +463,7 @@
                        // var activeX = document.getElementById("CSharpActiveX");
                        
                         //门诊计划生育预结算
-                        var activeData = activeXNew.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"OutpatientPlanBirthPreSettlement");
+                        var activeData = activeXNew.OutpatientMethods(data.Data, JSON.stringify(baseInfoNew.HospitalInfo),"OutpatientPlanBirthPreSettlement");
                         var activeJsonData = JSON.parse(activeData);
                         if (activeJsonData.Success === false) {
                             msgError(activeJsonData.Message);
@@ -532,7 +534,7 @@
                        // var activeX = document.getElementById("CSharpActiveX");
                         //门诊计划生育结算
                       
-                        var activeData = activeXNew.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo),"OutpatientPlanBirthSettlement");
+                        var activeData = activeXNew.OutpatientMethods(data.Data, JSON.stringify(baseInfoNew.HospitalInfo),"OutpatientPlanBirthSettlement");
                         var activeJsonData = JSON.parse(activeData);
                         if (activeJsonData.Success === false) {
                             msgError(activeJsonData.Message);
@@ -582,7 +584,7 @@
         function outpatientNationEcTransParam() {
             var ecTransParam = $.extend({}, params);
             var url = "/GetOutpatientNationEcTransResidentParam";
-            if (baseInfo.Inpatient.InsuranceType === "310") {
+            if (baseInfoNew.Inpatient.InsuranceType === "310") {
                 url = "/OutpatientNationEcTransParam";
                 ecTransParam["InsuranceType"] = "310";
             } else {
@@ -591,9 +593,9 @@
                     layer.alert("居民报账联系电话不能为空", { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
                     return false;
                 }
-                ecTransParam["CommunityName"] = baseInfo.Inpatient.CommunityName;
+                ecTransParam["CommunityName"] = baseInfoNew.Inpatient.CommunityName;
                 ecTransParam["ContactPhone"] = $("#ContactPhone").val();
-                ecTransParam["ContactAddress"] = baseInfo.Inpatient.ContactAddress;
+                ecTransParam["ContactAddress"] = baseInfoNew.Inpatient.ContactAddress;
                  
             }
             $.ajax({
@@ -613,15 +615,15 @@
                         var activeData;
                         var activeJsonData; 
                         //电子医保支付
-                        if (baseInfo.Inpatient.InsuranceType !== "310") {
+                        if (baseInfoNew.Inpatient.InsuranceType !== "310") {
                             activeData = activeXNew.OutpatientMethods(data.Data,
-                                JSON.stringify(baseInfo.HospitalInfo),
+                                JSON.stringify(baseInfoNew.HospitalInfo),
                                 "NationEcTransResident");
                             activeJsonData = JSON.parse(activeData);
                         }
                         else {
                             activeData = activeXNew.OutpatientMethods(data.Data,
-                                JSON.stringify(baseInfo.HospitalInfo),
+                                JSON.stringify(baseInfoNew.HospitalInfo),
                                 "NationEcTrans");
                               activeJsonData = JSON.parse(activeData);
                         }
@@ -641,7 +643,7 @@
         function outpatientNationEcTrans(settlementDataInfo) {
             var ecTransParam = $.extend({}, params);
             var url = "/outpatientNationEcTrans";
-            if (baseInfo.Inpatient.InsuranceType !== "310") url = "/OutpatientNationEcTransResident";
+            if (baseInfoNew.Inpatient.InsuranceType !== "310") url = "/OutpatientNationEcTransResident";
             ecTransParam["SettlementJson"] = settlementDataInfo;
             var preParam = $.extend({}, params);
             preParam["InsuranceType"] = "310";
@@ -691,7 +693,7 @@
                         //var activeX = document.getElementById("CSharpActiveX");
                         //划卡支付
                       
-                        var activeData = activeXNew.HospitalizationMethods(JSON.stringify(data.Data), JSON.stringify(baseInfo.HospitalInfo),"WorkerCardSettlement");
+                        var activeData = activeXNew.HospitalizationMethods(JSON.stringify(data.Data), JSON.stringify(baseInfoNew.HospitalInfo),"WorkerCardSettlement");
                         var activeJsonData = JSON.parse(activeData);
                         if (activeJsonData.Success === false) {
                             msgError(activeJsonData.Message);
@@ -735,7 +737,7 @@
         }
         //职工读卡获取社保卡号
         function workerReadCardInfo(cardPwd) {
-            var activeData = activeXNew.OutpatientMethods(cardPwd, JSON.stringify(baseInfo.HospitalInfo), "ReadCardInfo");
+            var activeData = activeXNew.OutpatientMethods(cardPwd, JSON.stringify(baseInfoNew.HospitalInfo), "ReadCardInfo");
             var activeJsonData = JSON.parse(activeData);
        
             if (activeJsonData.Success === false) {
@@ -814,9 +816,9 @@
                 layer.alert("居民报账联系电话不能为空", { skin: 'layui-layer-molv', icon: 5, title: '错误提示' });
                 return false;
             }
-            cardParam["CommunityName"] = baseInfo.Inpatient.CommunityName;
+            cardParam["CommunityName"] = baseInfoNew.Inpatient.CommunityName;
             cardParam["ContactPhone"] = $("#ContactPhone").val();
-            cardParam["ContactAddress"] = baseInfo.Inpatient.ContactAddress;
+            cardParam["ContactAddress"] = baseInfoNew.Inpatient.ContactAddress;
             var pwd = $("#CardPwd").val();
             if (settlementRadio === "4") {
                 if (passWordKey === "0") {
@@ -855,7 +857,7 @@
                         // var activeX = document.getElementById("CSharpActiveX");
 
                        // 门诊居民结算
-                        var activeData = activeXNew.OutpatientMethods(data.Data, JSON.stringify(baseInfo.HospitalInfo), "ResidentSettlement");
+                        var activeData = activeXNew.OutpatientMethods(data.Data, JSON.stringify(baseInfoNew.HospitalInfo), "ResidentSettlement");
                         var activeJsonData = JSON.parse(activeData);
                         if (activeJsonData.Success === false) {
                             var errorMsg = activeJsonData.Message;
@@ -924,7 +926,7 @@
                         //var activeX = document.getElementById("CSharpActiveX");
                         //划卡支付
                       
-                        var activeData = activeXNew.HospitalizationMethods(data.Data.InputXml, JSON.stringify(baseInfo.HospitalInfo), data.Data.TransactionCode);
+                        var activeData = activeXNew.YdMedicalInsuranceMethods(data.Data.InputXml, JSON.stringify(baseInfoNew.HospitalInfo), data.Data.TransactionCode);
                         var activeJsonData = JSON.parse(activeData);
                         if (activeJsonData.Success === false) {
                             msgError(activeJsonData.Message);
@@ -950,6 +952,10 @@
             }//居民无卡报账
             if (event.keyCode === 13 && settlementVal==="5") {
                 residentSettlementCard();
+            }
+            //异地划卡
+            if (event.keyCode === 13 && settlementVal === "6") {
+                getYdOutpatientPayCardParam();
             }
         });
         //门诊预结算
@@ -1014,19 +1020,19 @@
             }
             workerSettlementCard();
         });
-        //医保电子支付
+        //异地划卡
         $('#YdPayCard').on('click', function () {
             getYdOutpatientPayCardParam();
         });
         //查询
         $('#queryData').on('click', function () {
           
-            //baseInfo.Inpatient.InsuranceType = "342";
-            //baseInfo.Inpatient.PatientName = "孙支燕";
-            //baseInfo.Inpatient.IdCardNo = "4721787353615206833";
-            //baseInfo.Inpatient.CommunityName = "宜宾市翠屏区";   
-            //baseInfo.HospitalInfo.AfferentSign = "2";
-            //baseInfo.HospitalInfo.IdentityMark = "1001522187";
+            //baseInfoNew.Inpatient.InsuranceType = "342";
+            //baseInfoNew.Inpatient.PatientName = "孙支燕";
+            //baseInfoNew.Inpatient.IdCardNo = "4721787353615206833";
+            //baseInfoNew.Inpatient.CommunityName = "宜宾市翠屏区";   
+            //baseInfoNew.HospitalInfo.AfferentSign = "2";
+            //baseInfoNew.HospitalInfo.IdentityMark = "1001522187";
             //iniInpatientInfo();
             queryData(getInpatientInfoBack);
             radioChecked();
@@ -1094,9 +1100,9 @@
                     
                     $("#ContactPhone").val(data.Data.ContactPhone);
                     $("#AccountPayment").val(data.Data.MedicalTreatmentTotalCost);
-                    baseInfo.HospitalInfo.IdentityMark = data.Data.IdCardNo;
+                    baseInfoNew.HospitalInfo.IdentityMark = data.Data.IdCardNo;
                     
-                    if (baseInfo.PageFunction.IsSuspend !== 1) {
+                    if (baseInfoNew.PageFunction.IsSuspend !== 1) {
                     $("#queryDataDiv").show(); 
                     } 
                 }

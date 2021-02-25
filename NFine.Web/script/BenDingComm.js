@@ -49,6 +49,11 @@ function DetectActiveX() {
 function queryData(getInpatientInfoBack) {
     var activeX = document.getElementById("CSharpActiveX");
     var activeData = activeX.CheckPwd();
+    var settlementType = "100";
+    var settlementVal = iniJs('input[name="Settlement"]:checked').val();
+    if (settlementVal !== undefined) {
+        settlementType = settlementVal;
+    }
 
     layer.open({
         type: 2, //弹窗类型 ['dialog', 'page', 'iframe', 'loading', 'tips']

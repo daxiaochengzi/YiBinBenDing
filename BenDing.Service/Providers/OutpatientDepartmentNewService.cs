@@ -1039,7 +1039,7 @@ namespace BenDing.Service.Providers
             if (residentData.MedicalInsuranceState != MedicalInsuranceState.MedicalInsurancePreSettlement) throw new Exception("当前病人未办理预结算,不能办理结算!!!");
             //存中间库
             //现金支付
-            var selfPayFeeAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost - iniData.ReimbursementAmount);
+            var selfPayFeeAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost - CommonHelp.ValueToDouble(iniData.ReimbursementAmount));
             var updateData = new UpdateMedicalInsuranceResidentSettlementParam()
             {
                 UserId = userBase.UserId,
@@ -1251,7 +1251,8 @@ namespace BenDing.Service.Providers
             if (residentData.MedicalInsuranceState != MedicalInsuranceState.MedicalInsurancePreSettlement) throw new Exception("当前病人未办理预结算,不能办理结算!!!");
             //存中间库
             //现金支付
-            var selfPayFeeAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost - iniData.ReimbursementAmount);
+            var selfPayFeeAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost - CommonHelp.ValueToDouble(iniData.ReimbursementAmount));
+            //var selfPayFeeAmount = CommonHelp.ValueToDouble(outpatientPerson.MedicalTreatmentTotalCost - iniData.ReimbursementAmount);
             var updateData = new UpdateMedicalInsuranceResidentSettlementParam()
             {
                 UserId = userBase.UserId,
@@ -1427,7 +1428,6 @@ namespace BenDing.Service.Providers
         public OutpatientNationEcTransResidentBackDto ResidentOutpatientSettlementCard(
             GetResidentOutpatientSettlementCardUiParam param)
         {
-          
             var resultData = new OutpatientNationEcTransResidentBackDto();
             var iniData = JsonConvert.DeserializeObject<OutpatientNationEcTransResidentJsonDto>(param.SettlementJson);
             var userBase = _serviceBasicService.GetUserBaseInfo(param.UserId);
