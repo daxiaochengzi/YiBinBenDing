@@ -62,33 +62,45 @@
                 var r = window.location.search.substr(1).match(reg);
                 if (r != null) return unescape(r[2]); return null;
             }
-
+        
             var idCardNo = getUrlParam('IdCardNo');
             var checkPwd = getUrlParam('CheckPwd');
+            var settlementType = getUrlParam('settlementType');
           
             //  if (checkPwd==="0")
             $("#IdentityMark").val(idCardNo);
+
+            function cardRead() {
+                if (checkPwd === "0") {
+                    $("#CardPwd").attr("class", "layui-input");
+                    $("#CardPwd").removeAttr("disabled");
+                }
+                $("#IdentityMark").val("");
+                $("#markTextLable").text("卡号");
+            }
+
+            debugger;
+            if (settlementType === "6") {
+                 cardRead();
+            };
             form.render();
             //查询方式切换
             form.on('select(AfferentSign)',
                 function (data) {
                     var val = data.value;
-                    if (val === "2") {
-                        $("#markTextLable").text("个人编码");
-                        $("#IdentityMark").val("");
-                        $("#IdentityMark").attr("placeholder", "请输入个人编码");
-                    } else if (val === "1") {
-                        $("#markTextLable").text("身份证号");
-                    }
-                    else if (val === "3") {
-
-                        if (checkPwd === "0") {
-                            $("#CardPwd").attr("class", "layui-input");
-                            $("#CardPwd").removeAttr("disabled");
+                  
+                        if (val === "2") {
+                            $("#markTextLable").text("个人编码");
+                            $("#IdentityMark").val("");
+                            $("#IdentityMark").attr("placeholder", "请输入个人编码");
+                        } else if (val === "1") {
+                            $("#markTextLable").text("身份证号");
                         }
-                        $("#IdentityMark").val("");
-                        $("#markTextLable").text("卡号");
-                    }
+                        else if (val === "3" ) {
+                            cardRead();
+
+                        }
+                    
                 });
         });
 

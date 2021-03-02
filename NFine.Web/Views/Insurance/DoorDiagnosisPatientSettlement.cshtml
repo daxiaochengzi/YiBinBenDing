@@ -33,10 +33,11 @@
                     <label class="layui-form-label">结算方式</label>
                     <div class="layui-input-block">
                         <input type="radio" id="SettlementThree" name="Settlement" value="2" title="职工刷卡">
+                        <input type="radio" id="SettlementSix" name="Settlement" value="6"   title="异地职工刷卡">
                         <input type="radio" id="SettlementFour" name="Settlement" value="4"   checked="checked"  title="居民有卡报账">
                         <input type="radio" id="SettlementFive" name="Settlement" value="5"   title="居民无卡报账">
                         @*<input type="radio" id="SettlementTwo" name="Settlement" value="1"  title="职工计划生育结算">*@
-                        <input type="radio" id="SettlementSix" name="Settlement" value="6"   title="异地职工刷卡">
+                    
                         <input type="radio" id="SettlementOne" name="Settlement" value="3" title="医保电子凭证">
                     </div>
 
@@ -224,10 +225,10 @@
         //新插件对象
         var activeXNew = document.getElementById("CSharpActiveX"); 
        // 插件检查
-        var verification = DetectActiveX();
-        if (verification === false) {
-            return false;
-        }
+        //var verification = DetectActiveX();
+        //if (verification === false) {
+        //    return false;
+        //}
         //是否使用加密键盘
         function isPassKey() {
             //var activeX = document.getElementById("CSharpActiveX");
@@ -861,7 +862,7 @@
                         var activeJsonData = JSON.parse(activeData);
                         if (activeJsonData.Success === false) {
                             var errorMsg = activeJsonData.Message;
-                            if (errorMsg.indexOf('居民门诊统筹余额及转结余额均为零') === -1) {
+                            if (errorMsg.indexOf('为零') === -1 && errorMsg.indexOf('余额') === -1) {
                                 msgError(activeJsonData.Message);
                             } else {
                                 residentOutpatientPreSettlement("");
@@ -1042,7 +1043,6 @@
         });
         //门诊居民结算
         $('#ResidentSettlementCard').on('click', function () {
-
             residentSettlementCard();
         });
         //项目对码

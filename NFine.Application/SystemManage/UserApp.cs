@@ -18,7 +18,7 @@ namespace NFine.Application.SystemManage
         private IUserRepository service = new UserRepository();
         private UserLogOnApp userLogOnApp = new UserLogOnApp();
 
-        public List<UserEntity> GetList(Pagination pagination, string keyword)
+        public List<UserEntity> GetList(Pagination pagination, string keyword,string organizationName)
         {
             var expression = ExtLinq.True<UserEntity>();
             if (!string.IsNullOrEmpty(keyword))
@@ -27,6 +27,11 @@ namespace NFine.Application.SystemManage
                 expression = expression.Or(t => t.F_RealName.Contains(keyword));
                 expression = expression.Or(t => t.F_MobilePhone.Contains(keyword));
             }
+            //if (!string.IsNullOrEmpty(organizationName))
+            //{
+            //    expression = expression.And(t => t.f_.Contains(keyword));
+               
+            //}
             expression = expression.And(t => t.F_Account != "admin");
             return service.FindList(expression, pagination);
         }

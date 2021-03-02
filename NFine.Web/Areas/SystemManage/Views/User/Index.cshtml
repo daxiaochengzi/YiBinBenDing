@@ -76,7 +76,10 @@
         });
         $("#btn_search").click(function () {
             $gridList.jqGrid('setGridParam', {
-                postData: { keyword: $("#txt_keyword").val() },
+                postData: {
+                    keyword: $("#txt_keyword").val(),
+                    OrganizationName: $("#txt_OrganizationName").val()
+                },   
             }).trigger('reloadGrid');
         });
     }
@@ -199,7 +202,23 @@
             <tr>
                 <td>
                     <div class="input-group">
-                        <input id="txt_keyword" type="text" class="form-control" placeholder="账户/姓名/手机" style="width: 200px;">
+                        <span style="padding-left: 10px"> 账户/姓名/手机</span>
+                        <input id="txt_keyword" type="text" class="form-control" placeholder="账户/姓名/手机" style="width: 150px;">
+                     
+                    </div>
+                   
+                </td>
+                <td>
+                    <div class="input-group" style="margin-left: 15px">
+                        <span style="padding-left: 10px">机构名称</span>
+                        <input id="txt_OrganizationName" type="text" class="form-control" placeholder="机构名称" style="width: 150px;">
+
+                    </div>
+                   
+                </td>
+                <td>
+                    <div class="input-group" style="margin-left: 20px">
+
                         <span class="input-group-btn">
                             <button id="btn_search" type="button" class="btn  btn-primary"><i class="fa fa-search"></i></button>
                         </span>
