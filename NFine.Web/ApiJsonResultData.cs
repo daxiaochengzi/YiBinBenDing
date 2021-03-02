@@ -10,7 +10,7 @@ using NFine.Code;
 
 
 namespace NFine.Web
-{/// <summary>
+{/// <summary> 
 /// 返回结果值封装
 /// </summary>
     public class ApiJsonResultData
