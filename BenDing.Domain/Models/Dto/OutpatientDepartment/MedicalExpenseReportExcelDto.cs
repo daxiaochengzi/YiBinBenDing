@@ -19,7 +19,7 @@ namespace BenDing.Domain.Models.Dto.OutpatientDepartment
         public decimal 门诊费用 { get; set; }
         public  decimal 门诊报销 { get; set; }
         public decimal 历年结转 { get; set; }
-        public string 报销日期 { get; set; }
+        public DateTime 报销日期 { get; set; }
         public string 联系电话 { get; set; }
         public string 经办人 { get; set; }
         public  int 标记 { get; set; }

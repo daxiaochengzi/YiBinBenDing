@@ -56,7 +56,7 @@ namespace BenDing.Domain.Models.Dto.OutpatientDepartment
         /// 结算时间
         /// </summary>
 
-        public string SettlementTime { get; set; }
+        public DateTime SettlementTime { get; set; }
 
         /// <summary>
         /// 合计金额

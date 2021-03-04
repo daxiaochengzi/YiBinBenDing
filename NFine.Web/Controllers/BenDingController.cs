@@ -1210,19 +1210,21 @@ namespace NFine.Web.Controllers
         {
             return new ApiJsonResultData(ModelState, new QueryHospitalizationFeeDto()).RunWithTry(y =>
             {//ModelState, new QueryHospitalizationFeeDto()
-             
-                 var queryData = _hisSqlRepository.InpatientInfoDetailQuery(new InpatientInfoDetailQueryParam()
-                 {
-                       BusinessId = param.BusinessId
-                  });
+
+                var queryData = _hisSqlRepository.InpatientInfoDetailQuery(new InpatientInfoDetailQueryParam()
+                {
+                    BusinessId = param.BusinessId
+                });
                 var amount = CommonHelp.ValueToDouble(queryData.Select(c => c.Amount).Sum());
-                var uploadAllAmount = CommonHelp.ValueToDouble(queryData.Where(d=>d.UploadMark==1).Select(c => c.Amount).Sum());
+                var uploadAllAmount = CommonHelp.ValueToDouble(queryData.Where(d => d.UploadMark == 1).Select(c => c.Amount).Sum());
                 var data = new
                 {
                     Amount = amount,
+                    AllNum = queryData.Count,
                     UploadAllAmount = uploadAllAmount,
+                    UploadNum = queryData.Count(d => d.UploadMark == 1),
                     UnUploadAllAmount = amount - uploadAllAmount
-                  };
+                };
                 y.Data = data;
             });
 
@@ -2040,7 +2042,6 @@ namespace NFine.Web.Controllers
 
         }
         #endregion
-
         /// <summary>
         /// 下载文件
         /// </summary>
